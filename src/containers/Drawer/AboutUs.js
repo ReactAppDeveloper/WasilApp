@@ -1,7 +1,8 @@
 import React from 'react';
-import {  StatusBar, StyleSheet,View ,ScrollView,Text,LogBox} from 'react-native';
+import {  StatusBar, StyleSheet,View ,ScrollView,Text,LogBox,Dimensions,ImageBackground} from 'react-native';
 import { Colors} from '../../theme';
-import {AboutUsSVG} from '../../assets/icons';
+const { width} = Dimensions.get('window');
+const imageone = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1734071182/aboutusimage.png'};
 LogBox.ignoreAllLogs();
 
 const AboutUs = () => { 
@@ -11,12 +12,13 @@ const AboutUs = () => {
         
        <ScrollView>
 
-             <View style={{alignItems:"center",top:10}}>
-                   <AboutUsSVG/>
+             <View style={{alignItems:"center"}}>
+             <ImageBackground source={imageone} resizeMode="contain" imageStyle={{top:10}} style={styles.slidercontainer}>
+             </ImageBackground>
               </View>
 
              
-              <View style={{width:"92%",alignSelf:"center",left:3,top:10}}>
+              <View style={{width:"92%",alignSelf:"center",left:3}}>
               <Text style={{color:Colors.secondary,top:20,fontSize:12,fontFamily:"PoppinsLight"}}>
               Welcome to
               <Text style={{color:Colors.intermediate,top:20,fontSize:12,fontFamily:"PoppinsLight"}}>
@@ -40,7 +42,7 @@ const AboutUs = () => {
               </Text>
               </View>
 
-              <View style={{width:"92%",alignSelf:"center",left:3,top:20}}>
+              <View style={{width:"92%",alignSelf:"center",left:3,top:10}}>
               <Text style={{color:Colors.secondary,top:20,fontSize:12,fontFamily:"PoppinsLight"}}>
               At 
               <Text style={{color:Colors.intermediate,top:20,fontSize:12,fontFamily:"PoppinsLight"}}>
@@ -139,30 +141,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:Colors.white
   },
-  advImageContainer: {
-    width: "100%",
-    height: 120,  
-    top:150,
-    borderRadius:1,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    backgroundColor:Colors.prayercolor
-  },
-  submit: {
-    backgroundColor: Colors.transparent,
-    borderRadius: 5,
-    borderColor: Colors.primary,
-    height:25,
-    left:20,
-    width:"22%"
-  },
-  submitText: {
-    fontSize:12,
-    flexDirection:"column",
-    color: Colors.secondary,
-    left:8,
-    fontWeight:"500",
-    fontFamily:"Raleway",
-    top:4
+  slidercontainer: {
+    width:width*0.92,
+    height: 150,
+    alignSelf:"center"
   },
 });

@@ -8,14 +8,14 @@ const settop = () => {
   const height = screenHeight;
 
   if (height >= 1280) {
-    alert("Large")
+    // Large screens
     return 105;
   } else if (height >= 800) {
-    alert("Medium")
+    // Medium screens
     return 70;
   } else {
-    alert("Small")
-    return 45;
+    // Small screens
+    return 40;
   }
 };
 const ImagesBGTasbih = () => (

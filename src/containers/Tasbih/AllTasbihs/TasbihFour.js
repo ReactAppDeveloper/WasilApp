@@ -15,7 +15,7 @@ const settop = () => {
     return 70;
   } else {
     // Small screens
-    return 35;
+    return 40;
   }
 };
 const ImagesBGTasbih = () => (

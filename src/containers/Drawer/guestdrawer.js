@@ -8,7 +8,7 @@ import {
 import {  createDrawerNavigator, DrawerContentScrollView,} from '@react-navigation/drawer';
 import { Colors } from '../../theme';
 import Home from '../Home/Home';
-import {WasilLogoDrawerSVG,HelpSVG,FollowUsSVG,RateSVG,ContactSVG,PolicySVG,FounderSVG,FAQsSVG,ShareSVG,ClosePlayDrawerSVG,FacebookFollowUpSVG,YoutubeFollowUpSVG,InstagramFollowUpSVG,TiktokFollowUpSVG} from '../../assets/icons';
+import {WasilLogoDrawerSVG,HelpSVG,FollowUsSVG,RateSVG,ContactSVG,PolicySVG,FounderSVG,FAQsSVG,ShareSVG,ClosePlayDrawerSVG,FacebookFollowUpSVG,YoutubeFollowUpSVG,InstagramFollowUpSVG,TiktokFollowUpSVG,HijriSVG} from '../../assets/icons';
 import SplashScreen from 'react-native-splash-screen';
 import Modal from 'react-native-modal';
 import Share from 'react-native-share';
@@ -61,6 +61,19 @@ function CustomDrawerContent({props,navigation}) {
            </Text>
         </View>
         </TouchableOpacity> 
+
+        <View style={{backgroundColor:Colors.bordercolor,height: 0.7,marginLeft:20,marginRight:25}}/>
+
+         <TouchableOpacity onPress={() => navigation.navigate("HijriDates")}>
+        <View style={{backgroundColor: Colors.white, margin:10 ,bottom:10,height: 30,flexDirection:'row'}}> 
+            <View style={{paddingLeft:10,paddingTop:15}}>
+               <HijriSVG/>
+            </View>
+            <Text style={{fontSize: 14, top:13,left:15,color:Colors.lightgreytasbih,flex:1,alignSelf: "center",fontFamily: "PoppinsLight"}}>
+            Hijri Dates Adjustment
+            </Text>
+        </View>
+        </TouchableOpacity>
 
         <View style={{backgroundColor:Colors.bordercolor,height: 0.7,marginLeft:20,marginRight:25}}/>
 
@@ -225,7 +238,6 @@ function CustomDrawerContent({props,navigation}) {
 
         <View style={{backgroundColor:Colors.bordercolor,height: 0.7,marginLeft:20,marginRight:25}}/>
         
-
       </View>
 
       <View style={{height:200,justifyContent:'center',alignItems:'center',top:30,flexDirection:"row"}}>

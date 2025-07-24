@@ -105,30 +105,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:Colors.white
   },
-  advImageContainer: {
-    width: "100%",
-    height: 120,  
-    top:150,
-    borderRadius:1,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    backgroundColor:Colors.prayercolor
-  },
-  submit: {
-    backgroundColor: Colors.transparent,
-    borderRadius: 5,
-    borderColor: Colors.primary,
-    height:25,
-    left:20,
-    width:"22%"
-  },
-  submitText: {
-    fontSize:12,
-    flexDirection:"column",
-    color: Colors.secondary,
-    left:8,
-    fontWeight:"500",
-    fontFamily:"Raleway",
-    top:4
-  },
 });
