@@ -1,112 +1,95 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { StatusBar, StyleSheet, View, Image, TouchableOpacity, ScrollView, LogBox, Text, Dimensions, ActivityIndicator } from 'react-native';
-import { Colors } from '../../theme';
-import { useFocusEffect } from '@react-navigation/native';
-import axios from "axios";
-
-const { width, height } = Dimensions.get('window');
-LogBox.ignoreAllLogs();
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StatusBar, StyleSheet, View, Image, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
+import axios from 'axios';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme, Spacing, Radius, useScreen } from '../../theme';
+import { ScreenState } from '../../components';
 
 const GreetingCardListNew = ({ route, navigation }) => {
   const { cardid, categoryname } = route.params;
-  const [categorycardlisting, setcategorycardlisting] = useState([]);
-  const [isLoading, setisLoading] = useState(false);
-  const [error, seterror] = useState(null);
+  const { Colors } = useTheme();
+  const { width } = useScreen();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
-  const fetchData = async () => {
-    setisLoading(true);
+  const [cards, setCards] = useState([]);
+  const [status, setStatus] = useState('loading');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `https://islamicapp.vercel.app/api/greetings?categoryId=${cardid}`
-      );
-      console.log("greeting card list response ==>");
-      const data = response.data;
-      setcategorycardlisting(data);
+      const response = await axios.get(`https://islamicapp.vercel.app/api/greetings?categoryId=${cardid}`);
+      setCards(Array.isArray(response.data) ? response.data : []);
+      setStatus('ready');
     } catch (e) {
-      console.log(e);
-      seterror(e);
-    } finally {
-      setisLoading(false);
+      setStatus('error');
     }
+  }, [cardid]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [cardid, categoryname])
-  );
+  if (status !== 'ready' || cards.length === 0) {
+    return (
+      <ScreenState
+        status={status === 'ready' ? 'empty' : status}
+        title={status === 'ready' ? 'No cards in this category yet' : "Couldn't load cards"}
+        onRetry={() => {
+          setStatus('loading');
+          load();
+        }}
+      />
+    );
+  }
 
-  if (isLoading) {
-    return (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" ,backgroundColor:Colors.intermediate1}}>
-        <ActivityIndicator size={"large"} color={Colors.white} />
-      </View>
-    );
-  }
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>
-          Error in Fetching Data..... Please Check Your Internet Connection.
-        </Text>
-      </View>
-    );
-  }
+  const columns = width >= 600 ? 3 : 2;
+  const cardWidth = (width - Spacing.lg * 2 - Spacing.md * (columns - 1)) / columns;
+
   return (
-    <View style={styles.containerMain}>
-      <StatusBar backgroundColor={Colors.intermediate1} />
-      <View style={{ top: 2 }}>
-        <ScrollView>
-          <View>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignSelf: "center", justifyContent: "center" }}>
-              {categorycardlisting.map((item, index) => (
-                <TouchableOpacity key={index} onPress={() => {
-                  navigation.navigate('GreetingCardShare', {
-                    cardimage: item.path,
-                    catname: categoryname,
-                    name: categoryname,
-                  });
-                }}>
-                  <View style={styles.advImageContainer}>
-                    <View>
-                      <Image key={item} style={styles.advImage} source={{ uri: item.path }} />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View style={{ height: 20 }}></View>
-          </View>
-        </ScrollView>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <FlatList
+        key={columns}
+        data={cards}
+        numColumns={columns}
+        keyExtractor={(item, index) => item._id || String(index)}
+        columnWrapperStyle={{ gap: Spacing.md }}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.textPrimary} />}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.card, { width: cardWidth }]}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${categoryname} card`}
+            onPress={() =>
+              navigation.navigate('GreetingCardShare', { cardimage: item.path, catname: categoryname, name: categoryname })
+            }>
+            <Image style={styles.image} source={{ uri: item.path }} />
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
 
 export default GreetingCardListNew;
 
-const styles = StyleSheet.create({
-  containerMain: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1
-  },
-  advImageContainer: {
-    width: width * 0.42,
-    height: 180,
-    borderRadius: 15,
-    borderWidth: 0.5,
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 15,
-    borderColor: Colors.intermediate1,
-    flexDirection: 'column',
-    overflow: "hidden",
-    backgroundColor: Colors.white
-  },
-  advImage: {
-    width: width * 0.42,
-    height: 180,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-  },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { padding: Spacing.lg, gap: Spacing.md },
+    card: {
+      borderRadius: Radius.md,
+      overflow: 'hidden',
+      backgroundColor: Colors.name === 'white' ? Colors.surfaceAlt : Colors.surface,
+    },
+    image: { width: '100%', aspectRatio: 4 / 5, resizeMode: 'cover' },
+  });

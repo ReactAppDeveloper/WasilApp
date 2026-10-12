@@ -277,13 +277,7 @@ import GreetingsNew from '../containers/Greetings/GreetingsNew';
 import GreetingCardListNew from '../containers/Greetings/GreetingCardListNew';
 import GreetingCardShare from '../containers/Greetings/GreetingCardShare';
 
-import GreetingsNewWhite from '../containers/GreetingsWhite/GreetingsNew';
-import GreetingCardListNewWhite from '../containers/GreetingsWhite/GreetingCardListNew';
-import GreetingCardShareWhite from '../containers/GreetingsWhite/GreetingCardShare';
 
-import GreetingsNewGreen from '../containers/GreetingsGreen/GreetingsNew';
-import GreetingCardListNewGreen from '../containers/GreetingsGreen/GreetingCardListNew';
-import GreetingCardShareGreen from '../containers/GreetingsGreen/GreetingCardShare';
 
 //Shahadah Section
 import ShahadahNew from '../containers/Shahadah/ShahadahNew';
@@ -404,9 +398,6 @@ const Themed_IntoWudhuNew = themedScreen({ blue: IntoWudhuNew, green: IntoWudhuN
 const Themed_NullifiesNew = themedScreen({ blue: NullifiesNew, green: NullifiesNewGreen, white: NullifiesNewWhite });
 const Themed_WearingSockWudhu = themedScreen({ blue: WearingSockWudhu, green: WearingSockWudhuGreen, white: WearingSockWudhuWhite });
 const Themed_TayammumScreen = themedScreen({ blue: TayammumScreen, green: TayammumScreenGreen, white: TayammumScreenWhite });
-const Themed_GreetingsNew = themedScreen({ blue: GreetingsNew, green: GreetingsNewGreen, white: GreetingsNewWhite });
-const Themed_GreetingCardListNew = themedScreen({ blue: GreetingCardListNew, green: GreetingCardListNewGreen, white: GreetingCardListNewWhite });
-const Themed_GreetingCardShare = themedScreen({ blue: GreetingCardShare, green: GreetingCardShareGreen, white: GreetingCardShareWhite });
 const Themed_IslamicStoriesScreen = themedScreen({ blue: IslamicStoriesScreen, green: IslamicStoriesScreenGreen, white: IslamicStoriesScreenWhite });
 const Themed_SubCategories = themedScreen({ blue: SubCategories, green: SubCategoriesGreen, white: SubCategoriesWhite });
 const Themed_AllSubCategories = themedScreen({ blue: AllSubCategories, green: AllSubCategoriesGreen, white: AllSubCategoriesWhite });
@@ -1133,13 +1124,11 @@ const Stack = createNativeStackNavigator();
         <Stack.Screen name="TayammumScreen" component={Themed_TayammumScreen} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="GreetingsNew" component={Themed_GreetingsNew} options={{animation:'slide_from_right',headerTitle:"Greeting Cards",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-      },}}/>
-        <Stack.Screen name="GreetingCardListNew" component={Themed_GreetingCardListNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+        <Stack.Screen name="GreetingsNew" component={GreetingsNew} options={headerOptions(Colors, "Greeting Cards")}/>
+        <Stack.Screen name="GreetingCardListNew" component={GreetingCardListNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-        <Stack.Screen name="GreetingCardShare" component={Themed_GreetingCardShare} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+        <Stack.Screen name="GreetingCardShare" component={GreetingCardShare} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
         <Stack.Screen name="ShahadahNew" component={ShahadahNew} options={headerOptions(Colors, "Shahadah")}/>
