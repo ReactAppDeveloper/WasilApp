@@ -34,6 +34,7 @@ export default {
     cardBorder: "#E0E0E0",
     cardTitle: "#43288A",
     cardText: "#444444",
+    inkAccent: "#43288A",         // accent text on light artwork (cloud cards etc.)
     gold: "#CC9944",
     overlay: "rgba(0,0,0,0.45)",
 };

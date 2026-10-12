@@ -148,15 +148,7 @@ import TasbihCounterScreen from '../containers/Tasbih/TasbihCounterScreen';
 import BackgroundPickerScreen from '../containers/Tasbih/BackgroundPickerScreen';
 import FavoritesScreen from '../containers/Tasbih/FavoritesScreen';
 
-import TasbihWhite from '../containers/TasbihWhite/Tasbih';
-import TasbihCounterScreenWhite from '../containers/TasbihWhite/TasbihCounterScreen';
-import BackgroundPickerScreenWhite from '../containers/TasbihWhite/BackgroundPickerScreen';
-import FavoritesScreenWhite from '../containers/TasbihWhite/FavoritesScreen';
 
-import TasbihGreen from '../containers/TasbihGreen/Tasbih';
-import TasbihCounterScreenGreen from '../containers/TasbihGreen/TasbihCounterScreen';
-import BackgroundPickerScreenGreen from '../containers/TasbihGreen/BackgroundPickerScreen';
-import FavoritesScreenGreen from '../containers/TasbihGreen/FavoritesScreen';
 
 //Videos New Section
 import VideoDashboard from '../containers/VideosNew/VideoDashboard';
@@ -362,9 +354,6 @@ const Themed_HadithsBooksDashboard = themedScreen({ blue: HadithsBooksDashboard,
 const Themed_HadithBooksScreen = themedScreen({ blue: HadithBooksScreen, green: HadithBooksScreenGreen, white: HadithBooksScreenWhite });
 const Themed_HadithsDetail = themedScreen({ blue: HadithsDetail, green: HadithsDetailGreen, white: HadithsDetailWhite });
 const Themed_HadithsFavourites = themedScreen({ blue: HadithsFavourites, green: HadithsFavouritesGreen, white: HadithsFavouritesWhite });
-const Themed_TasbihCounterScreen = themedScreen({ blue: TasbihCounterScreen, green: TasbihCounterScreenGreen, white: TasbihCounterScreenWhite });
-const Themed_BackgroundPickerScreen = themedScreen({ blue: BackgroundPickerScreen, green: BackgroundPickerScreenGreen, white: BackgroundPickerScreenWhite });
-const Themed_FavoritesScreen = themedScreen({ blue: FavoritesScreen, green: FavoritesScreenGreen, white: FavoritesScreenWhite });
 const Themed_VideoDashboard = themedScreen({ blue: VideoDashboard, green: VideoDashboardGreen, white: VideoDashboardWhite });
 const Themed_VideosNew = themedScreen({ blue: VideosNew, green: VideosNewGreen, white: VideosNewWhite });
 const Themed_ChannelsDetailNew = themedScreen({ blue: ChannelsDetailNew, green: ChannelsDetailNewGreen, white: ChannelsDetailNewWhite });
@@ -939,91 +928,27 @@ const Stack = createNativeStackNavigator();
           <Stack.Screen name="HadithsFavourites" component={Themed_HadithsFavourites} options={({ route }) => ({ title: "Favourite Hadiths",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
         }})}/>
-          {theme === "blue" ? (
-        <Stack.Screen name="Tasbih" component={Tasbih} options={({navigation}) => ({ headerTitle: "Tasbih",headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouritestasbih.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 10: 18,left:20}} onPress={() => {
-        navigation.navigate('FavoritesScreen');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 10: 18,left:20}} onPress={() => {
-          navigation.navigate('FavoritesScreen');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.cardDark
-        }})}/>
-          ):theme === "green" ? (
-        <Stack.Screen name="Tasbih" component={TasbihGreen} options={({navigation}) => ({ headerTitle: "Tasbih",headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouritestasbih.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('FavoritesScreen');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('FavoritesScreen');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.primary
-        }})}/>
-          ):(
-        <Stack.Screen name="Tasbih" component={TasbihWhite} options={({navigation}) => ({ headerTitle: "Tasbih",headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouritestasbih.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('FavoritesScreen');
-      }}>
-        <HeartfilledSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('FavoritesScreen');
-        }}>
-          <WasilNewTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.black ,headerTitleStyle: {color: Colors.black,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.white
-        }})}/>
-          )}
-          <Stack.Screen name="TasbihCounterScreen" component={Themed_TasbihCounterScreen} options={{animation:'slide_from_right',headerTitle:"Tasbih",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-        },}}/>
-          <Stack.Screen name="BackgroundPickerScreen" component={Themed_BackgroundPickerScreen} options={{animation:'slide_from_right',headerTitle:"Change Background",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-        },}}/>
-          <Stack.Screen name="FavoritesScreen" component={Themed_FavoritesScreen} options={{animation:'slide_from_right',headerTitle:"Favourite Tasbih",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-        },}}/>
+          <Stack.Screen name="Tasbih" component={Tasbih} options={({navigation}) => ({
+            ...headerOptions(Colors, "Tasbih"),
+            headerRight: () => {
+              const filled = favouritestasbih.length > 0;
+              const Icon = theme === "white"
+                ? (filled ? HeartfilledSVG : WasilNewTasbihHeartUnFilled)
+                : (filled ? WasilNewHeartfilledBTSVG : WasilNewBTTasbihHeartUnFilled);
+              return (
+                <TouchableOpacity
+                  style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+                  onPress={() => navigation.navigate('FavoritesScreen')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Favourite tasbih">
+                  <Icon />
+                </TouchableOpacity>
+              );
+            },
+          })}/>
+          <Stack.Screen name="TasbihCounterScreen" component={TasbihCounterScreen} options={headerOptions(Colors, "Tasbih")}/>
+          <Stack.Screen name="BackgroundPickerScreen" component={BackgroundPickerScreen} options={headerOptions(Colors, "Change Background")}/>
+          <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} options={headerOptions(Colors, "Favourite Tasbih")}/>
           <Stack.Screen name="VideoDashboard" component={Themed_VideoDashboard} options={({ route }) => ({ title: "Videos",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
           backgroundColor: Colors.headerBg
         }})}/>
