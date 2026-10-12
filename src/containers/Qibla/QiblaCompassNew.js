@@ -1,267 +1,395 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   StatusBar,
-  PermissionsAndroid,
-  Alert,
-  ImageBackground,
   Vibration,
   Platform,
-  ScrollView,
   TouchableOpacity,
-  Dimensions
+  ActivityIndicator,
 } from "react-native";
 import CompassHeading from "react-native-compass-heading";
 import Geolocation from "react-native-geolocation-service";
-import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import { check, request, openSettings, PERMISSIONS, RESULTS } from "react-native-permissions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Colors } from "../../theme";
-const { width } = Dimensions.get("window");
-const dials = [
-   {
-    dialImage: require("../Qibla/qibla.png"),
-  },
-  {
-    dialImage: require("../Qibla/qibla1.png"),
-  },
-];
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Circle, Line, G, Text as SvgText } from "react-native-svg";
+import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from "../../theme";
 
-const QiblaCompassNew = () => {
-  const [direction, setDirection] = useState(0);
-  const [qibla, setQibla] = useState(0);
-  const [selectedDialIndex, setSelectedDialIndex] = useState(0);
+const KAABA = { lat: 21.4225, lon: 39.8262 };
+const ALIGN_TOLERANCE = 5;
+// The pointer printed on the "kaaba" dial artwork faces 270° (west); rotate the face by (qibla - 270).
+const ARTWORK_POINTER_DEG = 270;
+const DIAL_STORAGE_KEY = "qibla_selected_dial";
 
+const DIALS = {
+  blue: [require("../../assets/qibla/blue-kaaba.png"), require("../../assets/qibla/blue-calligraphy.png")],
+  green: [require("../../assets/qibla/green-kaaba.png"), require("../../assets/qibla/green-calligraphy.png")],
+  white: [require("../../assets/qibla/white-kaaba.png"), require("../../assets/qibla/white-calligraphy.png")],
+};
+
+const PERMISSION =
+  Platform.OS === "ios" ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+const toRad = (d) => (d * Math.PI) / 180;
+const toDeg = (r) => (r * 180) / Math.PI;
+const normalize = (d) => ((d % 360) + 360) % 360;
+
+const qiblaBearing = (lat, lon) => {
+  const φ = toRad(lat);
+  const φk = toRad(KAABA.lat);
+  const Δλ = toRad(KAABA.lon - lon);
+  const y = Math.sin(Δλ);
+  const x = Math.cos(φ) * Math.tan(φk) - Math.sin(φ) * Math.cos(Δλ);
+  return normalize(toDeg(Math.atan2(y, x)));
+};
+
+// Signed shortest turn from heading to target, in (-180, 180].
+const turnBy = (heading, target) => {
+  const d = normalize(target - heading);
+  return d > 180 ? d - 360 : d;
+};
+
+const getPosition = () =>
+  new Promise((resolve, reject) =>
+    Geolocation.getCurrentPosition(
+      ({ coords }) => resolve(coords),
+      reject,
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    ),
+  );
+
+const CompassRing = ({ size, qibla, Colors }) => {
+  const c = size / 2;
+  const rOuter = c - 2;
+  const ticks = [];
+  for (let deg = 0; deg < 360; deg += 5) {
+    const major = deg % 30 === 0;
+    const len = major ? 12 : 6;
+    const a = toRad(deg);
+    ticks.push(
+      <Line
+        key={deg}
+        x1={c + (rOuter - 2) * Math.sin(a)}
+        y1={c - (rOuter - 2) * Math.cos(a)}
+        x2={c + (rOuter - 2 - len) * Math.sin(a)}
+        y2={c - (rOuter - 2 - len) * Math.cos(a)}
+        stroke={major ? Colors.textPrimary : Colors.textSecondary}
+        strokeOpacity={major ? 0.9 : 0.5}
+        strokeWidth={major ? 2 : 1}
+      />,
+    );
+  }
+  const labelR = rOuter - 28;
+  const cardinals = [
+    ["N", 0],
+    ["E", 90],
+    ["S", 180],
+    ["W", 270],
+  ];
+  const q = toRad(qibla);
+  const markerR = rOuter - 8;
+  return (
+    <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
+      <Circle cx={c} cy={c} r={rOuter} stroke={Colors.accent} strokeWidth={2} fill="none" />
+      {ticks}
+      {cardinals.map(([label, deg]) => (
+        <SvgText
+          key={label}
+          x={c + labelR * Math.sin(toRad(deg))}
+          y={c - labelR * Math.cos(toRad(deg)) + 6}
+          fontSize={17}
+          fontWeight="bold"
+          fill={label === "N" ? Colors.gold : Colors.textPrimary}
+          textAnchor="middle">
+          {label}
+        </SvgText>
+      ))}
+      <G>
+        <Circle
+          cx={c + markerR * Math.sin(q)}
+          cy={c - markerR * Math.cos(q)}
+          r={9}
+          fill={Colors.gold}
+          stroke={Colors.background}
+          strokeWidth={3}
+        />
+      </G>
+    </Svg>
+  );
+};
+
+const QiblaCompass = () => {
+  const { Colors, theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { width, height } = useScreen();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+
+  const [heading, setHeading] = useState(0);
+  const [hasCompass, setHasCompass] = useState(true);
+  const [qibla, setQibla] = useState(null);
+  const [status, setStatus] = useState("loading"); // loading | ready | blocked | error
+  const [dialIndex, setDialIndex] = useState(0);
+  const wasAligned = useRef(false);
+
+  const dials = DIALS[theme] || DIALS.white;
+  const compassSize = Math.round(Math.min(width - Spacing.xl * 2, height * 0.46, 420));
+
+  // Compass sensor: started once, always stopped on unmount.
   useEffect(() => {
-    checkDeviceSensors();
-    handlePermissionFlow();
+    let active = true;
+    CompassHeading.hasCompass()
+      .then((ok) => {
+        if (!active) return;
+        if (!ok) {
+          setHasCompass(false);
+          return;
+        }
+        CompassHeading.start(3, ({ heading: h }) => setHeading(h));
+      })
+      .catch(() => setHasCompass(false));
+    return () => {
+      active = false;
+      CompassHeading.stop();
+    };
   }, []);
 
-  const checkDeviceSensors = async () => {
-    const hasCompass = await CompassHeading.hasCompass();
-    if (!hasCompass) {
-      Alert.alert(
-        "Alert",
-        "Your device doesn't have the required sensors to run the Qibla.",
-        [{ text: "OK" }],
-        { cancelable: false }
+  useEffect(() => {
+    AsyncStorage.getItem(DIAL_STORAGE_KEY)
+      .then((v) => v !== null && setDialIndex(Number(v) || 0))
+      .catch(() => {});
+    locate();
+  }, []);
+
+  const applySavedLocation = async () => {
+    const [lat, lon] = await Promise.all([AsyncStorage.getItem("ONLATI"), AsyncStorage.getItem("ONLONGI")]);
+    if (lat && lon) {
+      setQibla(qiblaBearing(parseFloat(lat), parseFloat(lon)));
+      setStatus("ready");
+      return true;
+    }
+    return false;
+  };
+
+  const locate = async () => {
+    setStatus("loading");
+    try {
+      let result = await check(PERMISSION);
+      if (result === RESULTS.DENIED) result = await request(PERMISSION);
+      if (result === RESULTS.GRANTED || result === RESULTS.LIMITED) {
+        const coords = await getPosition();
+        await AsyncStorage.multiSet([
+          ["ONLATI", String(coords.latitude)],
+          ["ONLONGI", String(coords.longitude)],
+        ]);
+        setQibla(qiblaBearing(coords.latitude, coords.longitude));
+        setStatus("ready");
+        return;
+      }
+      if (!(await applySavedLocation())) setStatus("blocked");
+    } catch (e) {
+      if (!(await applySavedLocation())) setStatus("error");
+    }
+  };
+
+  const selectDial = (i) => {
+    setDialIndex(i);
+    AsyncStorage.setItem(DIAL_STORAGE_KEY, String(i)).catch(() => {});
+  };
+
+  const turn = qibla === null ? 0 : turnBy(heading, qibla);
+  const aligned = qibla !== null && Math.abs(turn) <= ALIGN_TOLERANCE;
+
+  useEffect(() => {
+    if (aligned && !wasAligned.current) Vibration.vibrate(80);
+    wasAligned.current = aligned;
+  }, [aligned]);
+
+  const guidance = !hasCompass
+    ? "This device has no compass sensor"
+    : aligned
+      ? "You are facing the Qibla"
+      : `Turn ${turn > 0 ? "right" : "left"} ${Math.round(Math.abs(turn))}°`;
+
+  const renderBody = () => {
+    if (status === "loading") {
+      return (
+        <View style={styles.centerBox}>
+          <ActivityIndicator size="large" color={Colors.textPrimary} />
+          <Text style={styles.helperText}>Finding your location…</Text>
+        </View>
       );
-      return;
+    }
+    if (status === "blocked" || status === "error") {
+      return (
+        <View style={styles.centerBox}>
+          <Text style={styles.messageTitle}>
+            {status === "blocked" ? "Location access is off" : "Couldn't get your location"}
+          </Text>
+          <Text style={styles.helperText}>
+            Your location is needed to calculate the Qibla direction.
+          </Text>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={status === "blocked" ? () => openSettings().catch(() => {}) : locate}
+            accessibilityRole="button">
+            <Text style={styles.primaryButtonText}>{status === "blocked" ? "Open Settings" : "Try Again"}</Text>
+          </TouchableOpacity>
+          {status === "blocked" ? (
+            <TouchableOpacity onPress={locate} accessibilityRole="button" style={styles.linkButton}>
+              <Text style={styles.linkText}>I've enabled it</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      );
     }
 
-    const degreeUpdateRate = 3;
-    const compassListener = CompassHeading.start(degreeUpdateRate, ({ heading }) => {
-      setDirection(heading);
-    });
+    return (
+      <>
+        <View style={styles.readout} accessible accessibilityLabel={`Qibla is ${Math.round(qibla)} degrees from north. ${guidance}`}>
+          <Text style={styles.bearing}>{Math.round(qibla)}°</Text>
+          <Text style={styles.bearingCaption}>Qibla from North</Text>
+          <View style={[styles.guidancePill, aligned && styles.guidancePillAligned]}>
+            <Text style={[styles.guidanceText, aligned && styles.guidanceTextAligned]}>{guidance}</Text>
+          </View>
+        </View>
 
-    return () => {
-      CompassHeading.stop(compassListener);
-    };
-  };
-
-  const handlePermissionFlow = async () => {
-    try {
-      const storedStatus = await AsyncStorage.getItem("locationPermissionStatus");
-
-      if (storedStatus === "granted") {
-        // Already granted
-        getUserLocation();
-        return;
-      } else if (storedStatus === "blocked") {
-        // Previously blocked
-        Alert.alert(
-          "Location Access Blocked",
-          "Please enable location permission in Settings → Privacy → Location Services."
-        );
-        return;
-      }
-
-      // Ask permission for the first time
-      await requestLocationPermission();
-    } catch (err) {
-      console.log("Permission flow error:", err);
-    }
-  };
-
-  const requestLocationPermission = async () => {
-    try {
-      if (Platform.OS === "android") {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: "Location Access Required",
-            message: "This app needs your location to show the Qibla direction.",
-            buttonPositive: "OK",
-          }
-        );
-
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          await AsyncStorage.setItem("locationPermissionStatus", "granted");
-          getUserLocation();
-        } else {
-          await AsyncStorage.setItem("locationPermissionStatus", "blocked");
-          Alert.alert("Permission Required", "Please allow location access from settings.");
-        }
-      } else if (Platform.OS === "ios") {
-        const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-
-        if (result === RESULTS.GRANTED) {
-          await AsyncStorage.setItem("locationPermissionStatus", "granted");
-          getUserLocation();
-        } else if (result === RESULTS.BLOCKED) {
-          await AsyncStorage.setItem("locationPermissionStatus", "blocked");
-          Alert.alert(
-            "Location Permission Blocked",
-            "Please enable location access in iPhone Settings → Privacy → Location Services."
-          );
-        } else {
-          await AsyncStorage.setItem("locationPermissionStatus", "denied");
-          Alert.alert("Location Access Required", "Please allow location access.");
-        }
-      }
-    } catch (err) {
-      console.log("Permission request error:", err);
-    }
-  };
-
-  const getUserLocation = () => {
-    Geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const { latitude, longitude } = coords;
-        getDirection(latitude, longitude);
-      },
-      (error) => {
-        console.log("Location error:", error);
-        Alert.alert(
-          "Location Error",
-          "Please make sure your location is enabled for accurate Qibla direction."
-        );
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        <View style={styles.compassArea}>
+          <View style={[styles.pointer, { borderBottomColor: aligned ? Colors.gold : Colors.textPrimary }]} />
+          <View
+            style={{ width: compassSize, height: compassSize, transform: [{ rotate: `${-heading}deg` }] }}
+            importantForAccessibility="no-hide-descendants">
+            <Image
+              source={dials[dialIndex] || dials[0]}
+              style={[
+                styles.face,
+                {
+                  width: compassSize * 0.74,
+                  height: compassSize * 0.74,
+                  borderRadius: compassSize * 0.37,
+                  left: compassSize * 0.13,
+                  top: compassSize * 0.13,
+                  transform: [{ rotate: `${qibla - ARTWORK_POINTER_DEG}deg` }],
+                },
+              ]}
+            />
+            <CompassRing size={compassSize} qibla={qibla} Colors={Colors} />
+          </View>
+        </View>
+      </>
     );
   };
 
-  const getDirection = (latitude, longitude) => {
-    const kaabaLatitude = 21.4225;
-    const kaabaLongitude = 39.8262;
-    const userLatRad = deg2rad(latitude);
-    const kaabaLatRad = deg2rad(kaabaLatitude);
-    const deltaLon = deg2rad(kaabaLongitude - longitude);
-
-    const y = Math.sin(deltaLon);
-    const x =
-      Math.cos(userLatRad) * Math.tan(kaabaLatRad) -
-      Math.sin(userLatRad) * Math.cos(deltaLon);
-
-    const qiblaDirection = rad2deg(Math.atan2(y, x));
-    setQibla(qiblaDirection);
-    Vibration.vibrate(500);
-  };
-
-  const deg2rad = (degrees) => degrees * (Math.PI / 180);
-  const rad2deg = (radians) => radians * (180 / Math.PI);
-  const selectedDial = dials[selectedDialIndex];
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.intermediate1} />
-      <ImageBackground
-        style={{ width: "100%", height: "100%" ,backgroundColor:Colors.intermediate1}}
-      >
-        <View style={styles.directionContainer}>
-          <Text style={styles.directionText}>Qibla:</Text>
-          <Text style={[styles.directionText, { bottom: 40 }]}>{direction}°</Text>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <View style={styles.body}>{renderBody()}</View>
+
+      <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.md }]}>
+        <Text style={styles.tip}>Hold your phone flat and away from metal objects for best accuracy.</Text>
+        <View style={styles.dialRow}>
+          {dials.map((src, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => selectDial(i)}
+              style={[styles.dialThumb, dialIndex === i && styles.dialThumbActive]}
+              accessibilityRole="button"
+              accessibilityLabel={`Compass style ${i + 1}`}
+              accessibilityState={{ selected: dialIndex === i }}>
+              <Image source={src} style={styles.dialThumbImage} />
+            </TouchableOpacity>
+          ))}
         </View>
-
-        <ImageBackground
-          source={selectedDial.dialImage}
-          style={[styles.image, { transform: [{ rotate: `${360 - direction}deg` }] }]}
-        >
-          <View
-            style={[styles.compassContainer, { transform: [{ rotate: `${qibla}deg` }] }]}
-          />
-        </ImageBackground>
-
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>
-            Please keep your phone flat (horizontal) for accurate Qibla direction.
-          </Text>
-        </View>
-
-         <View style={styles.dialSelectorContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {dials.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setSelectedDialIndex(index)}
-                style={[
-                  styles.dialThumbnail,
-                  selectedDialIndex === index && styles.selectedDial,
-                ]}
-              >
-                <ImageBackground source={item.dialImage} style={styles.thumbnailImage} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-      </ImageBackground>
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
- container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    alignItems: "center",
-  },
-  directionContainer: {
-    flex: 0.15,
-    alignItems: "flex-end",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  directionText: {
-    textAlign: "center",
-    color: Colors.white,
-    fontFamily: Platform.OS === "ios" ? "Poppins-SemiBold" : "headerfont",
-    fontSize: 22,
-    bottom: 40,
-  },
- image: {
-  top:150,
-  position:"absolute",
-  width: width * 0.9,
-  height: width * 0.9,
-  alignSelf: "center",
-  justifyContent: "center",
-  alignItems: "center",
-},
-  compassContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  infoContainer: {
-    flex: 0.2,
-    top:600,
-    position:"absolute",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 30,
-  },
-  infoText: {
-    textAlign: "center",
-    color: Colors.white,
-    fontSize: 16,
-    fontFamily: Platform.OS === "ios" ? "Poppins-SemiBold" : "headerfont",
-  },
-  dialSelectorContainer: { alignItems:"center",justifyContent:"space-around",position: "absolute", bottom:0, width: "100%", backgroundColor: Colors.primary, },
-  dialThumbnail: {width: 70,height: 70,marginHorizontal: 8,borderRadius: 10,borderWidth: 2,borderColor: Colors.secondary1,overflow: "hidden"},
-  selectedDial: { borderColor: Colors.transparent },
-  thumbnailImage: { width: "100%", height: "100%", resizeMode: "cover" },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    body: { flex: 1, paddingHorizontal: Spacing.xl },
+    centerBox: { flex: 1, alignItems: "center", justifyContent: "center", gap: Spacing.md },
+    messageTitle: {
+      fontSize: TypeScale.title,
+      fontFamily: Fonts.heading,
+      color: Colors.heading,
+      textAlign: "center",
+    },
+    helperText: {
+      fontSize: TypeScale.body,
+      fontFamily: Fonts.body,
+      color: Colors.textSecondary,
+      textAlign: "center",
+    },
+    primaryButton: {
+      marginTop: Spacing.sm,
+      backgroundColor: Colors.action,
+      paddingHorizontal: Spacing.xl,
+      minHeight: 48,
+      borderRadius: Radius.pill,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    primaryButtonText: { color: Colors.onAction, fontSize: TypeScale.subtitle, fontFamily: Fonts.bodyBold },
+    linkButton: { padding: Spacing.sm },
+    linkText: { color: Colors.textSecondary, fontSize: TypeScale.body, fontFamily: Fonts.bodySemiBold },
+    readout: { alignItems: "center", paddingTop: Spacing.xl },
+    bearing: { fontSize: 44, fontFamily: Fonts.heading, color: Colors.heading },
+    bearingCaption: { fontSize: TypeScale.small, fontFamily: Fonts.body, color: Colors.textSecondary },
+    guidancePill: {
+      marginTop: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      paddingVertical: Spacing.sm,
+      borderRadius: Radius.pill,
+      borderWidth: 1,
+      borderColor: Colors.accent,
+    },
+    guidancePillAligned: { backgroundColor: Colors.gold, borderColor: Colors.gold },
+    guidanceText: { fontSize: TypeScale.body, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
+    guidanceTextAligned: { color: Colors.black },
+    compassArea: { flex: 1, alignItems: "center", justifyContent: "center" },
+    pointer: {
+      width: 0,
+      height: 0,
+      marginBottom: Spacing.sm,
+      borderLeftWidth: 10,
+      borderRightWidth: 10,
+      borderBottomWidth: 16,
+      borderLeftColor: "transparent",
+      borderRightColor: "transparent",
+    },
+    face: { position: "absolute" },
+    footer: {
+      backgroundColor: Colors.surface,
+      borderTopLeftRadius: Radius.lg,
+      borderTopRightRadius: Radius.lg,
+      paddingTop: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      alignItems: "center",
+      gap: Spacing.md,
+    },
+    tip: {
+      fontSize: TypeScale.small,
+      fontFamily: Fonts.body,
+      color: Colors.onSurface,
+      textAlign: "center",
+    },
+    dialRow: { flexDirection: "row", gap: Spacing.md },
+    dialThumb: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      borderWidth: 2,
+      borderColor: "transparent",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    dialThumbActive: { borderColor: Colors.gold },
+    dialThumbImage: { width: 52, height: 52, borderRadius: 26 },
+  });
 
-export default QiblaCompassNew;
-
+export default QiblaCompass;

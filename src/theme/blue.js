@@ -17,6 +17,7 @@ export default {
     statusBar: "light-content",
     background: "#43288A",      // screen background
     surface: "#281658",         // bars, sheets, tiles on the background
+    onSurface: "#CEB6F8",          // text on surface
     surfaceAlt: "#311C68",
     headerBg: "#43288A",
     headerText: "#FFFFFF",

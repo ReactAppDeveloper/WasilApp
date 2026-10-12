@@ -190,8 +190,6 @@ import VideoPlayingNewGreen from '../containers/VideosNewGreen/VideoPlayingNew';
 
 //Qibla Section
 import QiblaCompassNew from '../containers/Qibla/QiblaCompassNew';
-import QiblaCompassNewWhite from '../containers/QiblaWhite/QiblaCompassNew';
-import QiblaCompassNewGreen from '../containers/QiblaGreen/QiblaCompassNew';
 
 //Prayer Section
 import PrayerMosque from '../containers/Prayer/PrayerMosque/PrayerMosque';
@@ -388,7 +386,6 @@ const Themed_SpeakersDetailNew = themedScreen({ blue: SpeakersDetailNew, green: 
 const Themed_SpeakersVideosPlayingNew = themedScreen({ blue: SpeakersVideosPlayingNew, green: SpeakersVideosPlayingNewGreen, white: SpeakersVideosPlayingNewWhite });
 const Themed_RecitaionDetailNew = themedScreen({ blue: RecitaionDetailNew, green: RecitaionDetailNewGreen, white: RecitaionDetailNewWhite });
 const Themed_VideoPlayingNew = themedScreen({ blue: VideoPlayingNew, green: VideoPlayingNewGreen, white: VideoPlayingNewWhite });
-const Themed_QiblaCompassNew = themedScreen({ blue: QiblaCompassNew, green: QiblaCompassNewGreen, white: QiblaCompassNewWhite });
 const Themed_PrayerMosque = themedScreen({ blue: PrayerMosque, green: PrayerMosqueGreen, white: PrayerMosqueWhite });
 const Themed_PrayerGuide = themedScreen({ blue: PrayerGuide, green: PrayerGuideGreen, white: PrayerGuideWhite });
 const Themed_FajrSunnah = themedScreen({ blue: FajrSunnah, green: FajrSunnahGreen, white: FajrSunnahWhite });
@@ -1069,9 +1066,7 @@ const Stack = createNativeStackNavigator();
           <Stack.Screen name="VideoPlayingNew" component={Themed_VideoPlayingNew} options={{animation:'slide_from_right',headerTitle:"Videos",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-          <Stack.Screen name="QiblaCompassNew" component={Themed_QiblaCompassNew} options={{animation:'slide_from_right',headerTitle:"Qibla",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-         backgroundColor: Colors.headerBg
-        },}}/>
+          <Stack.Screen name="QiblaCompassNew" component={QiblaCompassNew} options={headerOptions(Colors, "Qibla")}/>
           <Stack.Screen name="PrayerMosque" component={Themed_PrayerMosque} options={{animation:'slide_from_right',headerTitle:"Find a Mosque",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
         },}}/>

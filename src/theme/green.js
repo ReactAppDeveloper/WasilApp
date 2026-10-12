@@ -17,6 +17,7 @@ export default {
     statusBar: "light-content",
     background: "#00240D",
     surface: "#013617",
+    onSurface: "#9DB8A3",
     surfaceAlt: "#012D12",
     headerBg: "#00240D",
     headerText: "#FFFFFF",

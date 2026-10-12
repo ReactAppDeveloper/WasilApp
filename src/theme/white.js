@@ -17,6 +17,7 @@ export default {
     statusBar: "dark-content",
     background: "#FFFFFF",
     surface: "#673AB7",
+    onSurface: "#FFFFFF",
     surfaceAlt: "#F3ECFF",
     headerBg: "#FFFFFF",
     headerText: "#000000",
