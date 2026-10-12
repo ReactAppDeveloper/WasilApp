@@ -106,8 +106,6 @@ import TranslatorDetailGreen from '../containers/QuranGreen/screens/ListenTransl
 
 //Reel Section
 import ReelsComponentNew from '../containers/Reel/ReelsComponentNew';
-import ReelsComponentNewWhite from '../containers/ReelWhite/ReelsComponentNew';
-import ReelsComponentNewGreen from '../containers/ReelGreen/ReelsComponentNew';
 
 //Hadith Section
 import HadithsDetail from '../containers/Hadith/HadithsDetail';
@@ -363,7 +361,6 @@ const Themed_TafsirBySurah = themedScreen({ blue: TafsirBySurah, green: TafsirBy
 const Themed_TafsirSettingsScreen = themedScreen({ blue: TafsirSettingsScreen, green: TafsirSettingsScreenGreen, white: TafsirSettingsScreenWhite });
 const Themed_TafsirSettingFont = themedScreen({ blue: TafsirSettingFont, green: TafsirSettingFontGreen, white: TafsirSettingFontWhite });
 const Themed_TranslatorDetail = themedScreen({ blue: TranslatorDetail, green: TranslatorDetailGreen, white: TranslatorDetailWhite });
-const Themed_ReelsNew = themedScreen({ blue: ReelsComponentNew, green: ReelsComponentNewGreen, white: ReelsComponentNewWhite });
 const Themed_DuaCategoryDetail = themedScreen({ blue: DuaCategoryDetail, green: DuaCategoryDetailGreen, white: DuaCategoryDetailWhite });
 const Themed_DuaDetailNew = themedScreen({ blue: DuaDetailNew, green: DuaDetailNewGreen, white: DuaDetailNewWhite });
 const Themed_DuaNewFavourites = themedScreen({ blue: DuaNewFavourites, green: DuaNewFavouritesGreen, white: DuaNewFavouritesWhite });
@@ -772,7 +769,7 @@ const Stack = createNativeStackNavigator();
       }})}/>
 
           
-          <Stack.Screen name="ReelsNew" component={Themed_ReelsNew} options={{headerShown: false,animation:"slide_from_right"}}/>
+          <Stack.Screen name="ReelsNew" component={ReelsComponentNew} options={{headerShown: false,animation:"slide_from_right"}}/>
           {theme === "blue" ? (
         <Stack.Screen name="DuasScreen" component={DuasScreen} options={({navigation}) => ({ headerTitle: "Duas",headerRight: () => (
           <View style={{height:50,width:50}}>
