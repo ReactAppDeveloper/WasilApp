@@ -289,8 +289,6 @@ import GreetingCardShareGreen from '../containers/GreetingsGreen/GreetingCardSha
 
 //Shahadah Section
 import ShahadahNew from '../containers/Shahadah/ShahadahNew';
-import ShahadahNewWhite from '../containers/ShahadahWhite/ShahadahNew';
-import ShahadahNewGreen from '../containers/ShahadahGreen/ShahadahNew';
 
 //IslamicStory
 import IslamicStoriesScreen from '../containers/IslamicStories/maincomponent/IslamicStoriesScreen';
@@ -414,7 +412,6 @@ const Themed_TayammumScreen = themedScreen({ blue: TayammumScreen, green: Tayamm
 const Themed_GreetingsNew = themedScreen({ blue: GreetingsNew, green: GreetingsNewGreen, white: GreetingsNewWhite });
 const Themed_GreetingCardListNew = themedScreen({ blue: GreetingCardListNew, green: GreetingCardListNewGreen, white: GreetingCardListNewWhite });
 const Themed_GreetingCardShare = themedScreen({ blue: GreetingCardShare, green: GreetingCardShareGreen, white: GreetingCardShareWhite });
-const Themed_ShahadahNew = themedScreen({ blue: ShahadahNew, green: ShahadahNewGreen, white: ShahadahNewWhite });
 const Themed_IslamicStoriesScreen = themedScreen({ blue: IslamicStoriesScreen, green: IslamicStoriesScreenGreen, white: IslamicStoriesScreenWhite });
 const Themed_SubCategories = themedScreen({ blue: SubCategories, green: SubCategoriesGreen, white: SubCategoriesWhite });
 const Themed_AllSubCategories = themedScreen({ blue: AllSubCategories, green: AllSubCategoriesGreen, white: AllSubCategoriesWhite });
@@ -1151,9 +1148,7 @@ const Stack = createNativeStackNavigator();
         <Stack.Screen name="GreetingCardShare" component={Themed_GreetingCardShare} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-        <Stack.Screen name="ShahadahNew" component={Themed_ShahadahNew} options={({ route }) => ({ title: "Shahadah",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+        <Stack.Screen name="ShahadahNew" component={ShahadahNew} options={headerOptions(Colors, "Shahadah")}/>
         <Stack.Screen name="IslamicStoriesScreen" component={Themed_IslamicStoriesScreen} options={({ route }) => ({ title: "Islamic Stories",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
          backgroundColor: Colors.headerBg
         }})}/>
