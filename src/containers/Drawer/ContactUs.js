@@ -1,19 +1,6 @@
 import React from 'react';
-import { View, StatusBar } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { Colors } from '../../theme';
+import WebPage from './WebPage';
 
-const ContactUs = () => {
-  return (
-    <View style={{ flex: 1}}>
-      <StatusBar backgroundColor={Colors.intermediate1}/>
-
-      <WebView
-        source={{ uri: 'https://wasil.io/mobileContact' }}
-        style={{ flex: 1 }}
-      />
-    </View>
-  );
-};
+const ContactUs = () => <WebPage uri="https://wasil.io/mobileContact" />;
 
 export default ContactUs;

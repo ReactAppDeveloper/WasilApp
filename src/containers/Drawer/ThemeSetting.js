@@ -10,27 +10,33 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 import {useTheme} from '../../theme';
+import Blue from '../../theme/blue';
+import Green from '../../theme/green';
+import White from '../../theme/white';
 
 const THEMES = [
   {
     key: 'white',
     title: 'White',
     subtitle: 'Clean & Minimal',
-    color: '#F5F5F5',
+    color: '#F1EDF7', // White.background is pure white; tint so the preview shows on the white card
+    accent: White.surface,
     textColor: '#000',
   },
   {
     key: 'blue',
     title: 'Blue',
     subtitle: 'Elegant & Modern',
-    color: '#4B2D90',
+    color: Blue.background,
+    accent: Blue.gold,
     textColor: '#FFF',
   },
   {
     key: 'green',
     title: 'Green',
     subtitle: 'Peaceful & Islamic',
-    color: '#0B6B3A',
+    color: Green.background,
+    accent: Green.gold,
     textColor: '#FFF',
   },
 ];
@@ -89,9 +95,7 @@ const ThemeSetting = () => {
                     styles.fakeHeader,
                     {
                       backgroundColor:
-                        item.key === 'white'
-                          ? '#DDDDDD'
-                          : '#FFFFFF30',
+                        item.accent,
                     },
                   ]}
                 />

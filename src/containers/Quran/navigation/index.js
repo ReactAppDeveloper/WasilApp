@@ -67,7 +67,7 @@ import BackgroundPickerScreen from '../../Tasbih/BackgroundPickerScreen';
 import FavoritesScreen from '../../Tasbih/FavoritesScreen';
 
 //Videos New Section
-import VideosNew from '../../VideosNew/VideosNew';
+import VideosNew from '../../VideosNew/VideoDashboard';
 import ChannelsDetailNew from '../../VideosNew/ChannelsDetailNew';
 import BySpeakersNew from '../../VideosNew/BySpeakersNew';
 import SpeakersDetailNew from '../../VideosNew/SpeakersDetailNew';

@@ -1,48 +1,47 @@
-import React,{ useState, useEffect }  from 'react';
-import {  StatusBar, StyleSheet,View,Text,LogBox,FlatList} from 'react-native';
-import { Colors} from '../../theme';
+import React, { useMemo } from 'react';
+import { StatusBar, StyleSheet, View, Text, FlatList } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useStorehadith from '../../hadithstore';
+import { FavouriteEmptySVG } from '../../assets/icons';
+import { useTheme, Fonts, TypeScale, Spacing } from '../../theme';
 import HadithCard from './HadithCard';
-import {FavouriteEmptySVG} from '../../assets/icons';
-LogBox.ignoreAllLogs();
-const HadithsFavourites = () => { 
+
+const HadithsFavourites = () => {
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const { favouriteshadith } = useStorehadith();
-  console.log('favouriteshadith', favouriteshadith);
 
   return (
-    <View style={styles.containerMain}>
-    <StatusBar backgroundColor={Colors.intermediate1}/>
-        
-    <View>
-    {favouriteshadith.length > 0 ? (
-        <FlatList
-          data={favouriteshadith}
-          renderItem={({ item,index }) => <HadithCard hadith={item} favouriteshadith={favouriteshadith} index={index} />}
-          onEndReachedThreshold={0.7}
-        />
-      ) : (
-        <View style={{height:"100%",alignItems:"center",justifyContent:"center"}}>
-          <View >
-        <FavouriteEmptySVG/>
-        </View>
-        <Text style={{top:20,fontSize:12,color:Colors.white,fontWeight:"500",textAlign:"center",fontFamily:"Poppins-Regular"}}>
-           No Favourites yet!
-        </Text>
-      
-</View>
-      )}
-                  </View>
+    <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <FlatList
+        data={favouriteshadith}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={[
+          { gap: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: insets.bottom + Spacing.xl },
+          favouriteshadith.length === 0 && styles.emptyContainer,
+        ]}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <FavouriteEmptySVG />
+            <Text style={styles.emptyTitle}>No favourites yet</Text>
+            <Text style={styles.emptyText}>Tap the heart on any hadith to save it here.</Text>
+          </View>
+        }
+        renderItem={({ item, index }) => <HadithCard hadith={item} favouriteshadith={favouriteshadith} index={index} />}
+      />
     </View>
   );
 };
 
 export default HadithsFavourites;
 
-const styles = StyleSheet.create({
-
-  containerMain: {
-    paddingTop:10,
-    height:"100%",
-    backgroundColor:Colors.intermediate1,
-  }, 
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    emptyContainer: { flexGrow: 1, justifyContent: 'center' },
+    empty: { alignItems: 'center', gap: Spacing.sm, padding: Spacing.xl },
+    emptyTitle: { marginTop: Spacing.md, fontSize: TypeScale.subtitle, color: Colors.heading, fontFamily: Fonts.heading },
+    emptyText: { fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body, textAlign: 'center' },
+  });

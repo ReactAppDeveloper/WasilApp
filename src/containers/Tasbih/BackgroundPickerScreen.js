@@ -1,99 +1,71 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  Dimensions,
-  Platform,
-} from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import useStoreTasbih from "../../tasbihstore";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useStoreTasbih, { BG_MAP } from "../../tasbihstore";
 import { WasilNewTasbihSelectbgSvg } from "../../assets/icons";
-const { width } = Dimensions.get("window");
-import {Colors} from '../../theme'
-const BACKGROUNDS = [
-  { key: "cloud-bg", src: require("../../assets/cloud-bg.png") },
-  { key: "cloud-bg1", src: require("../../assets/cloud-bg1.png") },
-  { key: "cloud-bg2", src: require("../../assets/cloud-bg2.png") },
-  { key: "cloud-bg3", src: require("../../assets/cloud-bg3.png") },
-  { key: "cloud-bg4", src: require("../../assets/cloud-bg4.png") },
-  { key: "cloud-bg5", src: require("../../assets/cloud-bg5.png") },
-];
+import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from "../../theme";
+
+const BACKGROUNDS = Object.keys(BG_MAP).map((key) => ({ key, src: BG_MAP[key] }));
 
 export default function BackgroundPickerScreen() {
   const navigation = useNavigation();
+  const { Colors } = useTheme();
+  const { width } = useScreen();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const { currentBgKey, setCurrentBackground } = useStoreTasbih();
-  const [selectedBg, setSelectedBg] = useState(currentBgKey);
-  const selectBackground = (bgKey) => {
-    setCurrentBackground(bgKey); // ✅ update current global background
-    navigation.navigate("TasbihCounterScreen", { selectedBg: bgKey });
+
+  const columns = width >= 600 ? 3 : 2;
+  const itemWidth = (width - Spacing.lg * 2 - Spacing.md * (columns - 1)) / columns;
+
+  const select = (key) => {
+    setCurrentBackground(key);
+    navigation.navigate("TasbihCounterScreen", { selectedBg: key });
   };
-
- const renderItem = ({ item }) => {
-  const isActive = item.key === selectedBg;
-
-  return (
-    <TouchableOpacity
-      style={[styles.bgItem, isActive && styles.bgItemActive]}
-      onPress={() => selectBackground(item.key)}
-    >
-      <Image source={item.src} style={styles.bgImage} resizeMode="cover" />
-      
-      {/* ✅ Show SVG on selected image */}
-      {isActive && (
-        <View style={styles.selectedIconContainer}>
-          <WasilNewTasbihSelectbgSvg width={24} height={24} />
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-};
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Please Select Your Desired Background</Text>
-
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
       <FlatList
+        key={columns}
         data={BACKGROUNDS}
         keyExtractor={(item) => item.key}
-        numColumns={2}
-        contentContainerStyle={{ padding: 12 }}
-        renderItem={renderItem}
+        numColumns={columns}
+        columnWrapperStyle={{ gap: Spacing.md }}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
+        ListHeaderComponent={<Text style={styles.title}>Choose a card background</Text>}
+        renderItem={({ item }) => {
+          const active = item.key === currentBgKey;
+          return (
+            <TouchableOpacity
+              style={[styles.item, { width: itemWidth }, active && styles.itemActive]}
+              onPress={() => select(item.key)}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={`Background ${item.key.replace("cloud-bg", "") || "1"}`}>
+              <Image source={item.src} style={styles.image} resizeMode="cover" />
+              {active ? (
+                <View style={styles.check}>
+                  <WasilNewTasbihSelectbgSvg width={24} height={24} />
+                </View>
+              ) : null}
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.intermediate1 },
-  title: {
-    fontSize: 18,
-    textAlign: "center",
-    marginVertical: 15,
-    fontFamily: Platform.OS === "ios" ? "Asul-Bold" : "AsulBold",
-    color:Colors.white,
-  },
-  bgItem: {
-    width: width / 2 - 24,
-    height: 150,
-    margin: 6,
-    borderRadius: 12,
-    overflow: "hidden",
-    
-    borderWidth: 2,
-    borderColor: "#6A6AFF",
-  },
-  bgItemActive: {
-    borderColor: "#FF9800",
-    borderWidth: 4,
-  },
-  bgImage: { width: "100%", height: "100%" },
-  selectedIconContainer: {
-  position: "absolute",
-  top: 8,
-  right: 8,
-},
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { padding: Spacing.lg, gap: Spacing.md },
+    title: { marginBottom: Spacing.sm, fontSize: TypeScale.subtitle + 1, textAlign: "center", color: Colors.heading, fontFamily: Fonts.heading },
+    item: { aspectRatio: 396 / 230, borderRadius: Radius.md, overflow: "hidden", borderWidth: 2, borderColor: "transparent" },
+    itemActive: { borderColor: Colors.gold, borderWidth: 3 },
+    image: { width: "100%", height: "100%" },
+    check: { position: "absolute", top: Spacing.sm, right: Spacing.sm },
+  });

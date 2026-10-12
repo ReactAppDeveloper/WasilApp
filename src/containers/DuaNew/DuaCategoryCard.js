@@ -1,68 +1,43 @@
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ImageBackground ,Platform} from 'react-native';
+import React, { useMemo } from 'react';
+import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { SvgUri } from 'react-native-svg';
-import { Colors } from '../../theme';
+import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
+
+// Category tile: server-provided SVG artwork with the title on its left half.
 const DuaCategoryCard = ({ item, onPress }) => {
-const isLongTitle = item.title.length > 11;
+  const { Colors } = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <TouchableOpacity
-  activeOpacity={0.75}
-  style={styles.card}
-  onPress={() => onPress(item)}
->
-  <ImageBackground style={styles.iconWrapper}>
-  <SvgUri
-    uri={item.image}
-    width="100%"
-    height={150}
-  />
-
-  <Text
-    numberOfLines={2}
-    ellipsizeMode="tail"
-   style={[
-    styles.title,
-    {
-      top: isLongTitle ? 30 : 40,
-    },
-  ]}
-  >
-    {item.title}
-  </Text>
-</ImageBackground>
-</TouchableOpacity>
+      activeOpacity={0.8}
+      style={styles.card}
+      onPress={() => onPress(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.title} duas`}>
+      {item.image ? (
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <SvgUri uri={item.image} width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
+        </View>
+      ) : null}
+      <Text numberOfLines={2} style={styles.title}>
+        {item.title}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
 export default DuaCategoryCard;
 
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    margin: 6,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-
-  iconWrapper: {
-    height: 100,
-    justifyContent: 'center',
-  },
-
-  title: {
-    position: 'absolute',
-    left: 15,
-    top: Platform.OS === 'ios'
-        ? 40
-        : 40,  
-    width: '45%', 
-    fontSize: 16,
-    lineHeight: 20,
-    color: Colors.secondary,
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Asul-Regular'
-        : 'AsulRegular',
-  },
-  
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    card: {
+      flex: 1,
+      aspectRatio: 1.6,
+      borderRadius: Radius.lg,
+      overflow: 'hidden',
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.md,
+      backgroundColor: '#F2EEF8',
+    },
+    title: { width: '55%', fontSize: TypeScale.body + 1, lineHeight: 20, color: '#2B2540', fontFamily: Fonts.headingRegular },
+  });

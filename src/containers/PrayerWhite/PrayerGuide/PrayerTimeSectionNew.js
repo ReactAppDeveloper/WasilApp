@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../../theme';
-import { runAzanSetup } from './AzanSetuoComponent.android';
+import { runAzanSetup } from '../../../services/azan/AzanSetupComponent';
 const HomeBannerImage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1785021168/prayerwhitethemebg.png' };
 
 export default class PrayerTimeSectionNew extends React.PureComponent {

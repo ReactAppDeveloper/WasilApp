@@ -1,198 +1,111 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  StatusBar,
-  ActivityIndicator,
-  TextInput,
-  Dimensions,
-  Platform
-} from 'react-native';
-import { Colors } from '../../theme';
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
-import {SearchSVG} from '../../assets/icons';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SearchSVG } from '../../assets/icons';
+import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from '../../theme';
 import reciters from './newreciters';
+import ReciterAvatar from './ReciterAvatar';
+
 const RecitersList = ({ navigation }) => {
-  const [data, setData] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { Colors } = useTheme();
+  const { width } = useScreen();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [search, setSearch] = useState('');
-  const [noMatch, setnoMatch] = useState(false);
 
-  useEffect(() => {
-   setData(reciters);
-   setFiltered(reciters);
-   setLoading(false);
-  }, []);
+  const query = search.trim().toLowerCase();
+  const visible = useMemo(() => (query ? reciters.filter((r) => r.name.toLowerCase().includes(query)) : reciters), [query]);
 
-  const handleSearch = (text) => {
-    setSearch(text);
-    const filteredData = data.filter(item =>
-      item.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setFiltered(filteredData);
-    setnoMatch(filtered.length === 0);
-  };
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.8}
-      onPress={() =>
-        navigation.navigate('ReciterDetail', {
-          name:item.name,
-          reciterId: item.id,
-          reciterName: item.name,
-        })
-      }>
-
-
-  <View style={styles.avatarWrapper}>
-  <Image style={styles.advImage} source={item.image} />
-  </View>
-
-      <Text numberOfLines={1} style={styles.name}>
-        {item.name}
-      </Text>
-
-      <Text style={styles.desc}>
-       {item.style.description}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
-      </View>
-    );
-  }
+  const columns = width >= 600 ? 3 : 2;
+  const cardWidth = (width - Spacing.lg * 2 - Spacing.md * (columns - 1)) / columns;
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.intermediate1} />
-
-      <View style={styles.searchBox}>
-         <View>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <FlatList
+        key={columns}
+        data={visible}
+        keyExtractor={(item) => String(item.id)}
+        numColumns={columns}
+        columnWrapperStyle={{ gap: Spacing.md }}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={styles.searchBox}>
             <SearchSVG />
+            <TextInput
+              placeholder="Search reciter"
+              value={search}
+              onChangeText={setSearch}
+              style={styles.searchInput}
+              placeholderTextColor={Colors.textSecondary}
+              returnKeyType="search"
+              accessibilityLabel="Search reciter"
+            />
+            {search ? (
+              <TouchableOpacity onPress={() => setSearch('')} hitSlop={10} accessibilityLabel="Clear search">
+                <Text style={styles.clear}>✕</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-        <TextInput
-          placeholder="Search Reciter"
-          value={search}
-          onChangeText={handleSearch}
-          style={styles.searchInput}
-          placeholderTextColor={Colors.white}
-        />
-      </View>
-{noMatch ? (
-          <Text style={styles.noMatch}>No Match Found</Text>
-        ) : (
-     <FlatList
-  data={filtered}
-  keyExtractor={(item) => item.id.toString()}
-  numColumns={2}
-  columnWrapperStyle={{ justifyContent: 'space-between' }}
-  renderItem={renderItem}
-  showsVerticalScrollIndicator={false}
-/>
-)}
+        }
+        ListEmptyComponent={<Text style={styles.noMatch}>No reciter matches “{search}”</Text>}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.card, { width: cardWidth }]}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.name}, ${item.style?.name}`}
+            onPress={() => navigation.navigate('ReciterDetail', { name: item.name, reciterId: item.id, reciterName: item.name })}>
+            <ReciterAvatar reciter={item} size={Math.min(96, cardWidth - Spacing.xl * 2)} />
+            <Text numberOfLines={2} style={styles.name}>
+              {item.name.replace(/`/g, "'")}
+            </Text>
+            {item.style?.name ? (
+              <View style={styles.styleTag}>
+                <Text style={styles.styleText}>{item.style.name}</Text>
+              </View>
+            ) : null}
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
 
 export default RecitersList;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1,
-    paddingHorizontal: 16,
-  },
 
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.bordercolor1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 46,
-    marginVertical: 14,
-  },
-
-  searchInput: {
-    flex: 1,
-    marginLeft: 5,
-    paddingBottom:Platform.OS==='ios'?0:7,
-    fontSize: 14,
-    color: Colors.white,
-    fontFamily:"Poppins-Medium"
-  },
-
-  card: {
-    width: CARD_WIDTH,
-    backgroundColor: Colors.intermediate1,
-    borderRadius:10,
-    borderWidth: 1,
-    borderColor: Colors.bordercolor1,
-    padding: 12,
-    marginBottom: 16,
-  },
-  advImage: {
-      width: "100%",
-      height: "100%",
-      
+const makeStyles = (Colors) => {
+  const isLight = Colors.name === 'white';
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { paddingHorizontal: Spacing.lg, gap: Spacing.md },
+    searchBox: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      minHeight: 48,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.xs,
+      paddingHorizontal: Spacing.md,
+      borderRadius: Radius.md,
+      borderWidth: 1,
+      borderColor: isLight ? '#D9D9D9' : Colors.accent,
     },
-  avatarWrapper: {
-  width: 120,
-  height: 120,
-  borderRadius: 60,
-  overflow: 'hidden',
-  marginBottom: 12,
-  alignSelf:"center",
-  backgroundColor: Colors.white,
-},
-
-  name: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.white,
-    textAlign: 'center',
-    fontFamily:Platform.OS === 'ios' ? "Asul-Bold" : "AsulBold"
-  },
-
-  desc: {
-    fontSize: 10,
-    color: Colors.white,
-    textAlign: 'center',
-    marginTop: 6,
-    lineHeight: 12,
-    fontFamily: 'Poppins-Medium',
-  },
-
-  shareIcon: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    zIndex: 10,
-  },
-  noMatch: {
-    height: '100%',
-    top: 300,
-    fontSize: 15,
-    alignSelf: 'center',
-    color: Colors.white,
-    fontFamily: 'Poppins-Light',
-  },
-});
+    searchInput: { flex: 1, paddingVertical: Spacing.sm, fontSize: TypeScale.body, color: Colors.textPrimary, fontFamily: Fonts.body },
+    clear: { fontSize: 16, color: Colors.textSecondary },
+    card: {
+      alignItems: 'center',
+      gap: Spacing.sm,
+      paddingVertical: Spacing.lg,
+      paddingHorizontal: Spacing.md,
+      borderRadius: Radius.lg,
+      backgroundColor: isLight ? Colors.surfaceAlt : Colors.surface,
+    },
+    name: { textAlign: 'center', fontSize: TypeScale.body, lineHeight: 19, color: Colors.textPrimary, fontFamily: Fonts.heading },
+    styleTag: { paddingHorizontal: Spacing.sm + 2, paddingVertical: 2, borderRadius: Radius.pill, borderWidth: 1, borderColor: Colors.gold },
+    styleText: { fontSize: TypeScale.caption, color: Colors.gold, fontFamily: Fonts.bodySemiBold },
+    noMatch: { marginTop: Spacing.xxl, textAlign: 'center', fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body },
+  });
+};

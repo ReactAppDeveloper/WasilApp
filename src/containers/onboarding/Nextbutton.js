@@ -1,72 +1,41 @@
-import React, { useEffect ,useRef} from 'react';
-import { View, StyleSheet, Animated,TouchableOpacity ,Dimensions} from 'react-native';
-import Svg, {G, Circle} from "react-native-svg";
-import {OnboardingForward} from '../../assets/icons';
-const { height } = Dimensions.get('window');
-export const Nextbutton = ({percentage,scrollTo}) => {
-    const size = 48;
-    const strokeWidth = 1.5;
-    const center = size / 2;
-    const radius = size / 2 - strokeWidth / 2;
-    const circumference = 2 * Math.PI * radius;
-    const progressAnimation = useRef(new Animated.Value(0)).current;
-    const progressRef = useRef(null);
-    const animation = (toValue)=>{
-      return Animated.timing(progressAnimation,{
-        toValue,
-        duration:250,
-        useNativeDriver:true
-      }).start()
-    }
-    useEffect(() => {
-      animation(percentage);
-    },[percentage]);
-    useEffect(() => {
-      progressAnimation.addListener((value) => {
-        const strokeDashoffset = circumference - (circumference * value.value)/100;
-        if(progressRef?.current){
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import { OnboardingForward } from '../../assets/icons';
 
-          progressRef.current.setNativeProps({
-            strokeDashoffset
-          })
-        }
-      },[percentage]
-    );
-    return()=>{
-      progressAnimation.removeAllListeners()
-    }
-    },[]);
+const SIZE = 60;
+const STROKE = 2.5;
+const R = SIZE / 2 - STROKE;
+const C = 2 * Math.PI * R;
 
-  return (
-    <View style={styles.container}>
-       <Svg width={size} height={size} fill={"#6B61F6"}>
-        <G rotation={-90} origin={center}>
-        <Circle stroke="#FAFAFA"cx={center} cy={center} r={radius} strokeWidth={strokeWidth}/>
-        <Circle ref={progressRef}stroke="#432889" cx={center} cy={center} r={radius} strokeWidth={strokeWidth} strokeDasharray={circumference}
-        />
-        </G>
-       </Svg>
-       <TouchableOpacity onPress={scrollTo} style={styles.button} activeOpacity={0.6}>
-         <OnboardingForward/>    
-       </TouchableOpacity>
+// Forward button wrapped in a ring that fills as the user moves through the slides.
+export const Nextbutton = ({ percentage, scrollTo, label = 'Next' }) => (
+  <TouchableOpacity onPress={scrollTo} activeOpacity={0.7} style={styles.hit} accessibilityRole="button" accessibilityLabel={label}>
+    <Svg width={SIZE} height={SIZE} style={StyleSheet.absoluteFill}>
+      <Circle cx={SIZE / 2} cy={SIZE / 2} r={R} stroke="rgba(255,255,255,0.3)" strokeWidth={STROKE} fill="none" />
+      <Circle
+        cx={SIZE / 2}
+        cy={SIZE / 2}
+        r={R}
+        stroke="#FFFFFF"
+        strokeWidth={STROKE}
+        fill="none"
+        strokeDasharray={C}
+        strokeDashoffset={C - (C * Math.min(percentage, 100)) / 100}
+        strokeLinecap="round"
+        rotation={-90}
+        origin={`${SIZE / 2}, ${SIZE / 2}`}
+      />
+    </Svg>
+    <View style={styles.icon}>
+      <OnboardingForward />
     </View>
-  );
-};
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent:"center",
-    alignItems:"center",
-    alignSelf:"flex-end",
-    right:20,
-    position: 'absolute',
-    bottom: height * 0.030,
-  },
-  button:{
-    position:"absolute",
-    borderRadius:100,
-    padding:20
-  }
+  hit: { width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' },
+  icon: { alignItems: 'center', justifyContent: 'center' },
 });
 
 export default Nextbutton;

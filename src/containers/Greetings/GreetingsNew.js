@@ -1,245 +1,157 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Platform,
-  Image,
-  StatusBar
-} from 'react-native';
-import { Colors } from '../../theme';
-import axios from "axios"
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Image, StatusBar, RefreshControl } from 'react-native';
+import axios from 'axios';
 import { SvgUri } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WasilGreetingAdBannerSVG } from '../../assets/icons';
+import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from '../../theme';
+import { ScreenState, SectionHeader } from '../../components';
+
+const API = 'https://islamicapp.vercel.app/api';
+const NEW_WINDOW_DAYS = 31;
+const NEW_MAX = 12;
+
+// Most recently added cards: everything within a month of the newest upload.
+const pickNewest = (cards) => {
+  const dated = cards.filter((c) => c.createdAt).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (!dated.length) return cards.slice(0, NEW_MAX);
+  const cutoff = new Date(dated[0].createdAt).getTime() - NEW_WINDOW_DAYS * 24 * 3600 * 1000;
+  return dated.filter((c) => new Date(c.createdAt).getTime() >= cutoff).slice(0, NEW_MAX);
+};
 
 export default function GreetingsNew({ navigation }) {
-const [speakervideodata, setspeakervideodata] = useState([]);
-const [newThisMonth, setNewThisMonth] = useState([]);
-const [isLoading, setisLoading] = useState(false);
+  const { Colors } = useTheme();
+  const { width } = useScreen();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
-useEffect(() => {
-    setisLoading(true);
-    fetchData();
-    fetchNewVideos();
-  }, [])
+  const [categories, setCategories] = useState([]);
+  const [newest, setNewest] = useState([]);
+  const [status, setStatus] = useState('loading');
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = async () => {
-     let isMounted = true; 
+  const load = useCallback(async () => {
     try {
-      const response = await axios.get(
-        "https://islamicapp.vercel.app/api/categories"
-      )
-      console.log("greeetings response")
-       if (isMounted) {
-          const data = response.data
-          setspeakervideodata(data)
-        }
+      const [cats, all] = await Promise.all([
+        axios.get(`${API}/categories`),
+        axios.get(`${API}/allgreetings`).catch(() => ({ data: [] })), // the "new" rail is optional
+      ]);
+      setCategories(Array.isArray(cats.data) ? cats.data : []);
+      setNewest(pickNewest(Array.isArray(all.data) ? all.data : []));
+      setStatus('ready');
     } catch (e) {
-       console.error("Error fetching data", e);
-        if (isMounted) {
-          seterror("Failed to load data");
-        }
+      setStatus('error');
     }
-    finally {
-        if (isMounted) {
-          setisLoading(false);
-        }
-      }
-  }
-  const fetchNewVideos = async () => {
-  try {
-    setisLoading(true);
+  }, []);
 
-    const response = await axios.get(
-      "https://islamicapp.vercel.app/api/allgreetings"
-    );
+  useEffect(() => {
+    load();
+  }, [load]);
 
-    const allVideos = response.data;
-
-    const filteredVideos = allVideos.filter(
-      item =>item.createdAt === "2026-01-16T12:09:14.394Z"
-    );
-    setNewThisMonth(filteredVideos);
-  } catch (error) {
-    console.log("New videos error:", error);
-  }
-
-  setisLoading(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
   };
 
-  if (isLoading) {
+  if (status !== 'ready') {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" ,backgroundColor:Colors.intermediate1}}>
-        <ActivityIndicator size={"large"} color={Colors.white}>
-
-        </ActivityIndicator>
-      </View>
+      <ScreenState
+        status={status}
+        title="Couldn't load greeting cards"
+        onRetry={() => {
+          setStatus('loading');
+          load();
+        }}
+      />
     );
   }
 
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <StatusBar backgroundColor={Colors.intermediate1}/>
+  const columns = width >= 600 ? 5 : 3;
+  const tileWidth = (width - Spacing.lg * 2 - Spacing.md * (columns - 1)) / columns;
 
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Categories</Text>
-        </View>
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: insets.bottom + Spacing.xl }}
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.textPrimary} />}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+
+      <SectionHeader title="Categories" style={styles.firstHeader} />
+      <View style={styles.grid}>
+        {categories.map((item) => (
+          <TouchableOpacity
+            key={item._id}
+            onPress={() =>
+              navigation.navigate('GreetingCardListNew', { cardid: item._id, categoryname: item.name, name: item.name })
+            }
+            style={[styles.tile, { width: tileWidth }]}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.name} cards`}>
+            {item.imagenew ? <SvgUri width={36} height={36} uri={item.imagenew} /> : null}
+            <Text style={styles.tileText} numberOfLines={2}>
+              {item.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {isLoading ? (
-     <ActivityIndicator
-    size="small"
-    color={Colors.wasilnewthemecolorsecond}
-    style={{ marginTop: 16 }}/>
-    ) : (
-  <FlatList
-    data={speakervideodata}
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    keyExtractor={(item, index) => index.toString()}
-    contentContainerStyle={styles.categoryList}
-    renderItem={({ item, index }) => (
-      <TouchableOpacity key={index} 
-      onPress={() => {
-            navigation.navigate('GreetingCardListNew', {
-            cardid: item._id,
-            categoryname:item.name,
-            name:item.name})}}
-      style={styles.categoryCardHorizontal}>
-        <SvgUri
-          width={36}
-          height={36}
-          uri={item.imagenew}
-        />
-        <Text style={styles.categoryText} numberOfLines={2}>
-                {item.name === 'Thank You'? item.name.replace(' ', '\n'): item.name === 'Eid ul Fitr'
-      ? 'Eid ul\nFitr': item.name === 'Eid ul Adha'
-      ? 'Eid ul\nAdha': item.name}
-        </Text>
-      </TouchableOpacity>
-    )}
-  />
-      )}
+      {newest.length ? (
+        <>
+          <SectionHeader title="New This Month" />
+          <FlatList
+            data={newest}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => item._id || String(index)}
+            contentContainerStyle={styles.rail}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.newCard}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${item.name || 'greeting'} card`}
+                onPress={() =>
+                  navigation.navigate('GreetingCardShare', { cardimage: item.path, catname: item.name, name: 'Share Greetings' })
+                }>
+                <Image source={{ uri: item.path }} style={styles.newImage} />
+              </TouchableOpacity>
+            )}
+          />
+        </>
+      ) : null}
 
-      <SectionHeader title="New This Month" />
-
-       <FlatList
-          data={newThisMonth}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{ paddingHorizontal: 15,marginTop:10 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.newCard}
-             onPress={() => {
-                  navigation.navigate('GreetingCardShare', {
-                    cardimage: item.path,
-                    catname: item.name,
-                    name: "Share Greetings",
-                  });
-                }}
-            >
-              <Image
-                source={{ uri: item.path }}
-                style={styles.newImage}
-              />
-      
-            </TouchableOpacity>
-          )}
-        />
-
-        <View style={{ alignSelf:"center"}} >
-          <WasilGreetingAdBannerSVG/>
-        </View>
-
-      <View style={{ height: 40 }} />
+      <View style={styles.banner}>
+        <WasilGreetingAdBannerSVG />
+      </View>
     </ScrollView>
   );
 }
 
-
-const SectionHeader = ({ title }) => (
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-  </View>
-);
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1
-  },
-
-  sectionHeader: {
-    marginTop: 24,
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontFamily: Platform.OS === 'ios' ? "Asul-Bold" : "AsulBold",
-    fontSize: 18,
-    color: Colors.white,
-  },
-
-  newCard: {
-  width: 150,
-  marginRight: 12,
-  borderRadius: 10,
-},
- newImage: {
-  width: 150,
-  height: 200,
-  borderRadius: 10,
-  resizeMode:"contain"
-},
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 10,
-    marginTop: 5,
-    backgroundColor: Colors.intermediate1
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily:Platform.OS === 'ios' ? "Asul-Bold" : "AsulBold",
-    fontWeight: '600',
-    left:15,
-    marginTop:10,
-    color:Colors.white
-  },
-  categoryText: {
-  fontFamily: 'Poppins-Medium',
-  fontSize: 12,
-  textAlign: 'center',
-  marginTop: 10,
-  color: Colors.white,
-},
-  categoryList: {
-  paddingHorizontal: 20,
-  paddingTop: 10,
-},
-
-categoryCardHorizontal: {
-  width: 100,
-  height:100,
-  backgroundColor: Colors.secondary1,
-  borderRadius: 12,
-  borderRadius: 10,
-  paddingVertical: 10,
-  paddingHorizontal: 10,
-  marginRight: 10,
-  alignItems: 'center',
-  borderWidth: 0.5,
-  borderColor: Colors.bordercolor,
-},
-});
+const makeStyles = (Colors) => {
+  const isLight = Colors.name === 'white';
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    firstHeader: { marginTop: Spacing.lg },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.md, paddingHorizontal: Spacing.lg },
+    tile: {
+      minHeight: 100,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.sm,
+      borderRadius: Radius.md,
+      backgroundColor: isLight ? Colors.surfaceAlt : Colors.surface,
+      borderWidth: 1,
+      borderColor: isLight ? 'transparent' : Colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: Spacing.sm,
+    },
+    tileText: { fontSize: TypeScale.small, lineHeight: 16, textAlign: 'center', color: Colors.textPrimary, fontFamily: Fonts.bodySemiBold },
+    rail: { paddingHorizontal: Spacing.lg, gap: Spacing.md },
+    newCard: { width: 140, borderRadius: Radius.md, overflow: 'hidden', backgroundColor: isLight ? Colors.surfaceAlt : Colors.surface },
+    newImage: { width: 140, aspectRatio: 4 / 5, resizeMode: 'cover' },
+    banner: { alignItems: 'center', marginTop: Spacing.xl },
+  });
+};

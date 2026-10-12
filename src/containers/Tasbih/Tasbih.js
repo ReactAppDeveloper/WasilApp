@@ -1,222 +1,188 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, TextInput, StatusBar } from "react-native";
+import { SvgUri } from "react-native-svg";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-  TextInput,
-  LogBox,
-  Platform,
-  StatusBar
-} from "react-native";
-import { Colors } from "../../theme";
-import {
-  WasilNewAllBTTasbihSvg,
   SearchSVG,
-  WasilNewBTAllahTasbihSvg
+  WasilNewAllBTTasbihSvg,
+  WasilNewAllGTasbihSvg,
+  WasilNewBTAllahTasbihSvg,
+  WasilNewGAllahTasbihSvg,
+  WasilNewAllahTasbihSvg,
 } from "../../assets/icons";
+import { useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH } from "../../theme";
+import { ScreenState } from "../../components";
 
-LogBox.ignoreAllLogs();
+const NAMES_OF_ALLAH = "Names of Allah";
+const ICONS = {
+  blue: { Allah: WasilNewBTAllahTasbihSvg, General: WasilNewAllBTTasbihSvg },
+  green: { Allah: WasilNewGAllahTasbihSvg, General: WasilNewAllGTasbihSvg },
+  white: { Allah: WasilNewAllahTasbihSvg, General: WasilNewAllBTTasbihSvg },
+};
 
 const Tasbih = ({ navigation }) => {
-  const [data, setData] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [noMatch, setnoMatch] = useState(false);
+  const { Colors, theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const { Allah: AllahIcon, General: GeneralIcon } = ICONS[theme] || ICONS.white;
 
-  useEffect(() => {
-    fetchTasbihs();
+  const [data, setData] = useState([]);
+  const [status, setStatus] = useState("loading");
+  const [search, setSearch] = useState("");
+
+  const load = useCallback(async () => {
+    setStatus("loading");
+    try {
+      const response = await fetch("https://islamicapp.vercel.app/api/tasbihs");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const json = await response.json();
+      setData(Array.isArray(json) ? json : []);
+      setStatus("ready");
+    } catch (error) {
+      setStatus("error");
+    }
   }, []);
 
-  const fetchTasbihs = async () => {
-    try {
-      const response = await fetch(
-        "https://islamicapp.vercel.app/api/tasbihs"
-      );
-      const json = await response.json();
-        setData(json);
-        setFiltered(json);
-    } catch (error) {
-      console.log("API Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    load();
+  }, [load]);
 
-const handleSearch = (text) => {
-    setSearch(text);
-    const filteredData = data.filter((item) =>
-      item.tasbihnameenglish.toLowerCase().includes(text.toLowerCase())
-    );
-    setFiltered(filteredData);
-    setnoMatch(filtered.length === 0);
-  };
+  const query = search.trim().toLowerCase();
+  const categories = useMemo(
+    () =>
+      data.filter(
+        (item) => item.tasbihnameenglish !== NAMES_OF_ALLAH && (!query || item.tasbihnameenglish?.toLowerCase().includes(query)),
+      ),
+    [data, query],
+  );
+  const showNamesBanner = !query || NAMES_OF_ALLAH.toLowerCase().includes(query);
 
-const renderItem = ({ item }) => (
-  <TouchableOpacity
-    onPress={() =>
-      navigation.navigate("TasbihCounterScreen", { tasbihNameEnglish: item.tasbihnameenglish })
-    }
-  >
-    {item.tasbihnameenglish === "Names of Allah" ? (
-      <View style={styles.advImageContainer}>
-        <View style={styles.leftBox}>
-          <WasilNewBTAllahTasbihSvg />
-        </View>
+  const open = (name) => navigation.navigate("TasbihCounterScreen", { tasbihNameEnglish: name });
 
-        <View style={styles.middleBox}>
-          <Text numberOfLines={1} style={styles.titleText1}>
-            99 Names of Allah
-          </Text>
-          <Text numberOfLines={1} style={styles.titleText}>
-            {item.tasbihnameenglish}
-          </Text>
-        </View>
-      </View>
-    ) : (
-      <View style={styles.advImageContainer}>
-        <View style={styles.leftBox}>
-          <WasilNewAllBTTasbihSvg />
-        </View>
+  if (status !== "ready") return <ScreenState status={status} title="Couldn't load tasbih" onRetry={load} />;
 
-        <View style={styles.middleBox}>
-          <Text numberOfLines={1} style={styles.titleText1}>
-            General Tasbih
-          </Text>
-          <Text numberOfLines={1} style={styles.titleText}>
-            {item.tasbihnameenglish}
-          </Text>
-        </View>
-      </View>
-    )}
-  </TouchableOpacity>
-);
-
-if (loading) 
-{
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
-      </View>
-    );
-}
-
-  return (
-    <View style={styles.container}>
-    <StatusBar backgroundColor={Colors.intermediate1}/>
+  const header = (
+    <>
       <View style={styles.searchBox}>
         <SearchSVG />
         <TextInput
-          placeholder="Search Tasbih"
+          placeholder="Search tasbih"
           value={search}
-          onChangeText={handleSearch}
+          onChangeText={setSearch}
           style={styles.searchInput}
-          
-          placeholderTextColor={Colors.white}
+          placeholderTextColor={Colors.textSecondary}
+          returnKeyType="search"
+          accessibilityLabel="Search tasbih"
         />
+        {search ? (
+          <TouchableOpacity onPress={() => setSearch("")} hitSlop={10} accessibilityLabel="Clear search">
+            <Text style={styles.clear}>✕</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
- {noMatch ? (
-          <Text style={styles.noMatch}>No Match Found</Text>
-        ) : (
+      {showNamesBanner ? (
+        <TouchableOpacity style={styles.banner} activeOpacity={0.9} onPress={() => open(NAMES_OF_ALLAH)} accessibilityRole="button">
+          <View style={styles.bannerIcon}>
+            <AllahIcon />
+          </View>
+          <View style={styles.bannerBody}>
+            <Text style={styles.bannerTitle}>99 Names of Allah</Text>
+            <Text style={styles.bannerText}>Discover and reflect on the Most Beautiful Names</Text>
+          </View>
+          <Text style={styles.chevronOnBanner}>›</Text>
+        </TouchableOpacity>
+      ) : null}
+
+      {categories.length ? <Text style={styles.sectionTitle}>Tasbih Categories</Text> : null}
+    </>
+  );
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
       <FlatList
-        data={filtered}
+        data={categories}
         keyExtractor={(item) => item._id}
-        renderItem={renderItem}
+        ListHeaderComponent={header}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={!showNamesBanner ? <Text style={styles.noMatch}>No tasbih matches “{search}”</Text> : null}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => open(item.tasbihnameenglish)}
+            style={styles.row}
+            accessibilityRole="button">
+            <View style={styles.rowIcon}>{item.path ? <SvgUri uri={item.path} width={32} height={32} /> : <GeneralIcon />}</View>
+            <View style={styles.rowBody}>
+              <Text style={styles.rowTitle} numberOfLines={1}>
+                {item.tasbihnameenglish}
+              </Text>
+              <Text style={styles.rowSubtitle}>General Tasbih</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+        )}
       />
-)}
-   <View style={{height:20}}></View>
     </View>
   );
 };
 
 export default Tasbih;
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1,
-    paddingHorizontal: 15,
-  },
-
-  advImageContainer: {
-    width: "100%",
-    height: 70,
-    flexDirection: "row",
-    marginTop: 10,
-    borderRadius: 10,
-    borderWidth: 0.8,
-    borderColor: Colors.bordercolor,
-    backgroundColor: Colors.intermediate1,
-  },
-
-  leftBox: {
-    flex: 0.4,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-
-
-  middleBox: {
-    flex: 1.5,
-    justifyContent: "center",
-  },
-
-  titleText1: {
-    color: Colors.yellowgoldcolor,
-    fontSize: 8,
-    fontFamily: "NunitoSans-SemiBold"
-  },
-  titleText: {
-    color: Colors.white,
-    fontSize: 13,
-    fontFamily: "NunitoSans-SemiBold"
-  },
-
-  rightBox: {
-    flex: 0.3,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  searchBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 0.8,
-    borderColor: Colors.bordercolor,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 46,
-    marginVertical: 14,
-  },
-
-  searchInput: {
-    flex: 1,
-    top:1.8,
-    paddingBottom:Platform.OS=== 'ios'?4:10,
-    marginLeft: 8,
-    fontSize: 14,
-    color: Colors.white,
-    fontFamily: "Poppins-Medium",
-  },
-  noMatch: {
-    height: '100%',
-    top: 300,
-    fontSize: 15,
-    alignSelf: 'center',
-    color: Colors.white,
-    fontFamily: 'Poppins-Light',
-  },
-});
+const makeStyles = (Colors) => {
+  const isLight = Colors.name === "white";
+  const tile = isLight ? Colors.surfaceAlt : Colors.surface;
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { paddingHorizontal: Spacing.lg, gap: Spacing.sm },
+    searchBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: Spacing.sm,
+      minHeight: 48,
+      marginTop: Spacing.lg,
+      paddingHorizontal: Spacing.md,
+      borderRadius: Radius.md,
+      borderWidth: 1,
+      borderColor: isLight ? "#D9D9D9" : Colors.accent,
+      backgroundColor: isLight ? Colors.white : "transparent",
+    },
+    searchInput: { flex: 1, paddingVertical: Spacing.sm, fontSize: TypeScale.body, color: Colors.textPrimary, fontFamily: Fonts.body },
+    clear: { fontSize: 16, color: Colors.textSecondary },
+    banner: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: Spacing.md,
+      marginTop: Spacing.lg,
+      padding: Spacing.lg,
+      borderRadius: Radius.lg,
+      backgroundColor: isLight ? Colors.surface : Colors.surfaceAlt,
+      borderWidth: 1,
+      borderColor: Colors.gold,
+    },
+    bannerIcon: { width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.12)" },
+    bannerBody: { flex: 1 },
+    bannerTitle: { fontSize: TypeScale.subtitle + 1, color: Colors.white, fontFamily: Fonts.bodyBold },
+    bannerText: { marginTop: 2, fontSize: TypeScale.small, color: "rgba(255,255,255,0.8)", fontFamily: Fonts.body },
+    chevronOnBanner: { fontSize: 28, color: Colors.white },
+    sectionTitle: { marginTop: Spacing.xl, marginBottom: Spacing.xs, fontSize: TypeScale.subtitle + 1, color: Colors.heading, fontFamily: Fonts.heading },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: Spacing.md,
+      minHeight: 68,
+      paddingHorizontal: Spacing.md,
+      borderRadius: Radius.md,
+      backgroundColor: tile,
+    },
+    rowIcon: { width: MIN_TOUCH, height: MIN_TOUCH, alignItems: "center", justifyContent: "center" },
+    rowBody: { flex: 1 },
+    rowTitle: { fontSize: TypeScale.body + 1, color: Colors.textPrimary, fontFamily: Fonts.bodySemiBold },
+    rowSubtitle: { marginTop: 2, fontSize: TypeScale.caption, color: Colors.gold, fontFamily: Fonts.bodySemiBold, letterSpacing: 0.5 },
+    chevron: { fontSize: 24, color: Colors.textSecondary },
+    noMatch: { marginTop: Spacing.xxl, textAlign: "center", fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body },
+  });
+};

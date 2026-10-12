@@ -1,242 +1,136 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Platform,ImageBackground
-} from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, StatusBar } from 'react-native';
 import axios from 'axios';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { Colors } from '../../theme';
-import {
-  DuaListNumberBTSVGG,
-  DuaForwardSVG,
-  SearchSVG,
-} from '../../assets/icons';
-import BaseScreenClass from './BaseScreenClass';
-const tasbihbgmainimage = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1769082963/dua/duacategoryback.png'};
-class DuaCategoryDetail extends BaseScreenClass {
-  constructor(props) {
-    super(props);
-    this.state = {
-      duadata: [],
-      visibleData: [],
-      search: '',
-      isLoading: true,
-      isLoadingMore: false,
-      error: null,
-      noMatch: false,
-      loadIndex: 10,
-    };
-  }
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SearchSVG } from '../../assets/icons';
+import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
+import { ScreenState } from '../../components';
 
-  componentDidMount = async() =>{
-    const { duacategoryid } = this.props.route.params;
+const DuaCategoryDetail = ({ navigation, route }) => {
+  const { duacategoryid, duacategorytitle } = route.params;
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+
+  const [duas, setDuas] = useState([]);
+  const [status, setStatus] = useState('loading');
+  const [search, setSearch] = useState('');
+
+  const load = useCallback(async () => {
+    setStatus('loading');
     try {
       const response = await axios.get(`https://islamicapp.vercel.app/api/duabycategory?duacategoryId=${duacategoryid}`);
-      const data = response.data;
-      this.setState({
-        duadata: data,
-        visibleData: data.slice(0, 10),
-        isLoading: false,
-      });
-    } catch (error) {
-      this.setState({ error: true, isLoading: false });
+      setDuas(Array.isArray(response.data) ? response.data : []);
+      setStatus('ready');
+    } catch (e) {
+      setStatus('error');
     }
-  }
+  }, [duacategoryid]);
 
-  searchFilterFunction(text) {
-    const { duadata } = this.state;
-    const filtered = text
-      ? duadata.filter((item) =>
-          item.duanameenglish?.toUpperCase().includes(text.toUpperCase())
-        )
-      : duadata;
+  useEffect(() => {
+    load();
+  }, [load]);
 
-    this.setState({
-      visibleData: filtered.slice(0, 10),
-      search: text,
-      noMatch: filtered.length === 0,
-      loadIndex: 10,
-    });
-  }
+  const query = search.trim().toLowerCase();
+  const visible = useMemo(
+    () => duas.map((d, i) => ({ ...d, position: i })).filter((d) => !query || d.duanameenglish?.toLowerCase().includes(query)),
+    [duas, query],
+  );
 
-  loadMoreData = () => {
-    const { duadata, visibleData, loadIndex, isLoadingMore } = this.state;
+  if (status !== 'ready') return <ScreenState status={status} title="Couldn't load duas" onRetry={load} />;
 
-    if (isLoadingMore || visibleData.length >= duadata.length) return;
-
-    const nextIndex = loadIndex + 10;
-    const nextChunk = duadata.slice(0, nextIndex);
-
-    this.setState({
-      visibleData: nextChunk,
-      loadIndex: nextIndex,
-      isLoadingMore: true,
-    }, () => {
-      setTimeout(() => this.setState({ isLoadingMore: false }), 300);
-    });
-  };
-
-  handleScroll = (event) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const isBottomReached =
-      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-
-    if (isBottomReached) {
-      this.loadMoreData();
-    }
-  };
-
-  renderContent() {
-
-    const { visibleData, search, noMatch, isLoadingMore } = this.state;
-    const { navigation } = this.props;
-    const { duacategorytitle } = this.props.route.params;
-
-    return (
-      <View style={{ flex: 1,backgroundColor: Colors.intermediate1}}>
-         <View style={styles.searchContainer1}>
-                 <View style={{ top: 13,left:10 }}>
-                    <SearchSVG />
-                  </View>
-                  <View style={{ flex: 1, left: 15 }}>
-                    <TextInput
-                      style={styles.searchInput1}
-                      placeholder="Search Duas"
-                      placeholderTextColor={Colors.white}
-                      value={search}
-                      onChangeText={(text) => this.searchFilterFunction(text)}
-                    />
-                  </View>
-                 
-                </View>
-
-        {noMatch ? (
-          <Text style={styles.noMatch}>No Match Found</Text>
-        ) : (
-          <ScrollView
-            style={{ top: 25 }}
-            onScroll={this.handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={{ alignItems: 'center' }}>
-              {visibleData.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() =>
-                    navigation.navigate('DuaDetailNew', {
-                      duacategoryid: item.duacategoryId,
-                      duacategorytitle:duacategorytitle,
-                      name:duacategorytitle
-                    })
-                  }>
-                  <View style={styles.card}>
-                    <View style={styles.iconBox}>
-                       <View style={{ height: Platform.OS === 'ios' ? 15 : 15}}></View>
-                       <View style={{ left: Platform.OS === 'ios' ? 17 : 17}}>
-                        <DuaListNumberBTSVGG />
-                        </View>
-                        <View style={{ height: 5 }}></View>
-                        <Text style={{ bottom: Platform.OS === 'ios' ? 37 : 37, textAlign: "center", fontWeight: "500", color: Colors.white, fontSize: 18, fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway' }}>{index + 1}</Text>
-                    </View>
-                    <View style={styles.textBox}>
-                      <Text numberOfLines={1} style={styles.cardText}>
-                        {item.duanameenglish}
-                      </Text>
-                    </View>
-                    <View style={styles.forwardBox}>
-                      <DuaForwardSVG />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-              {isLoadingMore && (
-                <ActivityIndicator
-                  style={{ marginVertical: 20 }}
-                  size="small"
-                  color={Colors.wasilnewthemecolorsecond}
-                />
-              )}
-            </View>
-            <View style={{ height: 80 }} />
-          </ScrollView>
-        )}
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <View style={styles.searchBox}>
+        <SearchSVG />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search duas"
+          placeholderTextColor={Colors.textSecondary}
+          value={search}
+          onChangeText={setSearch}
+          returnKeyType="search"
+          accessibilityLabel="Search duas"
+        />
+        {search ? (
+          <TouchableOpacity onPress={() => setSearch('')} hitSlop={10} accessibilityLabel="Clear search">
+            <Text style={styles.clear}>✕</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
-    );
-  }
 
-  render() {
-    return this.renderContent();
-  }
-}
+      <FlatList
+        data={visible}
+        keyExtractor={(item, index) => item._id || String(index)}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
+        ListEmptyComponent={<Text style={styles.noMatch}>{query ? `No duas match “${search}”` : 'No duas in this category yet'}</Text>}
+        initialNumToRender={15}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.row}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            onPress={() =>
+              navigation.navigate('DuaDetailNew', {
+                duacategoryid: item.duacategoryId || duacategoryid,
+                duacategorytitle,
+                name: duacategorytitle,
+                startIndex: item.position,
+                duaName: item.duanameenglish,
+              })
+            }>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{item.position + 1}</Text>
+            </View>
+            <Text numberOfLines={2} style={styles.rowText}>
+              {item.duanameenglish}
+            </Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+};
 
 export default DuaCategoryDetail;
 
-const styles = StyleSheet.create({
-  
-  noMatch: {
-    height: '100%',
-    top: 300,
-    fontSize: 15,
-    alignSelf: 'center',
-    color: Colors.white,
-    fontFamily: 'Poppins-Light',
-  },
-
-  card: {
-    flexDirection: 'row',
-    width: "95%",
-    height: 70,
-    borderColor:Colors.bordercolor,
-    borderWidth: 0.8,
-    marginTop:10,
-    borderRadius:12,
-    alignSelf: "center",
-  },
-  iconBox: {
-    flex: 0.4,
-  },
-  textBox: {
-    flex: 1.4,
-    justifyContent: 'center',
-  },
-  forwardBox: {
-    flex: 0.3,
-    top:Platform.OS === 'ios' ? 3 : 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  cardText: {
-    color: Colors.white,
-    fontSize: 14,
-    top:Platform.OS === 'ios' ? 2 : 0,
-    fontFamily: Platform.OS === 'ios' ? 'NunitoSans-Semibold' : 'NunitoSans-Semibold',
-    textTransform: 'capitalize',
-  },
- searchContainer1: {
-    flexDirection: 'row',
-    width: '95%',
-    height: 50,
-    borderColor:Colors.bordercolor,
-    backgroundColor: Colors.intermediate1,
-    borderWidth: 0.8,
-    top:20,
-    borderRadius:12,
-    alignSelf: 'center',
-  },
-  searchInput1: {
-    paddingLeft: 1,
-    top: Platform.OS === 'ios' ? 16 : 1,
-    fontSize: 13,
-    color: Colors.white,
-    fontFamily:"NunitoSans-SemiBold"
-  },
-});
+const makeStyles = (Colors) => {
+  const isLight = Colors.name === 'white';
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    searchBox: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      minHeight: 48,
+      marginHorizontal: Spacing.lg,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.sm,
+      paddingHorizontal: Spacing.md,
+      borderRadius: Radius.md,
+      borderWidth: 1,
+      borderColor: isLight ? '#D9D9D9' : Colors.accent,
+    },
+    searchInput: { flex: 1, paddingVertical: Spacing.sm, fontSize: TypeScale.body, color: Colors.textPrimary, fontFamily: Fonts.body },
+    clear: { fontSize: 16, color: Colors.textSecondary },
+    list: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, gap: Spacing.sm },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.md,
+      minHeight: 64,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+      borderRadius: Radius.md,
+      backgroundColor: isLight ? Colors.surfaceAlt : Colors.surface,
+    },
+    badge: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: Colors.gold, alignItems: 'center', justifyContent: 'center' },
+    badgeText: { fontSize: TypeScale.small + 1, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
+    rowText: { flex: 1, fontSize: TypeScale.body + 1, lineHeight: 20, color: Colors.textPrimary, fontFamily: Fonts.bodySemiBold },
+    chevron: { fontSize: 24, color: Colors.textSecondary },
+    noMatch: { marginTop: Spacing.xxl, textAlign: 'center', fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body },
+  });
+};

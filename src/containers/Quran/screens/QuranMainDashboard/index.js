@@ -490,8 +490,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#EDE4FF',
     borderRadius: 10,
     overflow: 'hidden',
-    height: 200,
-    width: 396,
+    minHeight: 200,
+    width: '100%',
     flexDirection: 'row',
   },
   ayahContent: {

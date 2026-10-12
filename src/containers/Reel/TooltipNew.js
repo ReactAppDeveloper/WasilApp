@@ -5,8 +5,7 @@ import {
   Animated,
   TouchableOpacity,
 } from 'react-native';
-import { Colors } from '../../theme';
-const TooltipNew = ({ onPress }) => {
+const TooltipNew = ({ onPress, bottom = 70 }) => {
   const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -34,7 +33,10 @@ const TooltipNew = ({ onPress }) => {
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
-      style={styles.wrapper}
+      style={[styles.wrapper, { bottom }]}
+      hitSlop={16}
+      accessibilityRole="button"
+      accessibilityLabel="Next reel"
     >
       <Animated.View style={{ transform: [{ translateY }] }}>
         <View style={styles.dot} />
@@ -48,7 +50,6 @@ const TooltipNew = ({ onPress }) => {
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
-    bottom: 70,
     alignSelf: 'center',
     zIndex: 1000,
   },
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: Colors.white,
+    backgroundColor: '#FFFFFF',
     marginVertical: 4,
     opacity: 0.9,
   },
