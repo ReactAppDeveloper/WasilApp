@@ -1,250 +1,152 @@
-// Onboarding.js
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  StatusBar,
-  FlatList,
-  StyleSheet,
-  PermissionsAndroid,
-  Animated,
-  Platform,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StatusBar, FlatList, StyleSheet, PermissionsAndroid, Animated, Platform, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import { Colors } from '../../theme';
-import slides from './slides';
-import OnbaordingItem from './OnbaordingItem';
-import Paginator from './Paginator';
-import Nextbutton from './Nextbutton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Fonts, TypeScale, Spacing, Radius, MIN_TOUCH, useScreen } from '../../theme';
+import slides from './slides';
+import OnboardingItem from './OnboardingItem';
+import Paginator from './Paginator';
+import Nextbutton from './Nextbutton';
 
-const { width, height } = Dimensions.get('window');
+// Used only when the user declines location or it can't be read (Karachi).
+const FALLBACK = { lat: '24.860735', lon: '67.115903' };
+const CONTROLS_HEIGHT = 96;
+
+const requestPermission = async () => {
+  if (Platform.OS === 'ios') return (await Geolocation.requestAuthorization('whenInUse')) === 'granted';
+  const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+    title: 'Use your location?',
+    message: 'Wasil uses your location for accurate prayer times and the Qibla direction.',
+    buttonNegative: 'Not now',
+    buttonPositive: 'Allow',
+  });
+  return result === PermissionsAndroid.RESULTS.GRANTED;
+};
+
+const currentPosition = () =>
+  new Promise((resolve) =>
+    Geolocation.getCurrentPosition(
+      ({ coords }) => resolve({ lat: String(coords.latitude), lon: String(coords.longitude) }),
+      () => resolve(null),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
+    ),
+  );
 
 export const Onboarding = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+  const { width } = useScreen();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [finishing, setFinishing] = useState(false);
   const scrollx = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef(null);
-
-  const [currentLatitude, setCurrentLatitude] = useState('');
-  const [currentLongitude, setCurrentLongitude] = useState('');
-  const [locationStatus, setLocationStatus] = useState('');
-  const watchIdRef = useRef(null);
+  const isLast = currentIndex === slides.length - 1;
 
   useEffect(() => {
-    const hideTimeout = setTimeout(() => {
-      SplashScreen.hide();
-    }, 1000);
-
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'ios') {
-        try {
-          const auth = await Geolocation.requestAuthorization('whenInUse');
-          if (auth === 'granted') {
-            getOneTimeLocation();
-            subscribeLocation();
-          } else {
-            setLocationStatus('Permission Denied');
-            setCurrentLatitude('24.860735');
-            setCurrentLongitude('67.115903');
-          }
-        } catch (err) {
-          console.warn('iOS requestAuthorization error', err);
-          setLocationStatus('Permission Error');
-          setCurrentLatitude('24.860735');
-          setCurrentLongitude('67.115903');
-        }
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            getOneTimeLocation();
-            subscribeLocation();
-          } else {
-            setLocationStatus('Permission Denied');
-            setCurrentLatitude('24.860735');
-            setCurrentLongitude('67.115903');
-          }
-        } catch (err) {
-          console.warn(err);
-          setLocationStatus('Permission Error');
-          setCurrentLatitude('24.860735');
-          setCurrentLongitude('67.115903');
-        }
-      }
-    };
-
-    requestLocationPermission();
-
-    return () => {
-      clearTimeout(hideTimeout);
-
-      if (watchIdRef.current !== null) {
-        Geolocation.clearWatch(watchIdRef.current);
-        watchIdRef.current = null;
-      }
-      Geolocation.stopObserving && Geolocation.stopObserving();
-    };
+    const t = setTimeout(() => SplashScreen.hide(), 1000);
+    return () => clearTimeout(t);
   }, []);
 
   const viewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems && viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index);
-    }
+    if (viewableItems?.length) setCurrentIndex(viewableItems[0].index);
   }).current;
-
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-  const scrollTo = async () => {
-    if (currentIndex < slides.length - 1) {
-      slidesRef.current?.scrollToIndex({ index: currentIndex + 1 });
-    } else {
-      try {
-        const lat = currentLatitude || '24.860735';
-        const lon = currentLongitude || '67.115903';
-        await AsyncStorage.setItem('ONLATI', lat.toString());
-        await AsyncStorage.setItem('ONLONGI', lon.toString());
-        await AsyncStorage.setItem('ONBOARDED', 'true');
-        navigation.navigate('GuestNew');
-      } catch (err) {
-        console.log('Error @setItem:', err);
-      }
-    }
-  };
-
-  const oSkip = async () => {
+  // Location is requested here, after the user has seen why it's needed, not on the first slide.
+  const finish = async () => {
+    if (finishing) return;
+    setFinishing(true);
+    let position = null;
     try {
-      const lat = currentLatitude || '24.860735';
-      const lon = currentLongitude || '67.115903';
-      await AsyncStorage.setItem('ONLATI', lat.toString());
-      await AsyncStorage.setItem('ONLONGI', lon.toString());
-      await AsyncStorage.setItem('ONBOARDED', 'true');
-      navigation.navigate('GuestNew');
-    } catch (err) {
-      console.log('Error @setItem:', err);
+      if (await requestPermission()) position = await currentPosition();
+    } catch (e) {
+      // fall back below
+    }
+    const { lat, lon } = position || FALLBACK;
+    try {
+      await AsyncStorage.multiSet([
+        ['ONLATI', lat],
+        ['ONLONGI', lon],
+        ['ONBOARDED', 'true'],
+      ]);
+    } finally {
+      navigation.reset({ index: 0, routes: [{ name: 'GuestNew' }] });
     }
   };
 
-  const getOneTimeLocation = () => {
-    setLocationStatus('Getting Location ...');
-    Geolocation.getCurrentPosition(
-      position => {
-        setLocationStatus('You are Here');
-        setCurrentLongitude(position.coords.longitude?.toString() || '');
-        setCurrentLatitude(position.coords.latitude?.toString() || '');
-      },
-      error => {
-        console.log('getCurrentPosition error', error);
-        setLocationStatus(error?.message || 'Error getting location');
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
-        forceRequestLocation: true, 
-      },
-    );
-  };
-
-  const subscribeLocation = () => {
-    // clear old watch if any
-    if (watchIdRef.current !== null) {
-      Geolocation.clearWatch(watchIdRef.current);
-      watchIdRef.current = null;
-    }
-    watchIdRef.current = Geolocation.watchPosition(
-      position => {
-        setLocationStatus('You are Here');
-        setCurrentLongitude(position.coords.longitude?.toString() || '');
-        setCurrentLatitude(position.coords.latitude?.toString() || '');
-      },
-      error => {
-        console.log('watchPosition error', error);
-        setLocationStatus(error?.message || 'Error watching location');
-      },
-      {
-        enableHighAccuracy: true,
-        distanceFilter: 0,
-        interval: 5000,
-        fastestInterval: 2000,
-      },
-    );
-  };
+  const next = () => (isLast ? finish() : slidesRef.current?.scrollToIndex({ index: currentIndex + 1 }));
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.black }}>
     <View style={styles.container}>
-     
-        <FlatList
-  data={slides}
-  renderItem={({ item }) => <OnbaordingItem item={item} />}
-  horizontal
-  pagingEnabled
-  bounces={false}
-  showsHorizontalScrollIndicator={false}
-  keyExtractor={item => item.id}
-  onScroll={Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollx } } }],
-    { useNativeDriver: false },
-  )}
-  scrollEventThrottle={32}
-  onViewableItemsChanged={viewableItemsChanged}
-  viewabilityConfig={viewConfig}
-  ref={slidesRef}
-/>
-
-
-      <Paginator data={slides} scrollx={scrollx} />
-      <Nextbutton
-        scrollTo={scrollTo}
-        percentage={(currentIndex + 1) * (100 / slides.length)}
+      <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
+      <FlatList
+        ref={slidesRef}
+        data={slides}
+        horizontal
+        pagingEnabled
+        bounces={false}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollx } } }], { useNativeDriver: false })}
+        scrollEventThrottle={16}
+        onViewableItemsChanged={viewableItemsChanged}
+        viewabilityConfig={viewConfig}
+        renderItem={({ item, index }) => (
+          <OnboardingItem
+            item={item}
+            bottomInset={insets.bottom + CONTROLS_HEIGHT + Spacing.lg}
+            note={index === slides.length - 1 ? 'Next, we’ll ask for your location so prayer times and the Qibla are accurate.' : null}
+          />
+        )}
       />
 
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          alignSelf: 'flex-start',
-          position: 'absolute',
-          left: 10,
-          bottom: 35, 
-        }}>
-        <TouchableOpacity onPress={oSkip}>
-          <Text style={styles.headingText}>Skip</Text>
+      {!isLast ? (
+        <TouchableOpacity onPress={finish} style={[styles.skip, { top: insets.top + Spacing.sm }]} accessibilityRole="button">
+          <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
+      ) : null}
+
+      <View style={[styles.controls, { paddingBottom: insets.bottom + Spacing.lg }]}>
+        <Paginator data={slides} scrollx={scrollx} />
+        {isLast ? (
+          <TouchableOpacity style={styles.start} onPress={finish} disabled={finishing} accessibilityRole="button">
+            {finishing ? <ActivityIndicator color="#2B1A63" /> : <Text style={styles.startText}>Get Started</Text>}
+          </TouchableOpacity>
+        ) : (
+          <Nextbutton scrollTo={next} percentage={((currentIndex + 1) * 100) / slides.length} />
+        )}
       </View>
     </View>
-    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.black, 
-    justifyContent: 'center',
+  container: { flex: 1, backgroundColor: '#000000' },
+  skip: { position: 'absolute', right: Spacing.lg, minHeight: MIN_TOUCH, paddingHorizontal: Spacing.md, justifyContent: 'center' },
+  skipText: { fontSize: TypeScale.body + 1, color: '#FFFFFF', fontFamily: Fonts.bodySemiBold },
+  controls: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    minHeight: CONTROLS_HEIGHT,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xl,
   },
-  headingText: {
-    left: 20,
-    fontSize: width * 0.04,
-    fontFamily: 'Poppins-Light',
-    color: Colors.white,
-    lineHeight: height * 0.03,
+  start: {
+    minHeight: 52,
+    minWidth: 160,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: Radius.pill,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  startText: { fontSize: TypeScale.subtitle, color: '#2B1A63', fontFamily: Fonts.bodyBold },
 });
 
 export default Onboarding;
