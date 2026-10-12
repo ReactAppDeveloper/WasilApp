@@ -249,19 +249,7 @@ import StoryDetailScreen from '../containers/IslamicStories/screens/StoryDetailS
 import ReadStoryDetail from '../containers/IslamicStories/screens/ReadStoryDetail';
 import PlayStory from '../containers/IslamicStories/screens/PlayStory';
 
-import IslamicStoriesScreenWhite from '../containers/IslamicStoriesWhite/maincomponent/IslamicStoriesScreen';
-import SubCategoriesWhite from '../containers/IslamicStoriesWhite/screens/SubCategories';
-import AllSubCategoriesWhite from '../containers/IslamicStoriesWhite/screens/AllSubCategories';
-import StoryDetailScreenWhite from '../containers/IslamicStoriesWhite/screens/StoryDetailScreen';
-import ReadStoryDetailWhite from '../containers/IslamicStoriesWhite/screens/ReadStoryDetail';
-import PlayStoryWhite from '../containers/IslamicStoriesWhite/screens/PlayStory';
 
-import IslamicStoriesScreenGreen from '../containers/IslamicStoriesGreen/maincomponent/IslamicStoriesScreen';
-import SubCategoriesGreen from '../containers/IslamicStoriesGreen/screens/SubCategories';
-import AllSubCategoriesGreen from '../containers/IslamicStoriesGreen/screens/AllSubCategories';
-import StoryDetailScreenGreen from '../containers/IslamicStoriesGreen/screens/StoryDetailScreen';
-import ReadStoryDetailGreen from '../containers/IslamicStoriesGreen/screens/ReadStoryDetail';
-import PlayStoryGreen from '../containers/IslamicStoriesGreen/screens/PlayStory';
 
 //Reciters
 import RecitersList from '../containers/Reciters/RecitersList';
@@ -335,12 +323,6 @@ const Themed_IntoWudhuNew = themedScreen({ blue: IntoWudhuNew, green: IntoWudhuN
 const Themed_NullifiesNew = themedScreen({ blue: NullifiesNew, green: NullifiesNewGreen, white: NullifiesNewWhite });
 const Themed_WearingSockWudhu = themedScreen({ blue: WearingSockWudhu, green: WearingSockWudhuGreen, white: WearingSockWudhuWhite });
 const Themed_TayammumScreen = themedScreen({ blue: TayammumScreen, green: TayammumScreenGreen, white: TayammumScreenWhite });
-const Themed_IslamicStoriesScreen = themedScreen({ blue: IslamicStoriesScreen, green: IslamicStoriesScreenGreen, white: IslamicStoriesScreenWhite });
-const Themed_SubCategories = themedScreen({ blue: SubCategories, green: SubCategoriesGreen, white: SubCategoriesWhite });
-const Themed_AllSubCategories = themedScreen({ blue: AllSubCategories, green: AllSubCategoriesGreen, white: AllSubCategoriesWhite });
-const Themed_StoryDetailScreen = themedScreen({ blue: StoryDetailScreen, green: StoryDetailScreenGreen, white: StoryDetailScreenWhite });
-const Themed_ReadStory = themedScreen({ blue: ReadStoryDetail, green: ReadStoryDetailGreen, white: ReadStoryDetailWhite });
-const Themed_PlayStory = themedScreen({ blue: PlayStory, green: PlayStoryGreen, white: PlayStoryWhite });
 const Themed_Wallofremember = themedScreen({ blue: Wallofremember, green: Wallofremembergreen, white: Wallofrememberwhite });
 const Themed_WallofrememberDetail = themedScreen({ blue: WallBlueDetail, green: WallGreenDetail, white: WallWhiteDetail });
 const Themed_RemembranceForm = themedScreen({ blue: RemembranceFormBlue, green: RemembranceFormGreen, white: RemembranceFormWhite });
@@ -857,24 +839,14 @@ const Stack = createNativeStackNavigator();
         backgroundColor: Colors.headerBg
       }})}/>
         <Stack.Screen name="ShahadahNew" component={ShahadahNew} options={headerOptions(Colors, "Shahadah")}/>
-        <Stack.Screen name="IslamicStoriesScreen" component={Themed_IslamicStoriesScreen} options={({ route }) => ({ title: "Islamic Stories",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-         backgroundColor: Colors.headerBg
-        }})}/>
-        <Stack.Screen name="SubCategories" component={Themed_SubCategories} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+        <Stack.Screen name="IslamicStoriesScreen" component={IslamicStoriesScreen} options={headerOptions(Colors, "Islamic Stories")}/>
+        <Stack.Screen name="SubCategories" component={SubCategories} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-        <Stack.Screen name="AllSubCategories" component={Themed_AllSubCategories} options={({ route }) => ({ title: "All Stories",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
-        <Stack.Screen name="StoryDetailScreen" component={Themed_StoryDetailScreen} options={({ route }) => ({ title: "Detail of Story",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
-        <Stack.Screen name="ReadStory" component={Themed_ReadStory} options={({ route }) => ({ title: "Read Story",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
-        <Stack.Screen name="PlayStory" component={Themed_PlayStory} options={({ route }) => ({ title: "Listen Story",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+        <Stack.Screen name="AllSubCategories" component={AllSubCategories} options={headerOptions(Colors, "All Stories")}/>
+        <Stack.Screen name="StoryDetailScreen" component={StoryDetailScreen} options={headerOptions(Colors, "Story")}/>
+        <Stack.Screen name="ReadStory" component={ReadStoryDetail} options={headerOptions(Colors, "Read Story")}/>
+        <Stack.Screen name="PlayStory" component={PlayStory} options={headerOptions(Colors, "Listen")}/>
         <Stack.Screen name="RecitersList" component={RecitersList} options={headerOptions(Colors, "Reciters")}/>
         <Stack.Screen name="ReciterDetail" component={ReciterDetail} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
