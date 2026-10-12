@@ -248,14 +248,8 @@ import CalendarScreen from '../containers/Calendar/CalendarScreen';
 
 //Wall
 import Wallofremember from '../containers/WallOfRemembrance/Wallofremember';
-import WallBlueDetail from '../containers/WallOfRemembrance/WallBlueDetail';
-import Wallofrememberwhite from '../containers/WallOfRemembrance/Wallofrememberwhite';
-import WallWhiteDetail from '../containers/WallOfRemembrance/WallWhiteDetail';
-import RemembranceFormWhite from '../containers/WallOfRemembrance/RemembranceFormWhite';
-import RemembranceFormBlue from '../containers/WallOfRemembrance/RemembranceFormBlue';
-import RemembranceFormGreen from '../containers/WallOfRemembrance/RemembranceFormGreen';
-import Wallofremembergreen from '../containers/WallOfRemembrance/Wallofremembergreen';
-import WallGreenDetail from '../containers/WallOfRemembrance/WallGreenDetail';
+import WallDetail from '../containers/WallOfRemembrance/WallDetail';
+import RemembranceForm from '../containers/WallOfRemembrance/RemembranceForm';
 
 // One route per screen; the component follows the active theme.
 const Themed_Quran = themedScreen({ blue: Quran, green: QuranGreen, white: QuranWhite });
@@ -302,9 +296,6 @@ const Themed_IntoWudhuNew = themedScreen({ blue: IntoWudhuNew, green: IntoWudhuN
 const Themed_NullifiesNew = themedScreen({ blue: NullifiesNew, green: NullifiesNewGreen, white: NullifiesNewWhite });
 const Themed_WearingSockWudhu = themedScreen({ blue: WearingSockWudhu, green: WearingSockWudhuGreen, white: WearingSockWudhuWhite });
 const Themed_TayammumScreen = themedScreen({ blue: TayammumScreen, green: TayammumScreenGreen, white: TayammumScreenWhite });
-const Themed_Wallofremember = themedScreen({ blue: Wallofremember, green: Wallofremembergreen, white: Wallofrememberwhite });
-const Themed_WallofrememberDetail = themedScreen({ blue: WallBlueDetail, green: WallGreenDetail, white: WallWhiteDetail });
-const Themed_RemembranceForm = themedScreen({ blue: RemembranceFormBlue, green: RemembranceFormGreen, white: RemembranceFormWhite });
 
 
 const Stack = createNativeStackNavigator();
@@ -829,17 +820,11 @@ const Stack = createNativeStackNavigator();
         backgroundColor: Colors.headerBg
       }})}/>
         <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={headerOptions(Colors, "Calendar")}/>
-        <Stack.Screen name="Wallofremember" component={Themed_Wallofremember} options={({ route }) => ({ title: "Wall of Remembrance",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+        <Stack.Screen name="Wallofremember" component={Wallofremember} options={headerOptions(Colors, "Wall of Remembrance")}/>
         
-        <Stack.Screen name="WallofrememberDetail" component={Themed_WallofrememberDetail} options={({ route }) => ({ title: "Wall of Remembrance",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+        <Stack.Screen name="WallofrememberDetail" component={WallDetail} options={headerOptions(Colors, "Wall of Remembrance")}/>
 
-         <Stack.Screen name="RemembranceForm" component={Themed_RemembranceForm} options={({ route }) => ({ title: "Wall of Remembrance",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+         <Stack.Screen name="RemembranceForm" component={RemembranceForm} options={headerOptions(Colors, "Add a Beloved Soul")}/>
 
 </Stack.Navigator>
     );
