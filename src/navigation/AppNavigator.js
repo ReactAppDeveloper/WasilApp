@@ -283,11 +283,7 @@ import PlayStoryGreen from '../containers/IslamicStoriesGreen/screens/PlayStory'
 import RecitersList from '../containers/Reciters/RecitersList';
 import ReciterDetail from '../containers/Reciters/ReciterDetail';
 
-import RecitersListWhite from '../containers/RecitersWhite/RecitersList';
-import ReciterDetailWhite from '../containers/RecitersWhite/ReciterDetail';
 
-import RecitersListGreen from '../containers/RecitersGreen/RecitersList';
-import ReciterDetailGreen from '../containers/RecitersGreen/ReciterDetail';
 
 //Calendar
 import CalendarScreen from '../containers/Calendar/CalendarScreen';
@@ -369,8 +365,6 @@ const Themed_AllSubCategories = themedScreen({ blue: AllSubCategories, green: Al
 const Themed_StoryDetailScreen = themedScreen({ blue: StoryDetailScreen, green: StoryDetailScreenGreen, white: StoryDetailScreenWhite });
 const Themed_ReadStory = themedScreen({ blue: ReadStoryDetail, green: ReadStoryDetailGreen, white: ReadStoryDetailWhite });
 const Themed_PlayStory = themedScreen({ blue: PlayStory, green: PlayStoryGreen, white: PlayStoryWhite });
-const Themed_RecitersList = themedScreen({ blue: RecitersList, green: RecitersListGreen, white: RecitersListWhite });
-const Themed_ReciterDetail = themedScreen({ blue: ReciterDetail, green: ReciterDetailGreen, white: ReciterDetailWhite });
 const Themed_Wallofremember = themedScreen({ blue: Wallofremember, green: Wallofremembergreen, white: Wallofrememberwhite });
 const Themed_WallofrememberDetail = themedScreen({ blue: WallBlueDetail, green: WallGreenDetail, white: WallWhiteDetail });
 const Themed_RemembranceForm = themedScreen({ blue: RemembranceFormBlue, green: RemembranceFormGreen, white: RemembranceFormWhite });
@@ -915,10 +909,8 @@ const Stack = createNativeStackNavigator();
         <Stack.Screen name="PlayStory" component={Themed_PlayStory} options={({ route }) => ({ title: "Listen Story",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-        <Stack.Screen name="RecitersList" component={Themed_RecitersList} options={({ route }) => ({ title: "Reciters",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
-        <Stack.Screen name="ReciterDetail" component={Themed_ReciterDetail} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+        <Stack.Screen name="RecitersList" component={RecitersList} options={headerOptions(Colors, "Reciters")}/>
+        <Stack.Screen name="ReciterDetail" component={ReciterDetail} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
         <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={headerOptions(Colors, "Calendar")}/>

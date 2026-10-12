@@ -33,6 +33,11 @@ import { Colors } from "../../theme";
 import reciters from "../../containers/Reciters/newreciters";
 
 export default function MiniPlayer() {
+  const { Colors, theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = React.useMemo(() => makeStyles(Colors), [Colors]);
+  const PlayIcon = theme === "white" ? IslamicStoryPlayAudioSVG : IslamicStoryPlayBTAudioSVG;
+  const PauseIcon = theme === "white" ? IslamicStoryPauseAudioSVG : IslamicStoryPauseBTAudioSVG;
   const [track, setTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [reciter, setReciter] = useState(null);
@@ -474,6 +479,7 @@ export default function MiniPlayer() {
       {...panResponder.panHandlers}
       style={[
         styles.container,
+        { bottom: insets.bottom + 12 },
         {
           opacity: translateX.interpolate({
             inputRange: [-screenWidth, 0, screenWidth],
@@ -492,11 +498,11 @@ export default function MiniPlayer() {
       <View style={styles.row}>
 
         {/* COVER */}
-        <Image
-          source={imageSource}
-          style={styles.cover}
-        />
-
+        {reciter ? (
+          <ReciterAvatar reciter={reciter} size={52} />
+        ) : (
+          <Image source={imageSource} style={styles.cover} />
+        )}
         {/* INFORMATION */}
         <View style={styles.info}>
 
@@ -551,27 +557,31 @@ export default function MiniPlayer() {
           <TouchableOpacity
             onPress={playPrev}
             activeOpacity={0.7}
+            style={styles.control}
+            accessibilityRole="button"
+            accessibilityLabel="Previous"
           >
             <IslamicStoryPlayPreviousSVG />
           </TouchableOpacity>
 
           {/* PLAY / PAUSE */}
           <TouchableOpacity
-            style={styles.playButton}
+            style={styles.control}
             onPress={togglePlay}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? (
-              <IslamicStoryPauseBTAudioSVG />
-            ) : (
-              <IslamicStoryPlayBTAudioSVG />
-            )}
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </TouchableOpacity>
 
           {/* NEXT */}
           <TouchableOpacity
             onPress={playNext}
             activeOpacity={0.7}
+            style={styles.control}
+            accessibilityRole="button"
+            accessibilityLabel="Next"
           >
             <IslamicStoryPlayNextSVG />
           </TouchableOpacity>
@@ -587,113 +597,32 @@ export default function MiniPlayer() {
 // STYLES
 // =========================================================
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-
-    bottom: 30,
-
-    alignSelf: "center",
-
-    width: "95%",
-
-    backgroundColor: Colors.white,
-
-    borderRadius: 16,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.wasilnewthemecolor,
-
-    paddingHorizontal: 10,
-
-    paddingVertical: 10,
-
-    elevation: 10,
-
-    shadowColor: Colors.black,
-
-    shadowOpacity: 0.15,
-
-    shadowRadius: 8,
-
-    shadowOffset: {
-      width: 0,
-      height: 4,
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      alignSelf: "center",
+      width: "94%",
+      maxWidth: 560,
+      backgroundColor: "#FFFFFF",
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: "#E6E1F0",
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      elevation: 10,
+      shadowColor: "#000000",
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 4 },
     },
-  },
-
-  row: {
-    flexDirection: "row",
-
-    alignItems: "center",
-  },
-
-  cover: {
-    width: 60,
-
-    height: 60,
-
-    borderRadius: 30,
-
-    backgroundColor: "#F5F5F5",
-  },
-
-  info: {
-    flex: 1,
-
-    marginHorizontal: 10,
-  },
-
-  title: {
-    color: Colors.primary,
-
-    fontSize: 16,
-
-    fontFamily:
-      Platform.OS === "ios"
-        ? "Asul-Regular"
-        : "AsulRegular",
-  },
-
-  artist: {
-    color: "#555",
-
-    marginTop: 2,
-
-    marginBottom: 8,
-
-    fontSize: 13,
-  },
-
-  progressBackground: {
-    height: 3,
-
-    backgroundColor: "#E5E5E5",
-
-    borderRadius: 5,
-
-    overflow: "hidden",
-  },
-
-  progressFill: {
-    height: 3,
-
-    backgroundColor: Colors.primary,
-
-    borderRadius: 5,
-  },
-
-  controls: {
-    flexDirection: "row",
-
-    alignItems: "center",
-
-    marginLeft: 10,
-  },
-
-  playButton: {
-    marginHorizontal: 12,
-  },
-});
+    row: { flexDirection: "row", alignItems: "center" },
+    cover: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#F5F5F5" },
+    info: { flex: 1, marginHorizontal: 10 },
+    title: { color: Colors.inkAccent, fontSize: TypeScale.body + 1, fontFamily: Fonts.headingRegular },
+    artist: { color: "#5E5970", marginTop: 2, marginBottom: 8, fontSize: TypeScale.small, fontFamily: Fonts.body },
+    progressBackground: { height: 3, backgroundColor: "#E6E1F0", borderRadius: 2, overflow: "hidden" },
+    progressFill: { height: 3, backgroundColor: Colors.inkAccent, borderRadius: 2 },
+    controls: { flexDirection: "row", alignItems: "center" },
+    control: { minWidth: MIN_TOUCH - 4, minHeight: MIN_TOUCH, alignItems: "center", justifyContent: "center" },
+  });

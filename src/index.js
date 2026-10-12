@@ -26,8 +26,6 @@ import {
 } from './containers/Reciters/playerStorage';
 
 import MiniPlayer from './containers/Reciters/MiniPlayer';
-import MiniPlayerWhite from './containers/RecitersWhite/MiniPlayer';
-import MiniPlayerGreen from './containers/RecitersGreen/MiniPlayer';
 
 
 const App = () => {
@@ -180,54 +178,20 @@ const AppContent = () => {
   };
 
 
+  // Route names (as registered in AppNavigator) where the floating mini player would cover content.
   const hideMiniPlayerScreens = [
-
     'Setting',
-    'SettingWhite',
-    'SettingGreen',
-
     'FullView',
-    'FullViewWhite',
-    'FullViewGreen',
-
     'TranslatePage',
-    'TranslatePageWhite',
-    'TranslatePageGreen',
-
     'SurahDetailPage',
-    'SurahDetailPageWhite',
-    'SurahDetailPageGreen',
-
     'AddTafseer',
-    'AddTafseerWhite',
-    'AddTafseerGreen',
-
     'ReciterDetail',
-    'ReciterDetailWhite',
-    'ReciterDetailGreen',
-
     'PlayStory',
-    'PlayStoryWhite',
-    'PlayStoryGreen',
-
-    'ReelsComponentNew',
-    'ReelsComponentNewWhite',
-    'ReelsComponentNewGreen',
-
+    'ReelsNew',
     'PrayerMosque',
-    'PrayerMosqueWhite',
-    'PrayerMosqueGreen',
-
     'QiblaCompassNew',
-    'QiblaCompassNewWhite',
-    'QiblaCompassNewGreen',
-
     'TranslatorDetail',
-    'TranslatorDetailGreen',
-    'TranslatorDetailWhite'
-
   ];
-
 
   const showMiniPlayer =
     currentRoute &&
@@ -235,19 +199,8 @@ const AppContent = () => {
       currentRoute,
     );
 
-  const renderMiniPlayer = () => {
-    if (theme === 'blue') {
-      return <MiniPlayer />;
-    }
-    if (theme === 'green') {
-      return <MiniPlayerGreen />;
-    }
-    if (theme === 'white') {
-      return <MiniPlayerWhite />;
-    }
+  const renderMiniPlayer = () => <MiniPlayer />;
 
-    return null;
-  };
 
 
  return (

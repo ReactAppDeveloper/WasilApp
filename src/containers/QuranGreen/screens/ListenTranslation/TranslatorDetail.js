@@ -20,7 +20,7 @@ import TrackPlayer, {
   useProgress,
 } from "react-native-track-player";
 
-import { SURAH_NAMES } from "../../../RecitersGreen/surahNames";
+import { SURAH_NAMES } from "../../../Reciters/surahNames";
 
 import {
   WasilNewRecitersBTPlayIcon,

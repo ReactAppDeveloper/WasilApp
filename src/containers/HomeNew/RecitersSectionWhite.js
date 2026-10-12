@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Colors } from '../../theme';
-import reciters from '../RecitersWhite/reciters'
+import reciters from '../Reciters/reciters'
 export default class RecitersSectionWhite extends Component {
   state = {
     loading: true,

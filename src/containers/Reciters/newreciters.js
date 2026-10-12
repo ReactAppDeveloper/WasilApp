@@ -1,9 +1,10 @@
+// Reciters shown in the app. `image` is null where the photo has not been added to the repo yet.
 const reciters = [
   {
     id: 7,
     reciter_id: 7,
     name: "Mishari Rashid al-`Afasy",
-    image: require('./recitersjpg/image-7.jpg'),
+    image: require('./image-7.png'),
     translated_name: {
       name: "Mishari Rashid al-`Afasy",
       language_name: "english",
@@ -23,7 +24,7 @@ const reciters = [
     id: 3,
     reciter_id: 3,
     name: "Abdur-Rahman as-Sudais",
-    image: require('./recitersjpg/image-3.jpg'),
+    image: require('./image-3.png'),
     translated_name: {
       name: "Abdur-Rahman as-Sudais",
       language_name: "english",
@@ -43,7 +44,7 @@ const reciters = [
     id: 1,
     reciter_id: 1,
     name: "Abdul Baset Abdul Samad",
-    image: require('./recitersjpg/image-1.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Abdul Baset Abdul Samad",
       language_name: "english",
@@ -63,7 +64,7 @@ const reciters = [
     id: 10,
     reciter_id: 10,
     name: "Sa'ud ash-Shuraim",
-    image: require('./recitersjpg/image-10.jpg'),
+    image: require('./image-10.png'),
     translated_name: {
       name: "Sa`ud ash-Shuraym",
       language_name: "english",
@@ -103,7 +104,7 @@ const reciters = [
     id: 6,
     reciter_id: 6,
     name: "Mahmoud Khalil Al-Husary",
-    image: require('./recitersjpg/image-6.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Mahmoud Khalil Al-Husary",
       language_name: "english",
@@ -123,7 +124,7 @@ const reciters = [
     id: 2,
     reciter_id: 2,
     name: "Abdul Baset Abdul Samad",
-    image: require('./recitersjpg/image-2.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Abdul Baset Abdul Samad",
       language_name: "english",
@@ -143,7 +144,7 @@ const reciters = [
     id: 4,
     reciter_id: 4,
     name: "Abu Bakr al-Shatri",
-    image: require('./recitersjpg/image-4.jpg'),
+    image: require('./image-4.png'),
     translated_name: {
       name: "Abu Bakr al-Shatri",
       language_name: "english",
@@ -163,7 +164,7 @@ const reciters = [
     id: 9,
     reciter_id: 9,
     name: "Mohamed Siddiq al-Minshawi",
-    image: require('./recitersjpg/image-9.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Mohamed Siddiq al-Minshawi",
       language_name: "english",
@@ -183,7 +184,7 @@ const reciters = [
     id: 5,
     reciter_id: 5,
     name: "Hani ar-Rifai",
-    image: require('./recitersjpg/image-5.jpg'),
+    image: require('./image-5.png'),
     translated_name: {
       name: "Hani ar-Rifai",
       language_name: "english",
@@ -203,7 +204,7 @@ const reciters = [
     id: 12,
     reciter_id: 12,
     name: "Mahmoud Khalil Al-Husary",
-    image: require('./recitersjpg/image-12.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Mahmoud Khalil Al-Husary",
       language_name: "english",
@@ -223,7 +224,7 @@ const reciters = [
     id: 173,
     reciter_id: 173,
     name: "Mishari Rashid al-`Afasy",
-    image: require('./recitersjpg/image-173.jpg'),
+    image: require('./image-7.png'),
     translated_name: {
       name: "Mishari Rashid al-`Afasy",
       language_name: "english",
@@ -243,7 +244,7 @@ const reciters = [
     id: 168,
     reciter_id: 168,
     name: "Mohamed Siddiq al-Minshawi",
-    image: require('./recitersjpg/image-168.jpg'),
+    image: null, // photo not in the repo yet; an initials avatar is shown
     translated_name: {
       name: "Mohamed Siddiq al-Minshawi",
       language_name: "english",
