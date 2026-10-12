@@ -107,7 +107,7 @@ And a shared `<AppText variant="body">` that applies `maxFontSizeMultiplier={1.3
 | Screen / file | Issue | Fix |
 |---|---|---|
 | `HomeNewBlue.js:85` & `:127` | Two `useEffect`s both register a `focus` listener → home data fetched twice per focus, two BackHandlers (first one leaks because the ref is overwritten). | Delete the second `useEffect` (lines ~127–150). |
-| `HomeNewBlue.js:383` | Loading/error views have no background → white flash on Blue/Green; error has no retry. | Use `ScreenState` with `backgroundColor: Colors.background` and a **Retry** button calling `fetchHomeData`. |
+| `HomeNewBlue.js:385` | Loading/error views have no background → white flash on Blue/Green; error has no retry. | Use `ScreenState` with `backgroundColor: Colors.background` and a **Retry** button calling `fetchHomeData`. |
 | `HomeNewBlue.js:492` | `gradientSection { top: 40 }` shifts content down without adding scroll space → last card cut off; `colors={['#43288A','#43288A','#43288A']}` is a gradient of one colour. | Use `marginTop: 40` (or `paddingTop`) and a plain `View` with `Colors.background`. Replace `<View style={{height:70}}/>` with `contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}`. |
 | `HomeNewBlue.js:18` | Imports `AzanSetuoComponent.android` explicitly → Android file also runs on iOS. | `import AzanSetupComponent from './AzanSetupComponent'` and let Metro pick `.ios.js` / `.android.js` (rename both files to the same base name). |
 | `HomeHeaderBlue.js:349` | Header has fixed `height: 185` but stacks location chip + Hijri + Gregorian + "Now" + 22pt time + "Upcoming" + button (~215pt) → overflows into the grid; `top: 20` instead of safe-area. | `minHeight: vs(200)`, `paddingTop: insets.top + 8`, remove `top`. |
