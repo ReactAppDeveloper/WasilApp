@@ -1,107 +1,50 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  BackHandler,
-  StatusBar
-} from 'react-native';
-import { Colors } from '../../theme';
-import MovieCardNew from './MovieCardNew';
+import React, { useMemo } from 'react';
+import { StyleSheet, View, Text, FlatList, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FavouriteEmptySVG } from '../../assets/icons';
-import BaseScreenClass from './BaseScreenClass';
 import useStore from '../../store';
+import { useTheme, Fonts, TypeScale, Spacing } from '../../theme';
+import DuaCard from './DuaCard';
 
-class DuaNewFavourites extends BaseScreenClass {
-  constructor(props) {
-    super(props);
+const DuaNewFavourites = () => {
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const favourites = useStore((state) => state.favourites) || [];
 
-    const store = useStore.getState();
-
-    this.state = {
-      favourites: store.favourites || [],
-    };
-  }
-
-  componentDidMount() {
-    // Android back handler safety
-    if (!BackHandler.removeEventListener) {
-      BackHandler.removeEventListener = () => {};
-    }
-
-    // Subscribe to Zustand store
-    this.unsubscribe = useStore.subscribe((state) => {
-      this.setState({ favourites: state.favourites || [] });
-    });
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
-  }
-
-  /* ---------------- Render content ---------------- */
-  renderContent() {
-    const { favourites } = this.state;
-
-    if (!favourites || favourites.length === 0) {
-      return (
-        <View style={styles.emptyContainer}>
-          <FavouriteEmptySVG />
-          <Text style={styles.emptyText}>
-            No Favourites yet!
-          </Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={{ flex: 1,backgroundColor:Colors.intermediate1, }}>
-          <StatusBar backgroundColor={Colors.intermediate1}/>
-        <FlatList
-  data={favourites}
-  keyExtractor={(item) => item._id?.toString()}
-  showsVerticalScrollIndicator={false}
-  renderItem={({ item }) => (
-    <MovieCardNew movie={item} favourites={favourites} />
-  )}
-  ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-  contentContainerStyle={{
-    paddingTop: 80,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  }}
-/>
-      </View>
-    );
-  }
-
-  render() {
-    return super.render({
-      isLoading: false,
-      error: null,
-    });
-  }
-}
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <FlatList
+        data={favourites}
+        keyExtractor={(item, index) => item._id?.toString() || String(index)}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.list,
+          favourites.length === 0 && styles.listEmpty,
+          { paddingBottom: insets.bottom + Spacing.xl },
+        ]}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <FavouriteEmptySVG />
+            <Text style={styles.emptyTitle}>No favourites yet</Text>
+            <Text style={styles.emptyText}>Tap the heart on any dua to save it here.</Text>
+          </View>
+        }
+        renderItem={({ item }) => <DuaCard dua={item} />}
+      />
+    </View>
+  );
+};
 
 export default DuaNewFavourites;
 
-
-const styles = StyleSheet.create({
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:Colors.intermediate1,
-  },
-  emptyText: {
-    marginTop: 20,
-    fontSize: 12,
-    color: Colors.white,
-    fontWeight: '500',
-    textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-  },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { padding: Spacing.lg, gap: Spacing.lg },
+    listEmpty: { flexGrow: 1, justifyContent: 'center' },
+    empty: { alignItems: 'center', gap: Spacing.sm },
+    emptyTitle: { marginTop: Spacing.md, fontSize: TypeScale.subtitle, color: Colors.heading, fontFamily: Fonts.heading },
+    emptyText: { fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body, textAlign: 'center' },
+  });

@@ -123,15 +123,7 @@ import DuaCategoryDetail from '../containers/DuaNew/DuaCategoryDetail';
 import DuaDetailNew from '../containers/DuaNew/DuaDetailNew';
 import DuaNewFavourites from '../containers/DuaNew/DuaNewFavourites';
 
-import DuasScreenWhite from '../containers/DuaNewWhite/DuasScreenWhite';
-import DuaCategoryDetailWhite from '../containers/DuaNewWhite/DuaCategoryDetailWhite';
-import DuaDetailNewWhite from '../containers/DuaNewWhite/DuaDetailNewWhite';
-import DuaNewFavouritesWhite from '../containers/DuaNewWhite/DuaNewFavouritesWhite';
 
-import DuasScreenGreen from '../containers/DuaNewGreen/DuasScreenGreen';
-import DuaCategoryDetailGreen from '../containers/DuaNewGreen/DuaCategoryDetailGreen';
-import DuaDetailNewGreen from '../containers/DuaNewGreen/DuaDetailNewGreen';
-import DuaNewFavouritesGreen from '../containers/DuaNewGreen/DuaNewFavouritesGreen';
 
 //Tasbih
 import Tasbih from '../containers/Tasbih/Tasbih';
@@ -338,9 +330,6 @@ const Themed_TafsirBySurah = themedScreen({ blue: TafsirBySurah, green: TafsirBy
 const Themed_TafsirSettingsScreen = themedScreen({ blue: TafsirSettingsScreen, green: TafsirSettingsScreenGreen, white: TafsirSettingsScreenWhite });
 const Themed_TafsirSettingFont = themedScreen({ blue: TafsirSettingFont, green: TafsirSettingFontGreen, white: TafsirSettingFontWhite });
 const Themed_TranslatorDetail = themedScreen({ blue: TranslatorDetail, green: TranslatorDetailGreen, white: TranslatorDetailWhite });
-const Themed_DuaCategoryDetail = themedScreen({ blue: DuaCategoryDetail, green: DuaCategoryDetailGreen, white: DuaCategoryDetailWhite });
-const Themed_DuaDetailNew = themedScreen({ blue: DuaDetailNew, green: DuaDetailNewGreen, white: DuaDetailNewWhite });
-const Themed_DuaNewFavourites = themedScreen({ blue: DuaNewFavourites, green: DuaNewFavouritesGreen, white: DuaNewFavouritesWhite });
 const Themed_VideoDashboard = themedScreen({ blue: VideoDashboard, green: VideoDashboardGreen, white: VideoDashboardWhite });
 const Themed_VideosNew = themedScreen({ blue: VideosNew, green: VideosNewGreen, white: VideosNewWhite });
 const Themed_ChannelsDetailNew = themedScreen({ blue: ChannelsDetailNew, green: ChannelsDetailNewGreen, white: ChannelsDetailNewWhite });
@@ -737,96 +726,23 @@ const Stack = createNativeStackNavigator();
 
           
           <Stack.Screen name="ReelsNew" component={ReelsComponentNew} options={{headerShown: false,animation:"slide_from_right"}}/>
-          {theme === "blue" ? (
-        <Stack.Screen name="DuasScreen" component={DuasScreen} options={({navigation}) => ({ headerTitle: "Duas",headerRight: () => (
-          <View style={{height:50,width:50}}>
-               <View>
-        {favourites.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('DuaNewFavourites');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('DuaNewFavourites');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-         
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.cardDark
-        }})}/>
-
-          ):theme === "green" ? (
-        <Stack.Screen name="DuasScreen" component={DuasScreenGreen} options={({navigation}) => ({ headerTitle: "Duas",headerRight: () => (
-          <View style={{height:50,width:50}}>
-               <View>
-        {favourites.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('DuaNewFavourites');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('DuaNewFavourites');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-         
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.primary
-        }})}/>
-
-          ):(
-        <Stack.Screen name="DuasScreen" component={DuasScreenWhite} options={({navigation}) => ({ headerTitle: "Duas",headerRight: () => (
-          <View style={{height:50,width:50}}>
-               <View>
-        {favourites.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('DuaNewFavourites');
-      }}>
-        <HeartfilledSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('DuaNewFavourites');
-        }}>
-          <WasilNewTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-         
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.black ,headerTitleStyle: {color: Colors.black,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.white
-        }})}/>
-          )}
-          <Stack.Screen name="DuaCategoryDetail" component={Themed_DuaCategoryDetail} options={({ route }) => ({ title: route.params.name+" Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="DuasScreen" component={DuasScreen} options={({ navigation }) => ({
+            ...headerOptions(Colors, "Duas"),
+            headerRight: () => (
+              <HeaderFavouritesButton
+                filled={favourites.length > 0}
+                onPress={() => navigation.navigate('DuaNewFavourites')}
+                label="Favourite duas"
+              />
+            ),
+          })}/>
+          <Stack.Screen name="DuaCategoryDetail" component={DuaCategoryDetail} options={({ route }) => ({ title: route.params.name+" Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
         }})}/>
-          <Stack.Screen name="DuaDetailNew" component={Themed_DuaDetailNew} options={({ route }) => ({ title: route.params.name+" Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="DuaDetailNew" component={DuaDetailNew} options={({ route }) => ({ title: route.params.name+" Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
         }})}/>
-          <Stack.Screen name="DuaNewFavourites" component={Themed_DuaNewFavourites} options={({ route }) => ({ title: "Favourite Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-        }})}/>
+          <Stack.Screen name="DuaNewFavourites" component={DuaNewFavourites} options={headerOptions(Colors, "Favourite Duas")}/>
           <Stack.Screen name="HadithsBooksDashboard" component={HadithsBooksDashboard} options={({ navigation }) => ({
             ...headerOptions(Colors, "Hadiths"),
             headerRight: () => (

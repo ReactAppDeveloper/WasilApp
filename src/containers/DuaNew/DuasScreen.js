@@ -1,66 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, FlatList, StyleSheet, StatusBar } from 'react-native';
+import axios from 'axios';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DuaCategoryCard from './DuaCategoryCard';
-import { Colors } from '../../theme';
-import axios from "axios"
-import { DUAS_CATEGORIES } from './duasCategories';
+import { useTheme, Spacing } from '../../theme';
+import { ScreenState } from '../../components';
 
 const DuasScreen = ({ navigation }) => {
-const [duacategoriesdata, setduacategoriesdata] = useState([]);
-const [isLoading, setisLoading] = useState(false);
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const [categories, setCategories] = useState([]);
+  const [status, setStatus] = useState('loading');
 
-useEffect(() => {
-    setisLoading(true);
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-     let isMounted = true; 
+  const load = useCallback(async () => {
+    setStatus('loading');
     try {
-      const response = await axios.get(
-        "https://islamicapp.vercel.app/api/duacategories"
-      )
-      console.log("dua categories response")
-       if (isMounted) {
-          const data = response.data
-          setduacategoriesdata(data)
-        }
+      const response = await axios.get('https://islamicapp.vercel.app/api/duacategories');
+      setCategories(Array.isArray(response.data) ? response.data : []);
+      setStatus('ready');
     } catch (e) {
-       console.error("Error fetching data", e);
-        if (isMounted) {
-          seterror("Failed to load data");
-        }
+      setStatus('error');
     }
-    finally {
-        if (isMounted) {
-          setisLoading(false);
-        }
-      }
-  }
+  }, []);
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size={"large"} color={Colors.wasilnewthemecolorsecond}>
+  useEffect(() => {
+    load();
+  }, [load]);
 
-        </ActivityIndicator>
-      </View>
-    );
-  }
-
-  const handlePress = (item) => {
-    navigation.navigate('DuaCategoryDetail', {duacategoryid: item._id,duacategorytitle:item.title,name:item.title});};
+  if (status !== 'ready') return <ScreenState status={status} title="Couldn't load duas" onRetry={load} />;
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
       <FlatList
-        data={duacategoriesdata}
-        keyExtractor={(item) => item.id}
+        data={categories}
+        keyExtractor={(item, index) => item._id || String(index)}
         numColumns={2}
+        columnWrapperStyle={{ gap: Spacing.md }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
         renderItem={({ item }) => (
-          <DuaCategoryCard item={item} onPress={handlePress} navigation={navigation} />
+          <DuaCategoryCard
+            item={item}
+            onPress={(c) => navigation.navigate('DuaCategoryDetail', { duacategoryid: c._id, duacategorytitle: c.title, name: c.title })}
+          />
         )}
       />
     </View>
@@ -69,12 +53,8 @@ useEffect(() => {
 
 export default DuasScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1,
-  },
-  list: {
-    padding: 8,
-  },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { padding: Spacing.lg, gap: Spacing.md },
+  });
