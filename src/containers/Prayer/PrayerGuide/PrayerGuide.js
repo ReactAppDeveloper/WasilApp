@@ -1,84 +1,83 @@
-import React, { useState, useEffect} from "react";
-import {View,ScrollView,Text,StyleSheet,TouchableOpacity,StatusBar,LogBox,ImageBackground,ActivityIndicator,Switch,NativeModules} from "react-native";
-import moment from "moment";
-import { Colors } from "../../../theme";
-import axios from "axios";
-import {PrayerHomeFajrSVG,PrayerHomeDhuhrSVG,PrayerHomeAsrSVG,PrayerHomeMaghribSVG,PrayerHomeEshaSVG,DuaForwardSVG,DuaCollapseSVG,FajrHomeSVG,DhuhrHomeSVG,AsrHomeSVG,MaghribHomeSVG,EshaHomeSVG,LocationColorSVG} from '../../../assets/icons';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  ActivityIndicator,
+  NativeModules,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
+
+import moment from 'moment';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Geolocation from "react-native-geolocation-service";
+import Geolocation from 'react-native-geolocation-service';
+
+import { Colors } from '../../../theme';
+
+import {
+  WasilNewPrayerFajrBTSvg,
+  WasilNewPrayerDhuhrBTSvg,
+  WasilNewPrayerAsrBTSvg,
+  WasilNewPrayerMaghribBTSvg,
+  WasilNewPrayerIshaBTSvg,
+  WasilNewArrowUnopenBTSvg,
+  WasilNewArrowOpenBTSvg,
+  WasilNewFajrIcon,
+  WasilNewDhuhrIcon,
+  WasilNewMagrhibIcon,
+  WasilNewIshaIcon,
+} from '../../../assets/icons';
+
+import PrayerHeader from './PrayerHeader';
+import PrayerTimeSectionNew from './PrayerTimeSectionNew';
+
 const { AzanScheduler } = NativeModules;
-const TEST_MODE = false; // Production mode
-LogBox.ignoreAllLogs(); 
-const image = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1720693588/home/homebg.png'};
 
-  const PrayerGuide = ({ navigation }) => {
-    
-    const [showComponmentFajr, setshowComponmentFajr] = useState(false);
-    const [showComponmentFajrArrowU, setshowComponmentFajrArrowU] = useState(true);
-    const [showComponmentFajrArrowD, setshowComponmentFajrArrowD] = useState(false);
-    const [showComponmentFajrbgcolor, setshowComponmentFajrbgcolor] = useState(Colors.white);
-    const [Fajrtogglebgcolor, setFajrogglebgcolor] = useState(Colors.white);
-  
-    const [showComponmentDhuhr, setshowComponmentDhuhr] = useState(false);
-    const [showComponmentDhuhrArrowU, setshowComponmentDhuhrArrowU] = useState(true);
-    const [showComponmentDhuhrArrowD, setshowComponmentDhuhrArrowD] = useState(false);
-    const [showComponmentDhuhrbgcolor, setshowComponmentDhuhrbgcolor] = useState(Colors.white);
-    const [Dhuhrtogglebgcolor, setDhuhrogglebgcolor] = useState(Colors.white);
-  
-    const [showComponmentAsr, setshowComponmentAsr] = useState(false);
-    const [showComponmentAsrArrowU, setshowComponmentAsrArrowU] = useState(true);
-    const [showComponmentAsrArrowD, setshowComponmentAsrArrowD] = useState(false);
-    const [showComponmentAsrbgcolor, setshowComponmentAsrbgcolor] = useState(Colors.white);
-    const [Asrtogglebgcolor, setAsrogglebgcolor] = useState(Colors.white);
-  
-    const [showComponmentMaghrib, setshowComponmentMaghrib] = useState(false);
-    const [showComponmentMaghribArrowU, setshowComponmentMaghribArrowU] = useState(true);
-    const [showComponmentMaghribArrowD, setshowComponmentMaghribArrowD] = useState(false);
-    const [showComponmentMaghribbgcolor, setshowComponmentMaghribbgcolor] = useState(Colors.white);
-     const [Maghribtogglebgcolor, setMaghribogglebgcolor] = useState(Colors.white);
-  
-    const [showComponmentEsha, setshowComponmentEsha] = useState(false);
-    const [showComponmentEshaArrowU, setshowComponmentEshaArrowU] = useState(true);
-    const [showComponmentEshaArrowD, setshowComponmentEshaArrowD] = useState(false);
-    const [showComponmentEshabgcolor, setshowComponmentEshabgcolor] = useState(Colors.white);
-    const [Eshatogglebgcolor, setEshaogglebgcolor] = useState(Colors.white);
+const TEST_MODE = false;
 
+const PRAYER_NAMES = [
+  'Fajr',
+  'Dhuhr',
+  'Asr',
+  'Maghrib',
+  'Isha',
+];
 
-  var currentDate = moment().format("DD-MM-YYYY");
-  var currentDatesimple =  moment().format("dddd, Do MMM YYYY");
-  const time = new Date();
-  const [isLoading,setisLoading] = useState(false);
-  const [error,seterror] = useState(null);
-  const [usermyadsdatatimes, setusermyadsdatatimes] = useState([]);
-  const [usermyadsdatahijri, setusermyadsdatahijri] = useState([]);
-  const [usermyadsdatamonth, setusermyadsdatamonth] = useState([]);
-  const [usermyadsdatadesignation, setusermyadsdatdesignation] = useState([]);
-  const [Fajrbgcolor, setFajrbgcolor] = useState(Colors.homeprayericon);
-  const [Fajrtextcolor, setFajrtextcolor] = useState(Colors.white);
-  const [Fajrtimecolor, setFajrtimecolor] = useState(Colors.white);
-  const [Fajricon, setFajricon] = useState(FajrHomeSVG);
-  const [Dhuhrbgcolor, setDhuhrbgcolor] = useState(Colors.homeprayericon);
-  const [Dhuhrtextcolor, setDhuhrtextcolor] = useState(Colors.white);
-  const [Dhuhrtimecolor, setDhuhrtimecolor] = useState(Colors.white);
-  const [Dhuhricon, setDhuhricon] = useState(DhuhrHomeSVG);
-  const [Asrbgcolor, setAsrbgcolor] = useState(Colors.homeprayericon);
-  const [Asrtextcolor, setAsrtextcolor] = useState(Colors.white);
-  const [Asrtimecolor, setAsrtimecolor] = useState(Colors.white);
-  const [Asricon, setAsricon] = useState(AsrHomeSVG);
-  const [Maghribbgcolor, setMaghribbgcolor] = useState(Colors.homeprayericon);
-  const [Maghribtextcolor, setMaghribtextcolor] = useState(Colors.white);
-  const [Maghribtimecolor, setMaghribtimecolor] = useState(Colors.white);
-  const [Maghribicon, setMaghribicon] = useState(MaghribHomeSVG);
-  const [Ishabgcolor, setIshabgcolor] = useState(Colors.homeprayericon);
-  const [Ishatextcolor, setIshatextcolor] = useState(Colors.white);
-  const [Ishatimecolor, setIshatimecolor] = useState(Colors.white);
-  const [Ishaicon, setIshaicon] = useState(EshaHomeSVG);
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongitude] = useState();
+const DEFAULT_LATITUDE = '24.8607';
+const DEFAULT_LONGITUDE = '67.0011';
+
+const LOCATIONIQ_API_KEY =
+  'pk.9c1fc2948e48c019aee6f13b6a961796';
+
+const PrayerGuide = ({ navigation }) => {
+
+  const locationWatchId = useRef(null);
+  const isMounted = useRef(true);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
   const [address, setAddress] = useState(null);
-  let watchID = null;
   const [locationStatus, setLocationStatus] = useState('');
-  const [timings, setTimings] = useState(null);
+
+  const [timings, setTimings] = useState({});
+  const [prayerTimes, setPrayerTimes] = useState({});
+  const [hijriDate, setHijriDate] = useState('');
 
   const [prayerToggles, setPrayerToggles] = useState({
     Fajr: true,
@@ -87,863 +86,1644 @@ const image = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v17206935
     Maghrib: true,
     Isha: true,
   });
+  const [expandedPrayer, setExpandedPrayer] = useState(null);
 
-  const scheduleAzans = (timings, toggles) => {
-    const today = moment().format("YYYY-MM-DD");
+  const gregorianDate = useMemo(
+    () => moment().format('dddd, MMM D, YYYY'),
+    []
+  );
 
-    Object.entries(timings).forEach(([prayer, timeStr]) => {
-      if (!toggles[prayer]) return;
+  const prayerSections = useMemo(
+    () => [
+      {
+        key: 'Fajr',
+        english: 'Fajr',
+        arabic: 'فجر',
+        icon: <WasilNewPrayerFajrBTSvg />,
+        items: [
+          {
+            title: 'Sunnah: 2 rak’ah',
+            route: 'FajrSunnah',
+          },
+          {
+            title: 'Farz: 2 rak’ah',
+            route: 'FajrFarz',
+          },
+        ],
+      },
 
-      const raw = `${today} ${timeStr}:00`;
-      const target = moment(raw, "YYYY-MM-DD HH:mm:ss");
+      {
+        key: 'Dhuhr',
+        english: 'Dhuhr',
+        arabic: 'ظہر',
+        icon: <WasilNewPrayerDhuhrBTSvg />,
+        items: [
+          {
+            title: 'Sunnah: 4 rak’ah',
+            route: 'DhuhrFirst4Sunnah',
+          },
+          {
+            title: 'Farz: 4 rak’ah',
+            route: 'DhuhrFirst4Farz',
+          },
+          {
+            title: 'Sunnah: 2 rak’ah',
+            route: 'Dhuhr2Sunnah',
+          },
+          {
+            title: 'Nafil: 2 rak’ah',
+            route: 'Dhuhr2Nafil',
+          },
+        ],
+      },
 
-      if (target.isBefore(moment())) {
-        target.add(1, 'day');
+      {
+        key: 'Asr',
+        english: 'Asr',
+        arabic: 'عصر',
+        icon: <WasilNewPrayerAsrBTSvg />,
+        items: [
+          {
+            title: 'Sunnah: 4 rak’ah',
+            route: 'AsrFirst4Sunnah',
+          },
+          {
+            title: 'Farz: 4 rak’ah',
+            route: 'AsrFirst4Farz',
+          },
+        ],
+      },
+
+      {
+        key: 'Maghrib',
+        english: 'Maghrib',
+        arabic: 'مغرب',
+        icon: <WasilNewPrayerMaghribBTSvg />,
+        items: [
+          {
+            title: 'Farz: 3 rak’ah',
+            route: 'MaghribFarz',
+          },
+          {
+            title: 'Sunnah: 2 rak’ah',
+            route: 'Maghrib2Sunnah',
+          },
+          {
+            title: 'Nafil: 2 rak’ah',
+            route: 'Maghrib2Nafil',
+          },
+        ],
+      },
+
+      {
+        key: 'Isha',
+        english: 'Isha',
+        arabic: 'عشاء',
+        icon: <WasilNewPrayerIshaBTSvg />,
+        items: [
+          {
+            title: 'Sunnah: 4 rak’ah',
+            route: 'IshaFirst4Sunnah',
+          },
+          {
+            title: 'Farz: 4 rak’ah',
+            route: 'IshaFirst4Farz',
+          },
+          {
+            title: 'Sunnah: 2 rak’ah',
+            route: 'Isha2Sunnah',
+          },
+          {
+            title: 'Nafil: 2 rak’ah',
+            route: 'Isha2Nafil',
+          },
+          {
+            title: 'Witr: 3 rak’ah',
+            route: 'IshaWitr',
+          },
+          {
+            title: 'Nafil: 2 rak’ah',
+            route: 'IshaLast2Nafil',
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+
+  const loadPrayerToggles = useCallback(async () => {
+    try {
+      const stored = await AsyncStorage.getItem(
+        'azan_prayer_toggles'
+      );
+
+      if (!stored) {
+        return;
       }
 
-      const fullTime = target.format("YYYY-MM-DD HH:mm:ss");
-      AzanScheduler.scheduleAzan(prayer, fullTime);
-      AzanScheduler.savePrayerTime?.(prayer, fullTime);
-      console.log(`📅 Scheduled ${prayer} at ${fullTime}`);
-    });
-  };
+      const parsed = JSON.parse(stored);
 
-  
-  const fetchTimings = async () => {
-     try {
-        const storedLatitude = await AsyncStorage.getItem('ONLATI');
-        const storedLongitude = await AsyncStorage.getItem('ONLONGI');
-        if (storedLatitude && storedLongitude) {
-          setlatitude(storedLatitude);
-          setlongitude(storedLongitude);
-        }
-        setisLoading(true);
-        const latitudeValue = storedLatitude || 24.860735;
-        const longitudeValue = storedLongitude || 67.001137;
-    
-        const response = await axios.get(
-          `https://api.aladhan.com/v1/timings/${currentDate}?latitude=${latitudeValue}&longitude=${longitudeValue}&school=1`
-        );
-       setTimings(response.data.data.timings);
-      } catch (error) {
-       console.error('❌ Failed to fetch timings:', err);
+      if (!parsed || typeof parsed !== 'object') {
+        return;
       }
-  };
 
-  const getOneTimeLocation = () => {
+      const safeToggles = {
+        Fajr:
+          typeof parsed.Fajr === 'boolean'
+            ? parsed.Fajr
+            : true,
+
+        Dhuhr:
+          typeof parsed.Dhuhr === 'boolean'
+            ? parsed.Dhuhr
+            : true,
+
+        Asr:
+          typeof parsed.Asr === 'boolean'
+            ? parsed.Asr
+            : true,
+
+        Maghrib:
+          typeof parsed.Maghrib === 'boolean'
+            ? parsed.Maghrib
+            : true,
+
+        Isha:
+          typeof parsed.Isha === 'boolean'
+            ? parsed.Isha
+            : true,
+      };
+
+      if (isMounted.current) {
+        setPrayerToggles(safeToggles);
+      }
+    } catch (err) {
+      console.error(
+        'Failed to load prayer toggles:',
+        err
+      );
+    }
+  }, []);
+
+
+  const getOneTimeLocation = useCallback(() => {
     setLocationStatus('Getting Location ...');
+
     Geolocation.getCurrentPosition(
-      (position) => {
+      position => {
+        if (!isMounted.current) {
+          return;
+        }
+
+
+        const currentLatitude =
+          position.coords.latitude;
+
+        const currentLongitude =
+          position.coords.longitude;
+
+        setLatitude(String(currentLatitude));
+        setLongitude(String(currentLongitude));
+
         setLocationStatus('You are Here');
-        const currentLongitude = JSON.stringify(position.coords.longitude);
-        const currentLatitude = JSON.stringify(position.coords.latitude);
-        setlatitude(currentLongitude);
-        setlongitude(currentLatitude);
+
+        AsyncStorage.multiSet([
+          ['ONLATI', String(currentLatitude)],
+          ['ONLONGI', String(currentLongitude)],
+        ]).catch(storageError => {
+          console.warn(
+            'Unable to save location:',
+            storageError
+          );
+        });
       },
-      (error) => {
-        setLocationStatus(error.message);
+
+      locationError => {
+        console.warn(
+          'Location error:',
+          locationError
+        );
+
+        if (isMounted.current) {
+          setLocationStatus(
+            locationError?.message ||
+              'Unable to get location'
+          );
+        }
       },
+
       {
         enableHighAccuracy: false,
         timeout: 30000,
-        maximumAge: 1000
-      },
+        maximumAge: 1000,
+        forceRequestLocation: true,
+        showLocationDialog: true,
+      }
     );
-  };
-  const subscribeLocationLocation = () => {
-    watchID = Geolocation.watchPosition(
-      (position) => {
-        setLocationStatus('You are Here');
-        const currentLongitude = JSON.stringify(position.coords.longitude);
-        const currentLatitude = JSON.stringify(position.coords.latitude);
-        setlatitude(currentLongitude);
-        setlongitude(currentLatitude);
-      },
-      (error) => {
-        setLocationStatus(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        maximumAge: 1000
-      },
-    );
-  };
-  const requestLocationPermission = async () => {
-    if (Platform.OS === 'ios') {
-      getOneTimeLocation();
-      subscribeLocationLocation();
-    } else {
+  }, []);
+
+
+  const subscribeLocation = useCallback(() => {
+
+    if (locationWatchId.current !== null) {
+      return;
+    }
+
+    locationWatchId.current =
+      Geolocation.watchPosition(
+        position => {
+          if (!isMounted.current) {
+            return;
+          }
+
+          const currentLatitude =
+            position.coords.latitude;
+
+          const currentLongitude =
+            position.coords.longitude;
+
+          setLatitude(String(currentLatitude));
+          setLongitude(String(currentLongitude));
+
+          setLocationStatus('You are Here');
+        },
+
+        locationError => {
+          console.warn(
+            'Location watch error:',
+            locationError
+          );
+
+          if (isMounted.current) {
+            setLocationStatus(
+              locationError?.message ||
+                'Location unavailable'
+            );
+          }
+        },
+
+        {
+          enableHighAccuracy: false,
+          distanceFilter: 100,
+          interval: 10000,
+          fastestInterval: 5000,
+          maximumAge: 1000,
+        }
+      );
+  }, []);
+
+
+  const requestLocationPermission =
+    useCallback(async () => {
+      if (Platform.OS === 'ios') {
+        getOneTimeLocation();
+        subscribeLocation();
+        return;
+      }
+
       try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Location Access Required',
-            message: 'This App needs to Access your location',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        const granted =
+          await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS
+              .ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Access Required',
+              message:
+                'This App needs to Access your location',
+              buttonPositive: 'Allow',
+              buttonNegative: 'Cancel',
+            }
+          );
+
+        if (
+          granted ===
+          PermissionsAndroid.RESULTS.GRANTED
+        ) {
           getOneTimeLocation();
-          subscribeLocationLocation();
+          subscribeLocation();
         } else {
           setLocationStatus('Permission Denied');
-          setCurrentLatitude("24.860735");
-          setCurrentLongitude("67.115903");
         }
       } catch (err) {
-        console.warn(err);
-      }
-    }
-  };
-
-  const loadPrayerToggles = async () => {
-    try {
-      const stored = await AsyncStorage.getItem('azan_prayer_toggles');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setPrayerToggles(parsed);
-      }
-    } catch (err) {
-      console.error("⚠️ Failed to load toggles:", err);
-    }
-  };
-  const togglePrayerAzan = async (prayer, value) => {
-    const updatedToggles = { ...prayerToggles, [prayer]: value };
-    setPrayerToggles(updatedToggles);
-    await AsyncStorage.setItem('azan_prayer_toggles', JSON.stringify(updatedToggles));
-
-    console.log(`🔁 Toggle ${prayer} to ${value}`);
-    AzanScheduler.cancelAzan?.(prayer);
-    console.log(`❌ Canceled ${prayer} azan`);
-
-    if (value && timings) {
-      const today = moment().format("YYYY-MM-DD");
-      const rawTime = timings[prayer]; // e.g., "13:10"
-      const target = moment(`${today} ${rawTime}:00`, "YYYY-MM-DD HH:mm:ss");
-
-      if (target.isBefore(moment())) {
-        target.add(1, 'day');
-      }
-
-      const fullTime = target.format("YYYY-MM-DD HH:mm:ss");
-      AzanScheduler.scheduleAzan(prayer, fullTime);
-      AzanScheduler.savePrayerTime?.(prayer, fullTime);
-      console.log(`✅ Rescheduled ${prayer} for ${fullTime}`);
-    }
-  };
-
-  useEffect(() => {
-    const init = async () => {
-      await loadPrayerToggles();
-      await fetchTimings();
-    };
-    init();
-  }, []);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedLatitude = await AsyncStorage.getItem('ONLATI');
-        const storedLongitude = await AsyncStorage.getItem('ONLONGI');
-        
-        if (storedLatitude && storedLongitude) {
-          setlatitude(storedLatitude);
-          setlongitude(storedLongitude);
-        }
-    
-        setisLoading(true);
-        const latitudeValue = storedLatitude || 24.860735;
-        const longitudeValue = storedLongitude || 67.001137;
-    
-        try {
-          const response = await fetch(`https://us1.locationiq.com/v1/reverse?key=pk.9c1fc2948e48c019aee6f13b6a961796&lat=${latitudeValue}&lon=${longitudeValue}&format=json`);
-          
-          if (!response.ok) {
-            // Log the error response for debugging
-            const errorText = await response.text();
-            console.error("Error fetching address:", errorText);
-            throw new Error("Failed to fetch address.");
-          }
-    
-          const data = await response.json();
-          setAddress(data.address.state);
-        } catch (error) {
-          console.error("Error fetching address:", error);
-        }
-  
-        const response = await axios.get(
-          `https://api.aladhan.com/v1/timings/${currentDate}?latitude=${latitudeValue}&longitude=${longitudeValue}&school=1`
+        console.warn(
+          'Location permission error:',
+          err
         );
-  
-        const timesdata = response.data.data.timings;
-        const hijridata = response.data.data.date.hijri;
-        const monthdata = response.data.data.date.hijri.month;
-        const designationdata = response.data.data.date.hijri.designation;
-        setusermyadsdatatimes(timesdata);
-        setusermyadsdatahijri(hijridata);
-        setusermyadsdatamonth(monthdata);
-        setusermyadsdatdesignation(designationdata);
-        setisLoading(false);
 
-        const interval = setInterval(() => {
-          const Fajrtime = timesdata.Fajr;
-          const Dhurdtime = timesdata.Dhuhr;
-          const Asrtime = timesdata.Asr;
-          const Maghribtime = timesdata.Maghrib;
-          const Ishatime = timesdata.Isha;
-  
-          if (moment(time).format("HH:mm") === Fajrtime || moment(time).format("HH:mm") < Dhurdtime) {
-            setFajrbgcolor(Colors.intermediate);
-            setFajrtextcolor(Colors.primary);
-            setFajrtimecolor(Colors.primary);
-            setFajricon(PrayerHomeFajrSVG);
-            setshowComponmentFajr(true);
-            setshowComponmentFajrArrowD(true);
-            setshowComponmentFajrArrowU(false);
-            setshowComponmentFajrbgcolor(Colors.prayercolor);
-            setFajrogglebgcolor(Colors.prayercolor);
-          } else if (moment(time).format("HH:mm") === Dhurdtime || moment(time).format("HH:mm") < Asrtime) {
-            setDhuhrbgcolor(Colors.intermediate);
-            setDhuhrtextcolor(Colors.primary);
-            setDhuhrtimecolor(Colors.primary);
-            setDhuhricon(PrayerHomeDhuhrSVG);
-            setshowComponmentDhuhr(true);
-            setshowComponmentDhuhrArrowD(true);
-            setshowComponmentDhuhrArrowU(false);
-            setshowComponmentDhuhrbgcolor(Colors.prayercolor);
-            setDhuhrogglebgcolor(Colors.prayercolor);
-          } else if (moment(time).format("HH:mm") === Asrtime || moment(time).format("HH:mm") < Maghribtime) {
-            setAsrbgcolor(Colors.intermediate);
-            setAsrtextcolor(Colors.primary);
-            setAsrtimecolor(Colors.primary);
-            setAsricon(PrayerHomeAsrSVG);
-            setshowComponmentAsr(true);
-            setshowComponmentAsrArrowD(true);
-            setshowComponmentAsrArrowU(false);
-            setshowComponmentAsrbgcolor(Colors.prayercolor);
-            setAsrogglebgcolor(Colors.prayercolor);
-          } else if (moment(time).format("HH:mm") === Maghribtime || moment(time).format("HH:mm") < Ishatime) {
-            setMaghribbgcolor(Colors.intermediate);
-            setMaghribtextcolor(Colors.primary);
-            setMaghribtimecolor(Colors.primary);
-            setMaghribicon(PrayerHomeMaghribSVG);
-            setshowComponmentMaghrib(true);
-            setshowComponmentMaghribArrowD(true);
-            setshowComponmentMaghribArrowU(false);
-            setshowComponmentMaghribbgcolor(Colors.prayercolor);
-            setMaghribogglebgcolor(Colors.prayercolor);
-          } else if (moment(time).format("HH:mm") === Ishatime || moment(time).format("HH:mm") < Fajrtime) {
-            setIshabgcolor(Colors.intermediate);
-            setIshatextcolor(Colors.primary);
-            setIshatimecolor(Colors.primary);
-            setIshaicon(PrayerHomeEshaSVG);
-            setshowComponmentEsha(true);
-            setshowComponmentEshaArrowD(true);
-            setshowComponmentEshaArrowU(false);
-            setshowComponmentEshabgcolor(Colors.prayercolor);
-            setEshaogglebgcolor(Colors.prayercolor);
+        setLocationStatus(
+          'Unable to request location permission'
+        );
+      }
+    }, [
+      getOneTimeLocation,
+      subscribeLocation,
+    ]);
+
+  /*
+   * =========================================================
+   * FETCH PRAYER DATA
+   * =========================================================
+   */
+
+  const fetchHomeData = useCallback(async () => {
+  try {
+    if (isMounted.current) {
+      setIsLoading(true);
+      setError(null);
+    }
+    const storedLatitude =
+      await AsyncStorage.getItem('ONLATI');
+
+    const storedLongitude =
+      await AsyncStorage.getItem('ONLONGI');
+
+    const lat =
+      storedLatitude || DEFAULT_LATITUDE;
+
+    const lon =
+      storedLongitude || DEFAULT_LONGITUDE;
+
+    if (isMounted.current) {
+      setLatitude(lat);
+      setLongitude(lon);
+    }
+
+    const date =
+      moment().format('DD-MM-YYYY');
+
+    const prayerResponse =
+      await axios.get(
+        `https://api.aladhan.com/v1/timings/${date}`,
+        {
+          params: {
+            latitude: lat,
+            longitude: lon,
+            school: 1,
+          },
+          timeout: 15000,
+        }
+      );
+
+    const prayerData =
+      prayerResponse?.data?.data;
+
+    if (!prayerData) {
+      throw new Error(
+        'Prayer timings were not returned.'
+      );
+    }
+
+    const prayerTimings =
+      prayerData.timings || {};
+
+
+    const offsetString =
+      await AsyncStorage.getItem(
+        'HIJRI_OFFSET'
+      );
+
+    const parsedOffset =
+      parseInt(offsetString, 10);
+
+    const hijriOffset =
+      Number.isNaN(parsedOffset)
+        ? 0
+        : parsedOffset;
+
+    let hijriDay =
+      parseInt(
+        prayerData.date.hijri.day,
+        10
+      );
+
+    let hijriMonth =
+      parseInt(
+        prayerData.date.hijri.month.number,
+        10
+      );
+
+    let hijriYear =
+      parseInt(
+        prayerData.date.hijri.year,
+        10
+      );
+
+
+    const hijriMonths = [
+      'Muharram',
+      'Safar',
+      'Rabi al-Awwal',
+      'Rabi al-Thani',
+      'Jumada al-Awwal',
+      'Jumada al-Thani',
+      'Rajab',
+      "Sha'ban",
+      'Ramadan',
+      'Shawwal',
+      "Dhu al-Qi'dah",
+      'Dhu al-Hijjah',
+    ];
+
+    const getHijriMonthDays = (
+      month,
+      year
+    ) => {
+
+      if (month === 12) {
+        const isLeapYear =
+          ((11 * year + 14) % 30) < 11;
+
+        return isLeapYear ? 30 : 29;
+      }
+
+      return month % 2 === 1
+        ? 30
+        : 29;
+    };
+
+
+    if (hijriOffset > 0) {
+      for (
+        let i = 0;
+        i < hijriOffset;
+        i++
+      ) {
+        hijriDay++;
+
+        const daysInMonth =
+          getHijriMonthDays(
+            hijriMonth,
+            hijriYear
+          );
+
+        if (
+          hijriDay >
+          daysInMonth
+        ) {
+          hijriDay = 1;
+          hijriMonth++;
+
+          if (hijriMonth > 12) {
+            hijriMonth = 1;
+            hijriYear++;
           }
-          else {
-            setIshabgcolor(Colors.intermediate);
-            setIshatextcolor(Colors.primary);
-            setIshatimecolor(Colors.primary);
-            setIshaicon(PrayerHomeEshaSVG);
-            setshowComponmentEsha(true);
-            setshowComponmentEshaArrowD(true);
-            setshowComponmentEshaArrowU(false);
-            setshowComponmentEshabgcolor(Colors.prayercolor);
-            setEshaogglebgcolor(Colors.prayercolor);
+        }
+      }
+    }
+
+
+    if (hijriOffset < 0) {
+      for (
+        let i = 0;
+        i > hijriOffset;
+        i--
+      ) {
+        hijriDay--;
+
+        if (hijriDay < 1) {
+          hijriMonth--;
+
+          if (hijriMonth < 1) {
+            hijriMonth = 12;
+            hijriYear--;
           }
-        }, 1000);
-  
-        return () => clearInterval(interval);
-      } catch (error) {
-        console.error(error);
-        setisLoading(false);
-        seterror(true);
+
+          hijriDay =
+            getHijriMonthDays(
+              hijriMonth,
+              hijriYear
+            );
+        }
+      }
+    }
+
+    // ---------------------------------------
+    // FINAL HIJRI DATE
+    // ---------------------------------------
+
+    const hijriDateFormatted =
+      `${hijriDay} ` +
+      `${hijriMonths[hijriMonth - 1]} ` +
+      `${hijriYear}`;
+
+    // ---------------------------------------
+    // DEBUG LOGS
+    // ---------------------------------------
+
+    console.log(
+      'Hijri API Date:',
+      prayerData.date.hijri.date
+    );
+
+    console.log(
+      'Hijri Offset:',
+      hijriOffset
+    );
+
+    console.log(
+      'Final Hijri Date:',
+      hijriDateFormatted
+    );
+
+
+    if (isMounted.current) {
+      setHijriDate(
+        hijriDateFormatted
+      );
+
+      setTimings(
+        prayerTimings
+      );
+
+      setPrayerTimes(
+        prayerTimings
+      );
+    }
+
+
+    try {
+      const addressResponse =
+        await axios.get(
+          'https://us1.locationiq.com/v1/reverse',
+          {
+            params: {
+              key: LOCATIONIQ_API_KEY,
+              lat,
+              lon,
+              format: 'json',
+            },
+            timeout: 10000,
+          }
+        );
+
+      const addressValue =
+        addressResponse?.data?.address
+          ?.state ||
+        addressResponse?.data?.address
+          ?.city ||
+        addressResponse?.data?.address
+          ?.town ||
+        addressResponse?.data?.address
+          ?.village ||
+        null;
+
+      if (isMounted.current) {
+        setAddress(
+          addressValue
+        );
+      }
+    } catch (addressError) {
+      console.warn(
+        'Reverse geocoding failed:',
+        addressError?.message ||
+          addressError
+      );
+
+      if (isMounted.current) {
+        setAddress(null);
+      }
+    }
+
+    if (isMounted.current) {
+      setIsLoading(false);
+    }
+
+  } catch (err) {
+    console.error(
+      'Home API error:',
+      err?.response?.data ||
+        err?.message ||
+        err
+    );
+
+    if (isMounted.current) {
+      setError(
+        err?.message ||
+          'Unable to fetch prayer timings.'
+      );
+
+      setIsLoading(false);
+    }
+  }
+}, []);
+
+
+  const scheduleAzans = useCallback(
+    (prayerTimings, toggles) => {
+      if (TEST_MODE) {
+        return;
+      }
+
+      if (
+        !prayerTimings ||
+        !AzanScheduler?.scheduleAzan
+      ) {
+        return;
+      }
+
+      const today =
+        moment().format('YYYY-MM-DD');
+
+      PRAYER_NAMES.forEach(prayer => {
+        if (!toggles?.[prayer]) {
+          return;
+        }
+
+        const timeString =
+          prayerTimings[prayer];
+
+        if (!timeString) {
+          return;
+        }
+
+
+        const cleanTime =
+          String(timeString)
+            .trim()
+            .substring(0, 5);
+
+        if (
+          !/^\d{2}:\d{2}$/.test(
+            cleanTime
+          )
+        ) {
+          return;
+        }
+
+        const target = moment(
+          `${today} ${cleanTime}:00`,
+          'YYYY-MM-DD HH:mm:ss'
+        );
+
+        if (!target.isValid()) {
+          return;
+        }
+
+        if (
+          target.isBefore(moment())
+        ) {
+          target.add(1, 'day');
+        }
+
+        const fullTime =
+          target.format(
+            'YYYY-MM-DD HH:mm:ss'
+          );
+
+        try {
+          AzanScheduler.scheduleAzan(
+            prayer,
+            fullTime
+          );
+
+          AzanScheduler.savePrayerTime?.(
+            prayer,
+            fullTime
+          );
+
+          console.log(
+            `Scheduled ${prayer} at ${fullTime}`
+          );
+        } catch (scheduleError) {
+          console.warn(
+            `Unable to schedule ${prayer}:`,
+            scheduleError
+          );
+        }
+      });
+    },
+    []
+  );
+
+
+  const togglePrayerAzan = useCallback(
+    async (prayer, value) => {
+      const updatedToggles = {
+        ...prayerToggles,
+        [prayer]: Boolean(value),
+      };
+
+      setPrayerToggles(
+        updatedToggles
+      );
+
+      try {
+        await AsyncStorage.setItem(
+          'azan_prayer_toggles',
+          JSON.stringify(
+            updatedToggles
+          )
+        );
+      } catch (storageError) {
+        console.warn(
+          'Unable to save prayer toggle:',
+          storageError
+        );
+      }
+
+
+      try {
+        AzanScheduler?.cancelAzan?.(
+          prayer
+        );
+      } catch (cancelError) {
+        console.warn(
+          `Unable to cancel ${prayer}:`,
+          cancelError
+        );
+      }
+
+
+      if (
+        value &&
+        timings?.[prayer]
+      ) {
+        const cleanTime =
+          String(timings[prayer])
+            .trim()
+            .substring(0, 5);
+
+        const today =
+          moment().format(
+            'YYYY-MM-DD'
+          );
+
+        const target = moment(
+          `${today} ${cleanTime}:00`,
+          'YYYY-MM-DD HH:mm:ss'
+        );
+
+        if (!target.isValid()) {
+          return;
+        }
+
+        if (
+          target.isBefore(moment())
+        ) {
+          target.add(1, 'day');
+        }
+
+        const fullTime =
+          target.format(
+            'YYYY-MM-DD HH:mm:ss'
+          );
+
+        try {
+          AzanScheduler?.scheduleAzan?.(
+            prayer,
+            fullTime
+          );
+
+          AzanScheduler?.savePrayerTime?.(
+            prayer,
+            fullTime
+          );
+
+          console.log(
+            `Rescheduled ${prayer} for ${fullTime}`
+          );
+        } catch (scheduleError) {
+          console.warn(
+            `Unable to reschedule ${prayer}:`,
+            scheduleError
+          );
+        }
+      }
+    },
+    [
+      prayerToggles,
+      timings,
+    ]
+  );
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    const initialize = async () => {
+      await loadPrayerToggles();
+      await fetchHomeData();
+    };
+
+    initialize();
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, [
+    loadPrayerToggles,
+    fetchHomeData,
+  ]);
+
+
+  useEffect(() => {
+    return () => {
+      if (
+        locationWatchId.current !== null
+      ) {
+        Geolocation.clearWatch(
+          locationWatchId.current
+        );
+
+        locationWatchId.current =
+          null;
       }
     };
-    fetchData();
-    if (watchID !== null) {
-      Geolocation.clearWatch(watchID);
-    }
-    if (!TEST_MODE && timings) {
-      scheduleAzans(timings, prayerToggles);
-    }
-    if (Platform.OS === 'android') {
-    AzanScheduler?.rescheduleAllAzans?.();
-  }
-  }, [latitude, longitude,timings]);
+  }, []);
 
-  if(isLoading){
-    return(
-      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-      <ActivityIndicator size={"large"} color={Colors.primary}>
 
-      </ActivityIndicator>
+  useEffect(() => {
+  
+
+    if (
+      latitude == null ||
+      longitude == null
+    ) {
+      return;
+    }
+
+  }, [
+    latitude,
+    longitude,
+  ]);
+
+  const getCurrentPrayer =
+    useCallback(() => {
+      if (
+        !prayerTimes ||
+        Object.keys(prayerTimes)
+          .length === 0
+      ) {
+        return {
+          currentPrayer: 'Fajr',
+          currentTime: '',
+        };
+      }
+
+      const now = moment();
+
+      let currentPrayer = 'Isha';
+      let currentTime =
+        prayerTimes.Isha || '';
+
+      for (
+        const prayer of PRAYER_NAMES
+      ) {
+        const timeString =
+          prayerTimes[prayer];
+
+        if (!timeString) {
+          continue;
+        }
+
+        const cleanTime =
+          String(timeString)
+            .trim()
+            .substring(0, 5);
+
+        const prayerMoment =
+          moment(
+            cleanTime,
+            'HH:mm'
+          );
+
+        if (
+          prayerMoment.isSameOrBefore(
+            now
+          )
+        ) {
+          currentPrayer =
+            prayer;
+
+          currentTime =
+            timeString;
+        }
+      }
+
+      if (
+        prayerTimes.Fajr
+      ) {
+        const fajrMoment =
+          moment(
+            String(
+              prayerTimes.Fajr
+            ).substring(0, 5),
+            'HH:mm'
+          );
+
+        if (
+          now.isBefore(
+            fajrMoment
+          )
+        ) {
+          currentPrayer = 'Isha';
+          currentTime =
+            prayerTimes.Isha || '';
+        }
+      }
+
+      return {
+        currentPrayer,
+        currentTime,
+      };
+    }, [
+      prayerTimes,
+    ]);
+
+
+  const getNextPrayer =
+    useCallback(() => {
+      if (
+        !prayerTimes ||
+        Object.keys(prayerTimes)
+          .length === 0
+      ) {
+        return {
+          nextPrayer: 'Fajr',
+          nextPrayerTime: '',
+        };
+      }
+
+      const now = moment();
+
+      for (
+        const prayer of PRAYER_NAMES
+      ) {
+        const timeString =
+          prayerTimes[prayer];
+
+        if (!timeString) {
+          continue;
+        }
+
+        const cleanTime =
+          String(timeString)
+            .trim()
+            .substring(0, 5);
+
+        const prayerMoment =
+          moment(
+            cleanTime,
+            'HH:mm'
+          );
+
+        if (
+          prayerMoment.isAfter(now)
+        ) {
+          return {
+            nextPrayer: prayer,
+            nextPrayerTime:
+              timeString,
+          };
+        }
+      }
+
+
+      return {
+        nextPrayer: 'Fajr',
+        nextPrayerTime:
+          prayerTimes.Fajr || '',
+      };
+    }, [
+      prayerTimes,
+    ]);
+
+
+  useEffect(() => {
+    if (
+      !prayerTimes ||
+      Object.keys(prayerTimes)
+        .length === 0
+    ) {
+      return undefined;
+    }
+
+    const {
+      currentPrayer,
+    } = getCurrentPrayer();
+
+    setExpandedPrayer(
+      currentPrayer
+    );
+
+    const interval =
+      setInterval(() => {
+        const {
+          currentPrayer:
+            updatedCurrentPrayer,
+        } = getCurrentPrayer();
+
+        setExpandedPrayer(
+          updatedCurrentPrayer
+        );
+      }, 60000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    prayerTimes,
+    getCurrentPrayer,
+  ]);
+
+
+  useEffect(() => {
+    if (
+      !timings ||
+      Object.keys(timings)
+        .length === 0
+    ) {
+      return;
+    }
+
+    if (!TEST_MODE) {
+      scheduleAzans(
+        timings,
+        prayerToggles
+      );
+    }
+
+    if (
+      Platform.OS === 'android'
+    ) {
+      try {
+        AzanScheduler?.rescheduleAllAzans?.();
+      } catch (err) {
+        console.warn(
+          'Unable to reschedule Azans:',
+          err
+        );
+      }
+    }
+  }, [
+    timings,
+    prayerToggles,
+    scheduleAzans,
+  ]);
+
+  const handlePrayerPress =
+    useCallback(prayer => {
+      setExpandedPrayer(
+        previous =>
+          previous === prayer
+            ? null
+            : prayer
+      );
+    }, []);
+
+
+  const handleRetry =
+    useCallback(() => {
+      fetchHomeData();
+    }, [
+      fetchHomeData,
+    ]);
+
+
+  const {
+    nextPrayer,
+    nextPrayerTime,
+  } = getNextPrayer();
+
+  const {
+    currentPrayer,
+    currentTime,
+  } = getCurrentPrayer();
+
+
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.loadingContainer,
+          {
+            backgroundColor:
+              Colors.intermediate1,
+          },
+        ]}
+      >
+        <StatusBar
+          backgroundColor={
+            Colors.intermediate1
+          }
+          barStyle="light-content"
+        />
+
+        <ActivityIndicator
+          size="large"
+          color={
+            Colors.white ||
+            Colors.white
+          }
+        />
+
+        <Text
+          style={styles.loadingText}
+        >
+          Loading prayer times...
+        </Text>
       </View>
     );
   }
 
-  if(error){
-    return(
-      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-      <Text>
-      Fetching Your Location Interrupt.....
-      </Text>
+
+  if (error) {
+    return (
+      <View
+        style={
+          styles.errorContainer
+        }
+      >
+        <StatusBar
+          backgroundColor={
+            Colors.intermediate1
+          }
+          barStyle="light-content"
+        />
+
+        <Text
+          style={styles.errorTitle}
+        >
+          Unable to load prayer times
+        </Text>
+
+        <Text
+          style={styles.errorMessage}
+        >
+          {error}
+        </Text>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={handleRetry}
+          style={styles.retryButton}
+        >
+          <Text
+            style={
+              styles.retryButtonText
+            }
+          >
+            Try Again
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }
- 
+
+
   return (
-  <View style={{flexDirection:"column",backgroundColor:Colors.white}}>
-       <StatusBar backgroundColor={Colors.primary}/>
+    <View
+      style={styles.containerMain}
+    >
+      <StatusBar
+        backgroundColor={
+          Colors.intermediate1
+        }
+      />
 
-       <ImageBackground source={image} resizeMode="contain" imageStyle={{top:15,width:"100%"}} style={styles.slidercontainer}>
-              <View style={{flex:1,flexDirection:"row",top:10 }}>
-                <View style={{flex:1,height: 45,alignItems:"flex-start"}}>
-                  <Text
-                    style={{paddingTop:10,paddingLeft:15,fontSize:13,width:300,color:Colors.white, fontFamily:"Raleway"}}>
-                    {usermyadsdatamonth.en +", "+usermyadsdatahijri.day+" "+usermyadsdatahijri.year+" "+usermyadsdatadesignation.abbreviated}
-                  
-                  </Text>
-                  <Text style={{paddingLeft:15,fontSize:12,color:Colors.white, fontFamily:"PoppinsLight"}}>{currentDatesimple}</Text>
-                </View>
-                <TouchableOpacity onPress={requestLocationPermission}>
-     
-     <View style={{alignItems:"flex-start",right:25, paddingLeft: 10}}>
-        <Text style={{paddingTop:10,fontSize:13,color:Colors.white,fontFamily:"Raleway", left:15}}>
-          {address}
-       </Text>
-      <View style={{bottom:20}}>
-        <LocationColorSVG/>
+      <PrayerHeader
+        navigation={navigation}
+        hijriDate={hijriDate}
+        gregorianDate={gregorianDate}
+        address={address}
+        nextPrayer={nextPrayer}
+        nextPrayerTime={nextPrayerTime}
+        currentPrayer={currentPrayer}
+        currentTime={currentTime}
+      />
+
+      <PrayerTimeSectionNew
+        prayerTimes={prayerTimes}
+        icons={{
+          Fajr: (
+            <WasilNewFajrIcon />
+          ),
+          Dhuhr: (
+            <WasilNewDhuhrIcon />
+          ),
+          Asr: (
+            <WasilNewFajrIcon />
+          ),
+          Maghrib: (
+            <WasilNewMagrhibIcon />
+          ),
+          Isha: (
+            <WasilNewIshaIcon />
+          ),
+        }}
+        onToggle={
+          togglePrayerAzan
+        }
+      />
+
+      <ScrollView
+        showsVerticalScrollIndicator={
+          false
+        }
+        nestedScrollEnabled
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={
+          styles.scrollContent
+        }
+      >
+        <View
+          style={
+            styles.prayerListContainer
+          }
+        >
+          {prayerSections.map(
+            section => {
+              const isExpanded =
+                expandedPrayer ===
+                section.key;
+
+              return (
+                <PrayerAccordion
+                  key={
+                    section.key
+                  }
+                  section={
+                    section
+                  }
+                  isExpanded={
+                    isExpanded
+                  }
+                  onPress={() =>
+                    handlePrayerPress(
+                      section.key
+                    )
+                  }
+                  navigation={
+                    navigation
+                  }
+                />
+              );
+            }
+          )}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
+const PrayerAccordion = ({
+  section,
+  isExpanded,
+  onPress,
+  navigation,
+}) => {
+  return (
+    <View
+      style={
+        styles.accordionWrapper
+      }
+    >
+
+
+      <View
+        style={[
+          styles.prayerHeaderRow,
+          isExpanded &&
+            styles.prayerHeaderRowExpanded,
+        ]}
+      >
+        <View
+          style={[
+            styles.prayerIconContainer,
+            {
+              backgroundColor: isExpanded
+                ? Colors.secondary1
+                : Colors.intermediate1,
+            },
+          ]}
+        >
+          {section.icon}
+        </View>
+
+        <View
+          style={[
+            styles.prayerEnglishContainer,
+            {
+              backgroundColor: isExpanded
+                ? Colors.secondary1
+                : Colors.intermediate1,
+            },
+          ]}
+        >
+          <Text
+            numberOfLines={1}
+            style={
+              styles.prayerEnglishText
+            }
+          >
+            {section.english}
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.prayerArabicContainer,
+            {
+              backgroundColor: isExpanded
+                ? Colors.secondary1
+                : Colors.intermediate1,
+            },
+          ]}
+        >
+          <Text
+            numberOfLines={1}
+            style={
+              styles.prayerArabicText
+            }
+          >
+            {section.arabic}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={onPress}
+          style={[
+            styles.arrowContainer,
+            {
+              backgroundColor: isExpanded
+                ? Colors.secondary1
+                : Colors.intermediate1,
+            },
+          ]}
+        >
+          {isExpanded ? (
+            <WasilNewArrowOpenBTSvg />
+          ) : (
+            <WasilNewArrowUnopenBTSvg />
+          )}
+        </TouchableOpacity>
       </View>
-    </View>
 
-    </TouchableOpacity>
+      {isExpanded && (
+        <View
+          style={
+            styles.accordionContent
+          }
+        >
+          {section.items.map(
+            (item, index) => (
+              <View
+                key={`${section.key}-${item.route}-${index}`}
+                style={
+                  styles.actionRow
+                }
+              >
+                <TouchableOpacity
+                  activeOpacity={0.75}
+                  onPress={() =>
+                    navigation.navigate(
+                      item.route
+                    )
+                  }
+                  style={
+                    styles.submitButton
+                  }
+                >
+                  <Text
+                    style={
+                      styles.submitText
+                    }
+                  >
+                    {item.title}
+                  </Text>
+                </TouchableOpacity>
               </View>
-      </ImageBackground>
+            )
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
 
-       <View style={{height:40,backgroundColor:Colors.white}}></View>
+const styles = StyleSheet.create({
 
-       <ScrollView
-        style={styles.maincontainer}
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled={true}>
-              <View style={{top:25}}>
+  containerMain: {
+    flex: 1,
+    backgroundColor:
+      Colors.intermediate1,
+  },
 
-                  <View style={{flexDirection:"column"}}>
-                 
-                    <View style={styles.advImageContainerFajr}>
-                    <View style={{backgroundColor:showComponmentFajrbgcolor,flex:0.5,alignItems:"center",justifyContent:"center",borderTopLeftRadius:8,borderBottomLeftRadius:8}}>
-                      <PrayerHomeFajrSVG/>
-                    </View>
-                    <View style={{backgroundColor:showComponmentFajrbgcolor,flex:1.2}}>
-                        <Text numberOfLines={1} style={{alignSelf:"flex-start",top:23,color:Colors.primary,fontSize:15,fontWeight:"600",fontFamily:"Raleway"}}>Fajr</Text>
-                    </View>
-                     <View style={{ backgroundColor:Fajrtogglebgcolor,paddingHorizontal: 10,paddingTop: 20,marginBottom: 10,}}>
-                            <View style={styles.toggleRow}>
-                              <Switch
-                                value={prayerToggles.Fajr}
-                                onValueChange={(value) => togglePrayerAzan('Fajr', value)}
-                                thumbColor={prayerToggles.Fajr ? Colors.primary : '#ccc'}
-                              />
-                            </View>
-                          </View>
-                    <View style={{backgroundColor:showComponmentFajrbgcolor,flex:0.3 ,alignItems:"center",justifyContent:"center",borderTopRightRadius:8,borderBottomRightRadius:8}}>
-                    {showComponmentFajrArrowU && (
-                    <TouchableOpacity onPress={()=>  setshowComponmentFajr(true) || setshowComponmentFajrArrowD(true) || setshowComponmentFajrArrowU(false) ||setshowComponmentFajrbgcolor(Colors.prayercolor)||setFajrogglebgcolor(Colors.prayercolor)}>
-                        <DuaForwardSVG/>
-                    </TouchableOpacity>
-                    )}
-                    {showComponmentFajrArrowD && (
-                    <TouchableOpacity onPress={()=> setshowComponmentFajrArrowD(false) || setshowComponmentFajrArrowU(true) || setshowComponmentFajr(false) || setshowComponmentFajrbgcolor(Colors.white)||setFajrogglebgcolor(Colors.white)}>
-                        <DuaCollapseSVG/>
-                    </TouchableOpacity>
-                    )}
-                    </View>
-                    </View> 
-                    {showComponmentFajr && (
-                    <View style={styles.advImageContainerFajr1}>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('FajrSunnah')}} style={styles.submit}>
-                      <Text style={styles.submitText}>Sunnah: 2 rak’ah</Text>  
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('FajrFarz')}} style={styles.submit1}>
-                      <Text style={styles.submitText}>Farz: 2 rak’ah</Text>  
-                    </TouchableOpacity>
-                    </View>
-                    </View>
-                    )}
 
-                    <View style={styles.advImageContainerDhuhr}>
-                    <View style={{backgroundColor:showComponmentDhuhrbgcolor,flex:0.5,alignItems:"center",justifyContent:"center",borderTopLeftRadius:8,borderBottomLeftRadius:8}}>
-                      <PrayerHomeDhuhrSVG/>
-                    </View>
-                    <View style={{backgroundColor:showComponmentDhuhrbgcolor,flex:1.2}}>
-                        <Text numberOfLines={1} style={{alignSelf:"flex-start",top:23,color:Colors.primary,fontSize:15,fontWeight:"600",fontFamily:"Raleway"}}>Dhuhr</Text>
-                    </View>
-                      <View style={{ backgroundColor:Dhuhrtogglebgcolor,paddingHorizontal: 10,paddingTop: 20,marginBottom: 10,}}>
-                            <View style={styles.toggleRow}>
-                              <Switch
-                                value={prayerToggles.Dhuhr}
-                                onValueChange={(value) => togglePrayerAzan('Dhuhr', value)}
-                                thumbColor={prayerToggles.Dhuhr ? Colors.primary : '#ccc'}
-                              />
-                            </View>
-                          </View>
-                    <View style={{backgroundColor:showComponmentDhuhrbgcolor,flex:0.3 ,alignItems:"center",justifyContent:"center",borderTopRightRadius:8,borderBottomRightRadius:8}}>
-                    {showComponmentDhuhrArrowU && (
-                    <TouchableOpacity onPress={()=>  setshowComponmentDhuhr(true) || setshowComponmentDhuhrArrowD(true) || setshowComponmentDhuhrArrowU(false) ||setshowComponmentDhuhrbgcolor(Colors.prayercolor)||setDhuhrogglebgcolor(Colors.prayercolor)}>
-                        <DuaForwardSVG/>
-                    </TouchableOpacity>
-                    )}
-                    {showComponmentDhuhrArrowD && (
-                    <TouchableOpacity onPress={()=> setshowComponmentDhuhrArrowD(false) || setshowComponmentDhuhrArrowU(true) || setshowComponmentDhuhr(false) || setshowComponmentDhuhrbgcolor(Colors.white)||setDhuhrogglebgcolor(Colors.white)}>
-                        <DuaCollapseSVG/>
-                    </TouchableOpacity>
-                    )}
-                    </View>
-                    </View>
-                    {showComponmentDhuhr && (
-                    <View style={styles.advImageContainerDhuhr1}>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('DhuhrFirst4Sunnah')}} style={styles.submit}>
-                    <Text style={styles.submitText}>Sunnah: 4 rak’ah</Text>  
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <View style={{height:"15%",width:"99.5%",flex:0.9,backgroundColor:Colors.prayercolor}}></View>
-                    <TouchableOpacity onPress={() => {navigation.navigate('DhuhrFirst4Farz')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Farz: 4 rak’ah</Text>  
-             </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Dhuhr2Sunnah')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Sunnah: 2 rak’ah</Text>  
-             </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Dhuhr2Nafil')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Nafil: 2 rak’ah</Text>  
-             </TouchableOpacity>
-             <View style={{height:"15%",width:"99.5%",flex:1,backgroundColor:Colors.prayercolor}}></View>
-                    </View>
-                   
-                    </View>
-                    )}
-
-                    <View style={styles.advImageContainerAsr}>
-                    <View style={{backgroundColor:showComponmentAsrbgcolor,flex:0.5,alignItems:"center",justifyContent:"center",borderTopLeftRadius:8,borderBottomLeftRadius:8}}>
-                      <PrayerHomeAsrSVG/>
-                    </View>
-                    <View style={{backgroundColor:showComponmentAsrbgcolor,flex:1.2}}>
-                        <Text numberOfLines={1} style={{alignSelf:"flex-start",top:23,color:Colors.primary,fontSize:15,fontWeight:"600",fontFamily:"Raleway"}}>Asr</Text>
-                    </View>
-                     <View style={{ backgroundColor:Asrtogglebgcolor,paddingHorizontal: 10,paddingTop: 20,marginBottom: 10,}}>
-                            <View style={styles.toggleRow}>
-                              <Switch
-                                value={prayerToggles.Asr}
-                                onValueChange={(value) => togglePrayerAzan('Asr', value)}
-                                thumbColor={prayerToggles.Asr ? Colors.primary : '#ccc'}
-                              />
-                            </View>
-                          </View>
-                    <View style={{backgroundColor:showComponmentAsrbgcolor,flex:0.3 ,alignItems:"center",justifyContent:"center",borderTopRightRadius:8,borderBottomRightRadius:8}}>
-                    {showComponmentAsrArrowU && (
-                    <TouchableOpacity onPress={()=>  setshowComponmentAsr(true) || setshowComponmentAsrArrowD(true) || setshowComponmentAsrArrowU(false) ||setshowComponmentAsrbgcolor(Colors.prayercolor)||setAsrogglebgcolor(Colors.prayercolor)}>
-                        <DuaForwardSVG/>
-                    </TouchableOpacity>
-                    )}
-                    {showComponmentAsrArrowD && (
-                    <TouchableOpacity onPress={()=> setshowComponmentAsrArrowD(false) || setshowComponmentAsrArrowU(true) || setshowComponmentAsr(false) || setshowComponmentAsrbgcolor(Colors.white)||setAsrogglebgcolor(Colors.white)}>
-                        <DuaCollapseSVG/>
-                    </TouchableOpacity>
-                    )}
-                    </View>
-                    </View>
-                    {showComponmentAsr && (
-                    <View style={styles.advImageContainerAsr1}>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('AsrFirst4Sunnah')}} style={styles.submit}>
-                <Text style={styles.submitText}>Sunnah: 4 rak’ah</Text>  
-             </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('AsrFirst4Farz')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Farz: 4 rak’ah</Text>  
-             </TouchableOpacity>
-                    </View>
-                   
-                    </View>
-                    )}
-
-                    <View style={styles.advImageContainerMaghrib}>
-                    <View style={{backgroundColor:showComponmentMaghribbgcolor,flex:0.5,alignItems:"center",justifyContent:"center",borderTopLeftRadius:8,borderBottomLeftRadius:8}}>
-                      <PrayerHomeMaghribSVG/>
-                    </View>
-                    <View style={{backgroundColor:showComponmentMaghribbgcolor,flex:1.2}}>
-                        <Text numberOfLines={1} style={{alignSelf:"flex-start",top:23,color:Colors.primary,fontSize:15,fontWeight:"600",fontFamily:"Raleway"}}>Maghrib</Text>
-                    </View>
-                     <View style={{ backgroundColor:Maghribtogglebgcolor,paddingHorizontal: 10,paddingTop: 20,marginBottom: 10,}}>
-                            <View style={styles.toggleRow}>
-                              <Switch
-                                value={prayerToggles.Maghrib}
-                                onValueChange={(value) => togglePrayerAzan('Maghrib', value)}
-                                thumbColor={prayerToggles.Maghrib ? Colors.primary : '#ccc'}
-                              />
-                            </View>
-                          </View>
-                    <View style={{backgroundColor:showComponmentMaghribbgcolor,flex:0.3 ,alignItems:"center",justifyContent:"center",borderTopRightRadius:8,borderBottomRightRadius:8}}>
-                    {showComponmentMaghribArrowU && (
-                    <TouchableOpacity onPress={()=>  setshowComponmentMaghrib(true) || setshowComponmentMaghribArrowD(true) || setshowComponmentMaghribArrowU(false) ||setshowComponmentMaghribbgcolor(Colors.prayercolor)||setMaghribogglebgcolor(Colors.prayercolor)}>
-                        <DuaForwardSVG/>
-                    </TouchableOpacity>
-                    )}
-                    {showComponmentMaghribArrowD && (
-                    <TouchableOpacity onPress={()=> setshowComponmentMaghribArrowD(false) || setshowComponmentMaghribArrowU(true) || setshowComponmentMaghrib(false) || setshowComponmentMaghribbgcolor(Colors.white)||setMaghribogglebgcolor(Colors.white)}>
-                        <DuaCollapseSVG/>
-                    </TouchableOpacity>
-                    )}
-                    </View>
-                    </View>
-                    {showComponmentMaghrib && (
-                    <View style={styles.advImageContainerMaghrib1}>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('MaghribFarz')}} style={styles.submit}>
-                <Text style={styles.submitText}>Farz: 3 rak’ah</Text> 
-             </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <View style={{height:"15%",width:"99.5%",flex:0.9,backgroundColor:Colors.prayercolor}}></View>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Maghrib2Sunnah')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Sunnah: 2 rak’ah</Text>  
-                
-             </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Maghrib2Nafil')}} style={styles.submit1}>
-                <Text style={styles.submitText}>Nafil: 2 rak’ah</Text>  
-             </TouchableOpacity>
-                    </View>
-                   
-                    </View>
-                    )}
-
-                    <View style={styles.advImageContainerEsha}>
-                    <View style={{backgroundColor:showComponmentEshabgcolor,flex:0.5,alignItems:"center",justifyContent:"center",borderTopLeftRadius:8,borderBottomLeftRadius:8}}>
-                      <PrayerHomeEshaSVG/>
-                    </View>
-                    <View style={{backgroundColor:showComponmentEshabgcolor,flex:1.2}}>
-                        <Text numberOfLines={1} style={{alignSelf:"flex-start",top:23,color:Colors.primary,fontSize:15,fontWeight:"600",fontFamily:"Raleway"}}>Isha</Text>
-                    </View>
-                      <View style={{ backgroundColor:Eshatogglebgcolor,paddingHorizontal: 10,paddingTop: 20,marginBottom: 10,}}>
-                            <View style={styles.toggleRow}>
-                              <Switch
-                                value={prayerToggles.Isha}
-                                onValueChange={(value) => togglePrayerAzan('Isha', value)}
-                                thumbColor={prayerToggles.Isha ? Colors.primary : '#ccc'}
-                              />
-                            </View>
-                          </View>
-                    <View style={{backgroundColor:showComponmentEshabgcolor,flex:0.3 ,alignItems:"center",justifyContent:"center",borderTopRightRadius:8,borderBottomRightRadius:8}}>
-                    {showComponmentEshaArrowU && (
-                    <TouchableOpacity onPress={()=>  setshowComponmentEsha(true) || setshowComponmentEshaArrowD(true) || setshowComponmentEshaArrowU(false) ||setshowComponmentEshabgcolor(Colors.prayercolor)||setEshaogglebgcolor(Colors.prayercolor)}>
-                        <DuaForwardSVG/>
-                    </TouchableOpacity>
-                    )}
-                    {showComponmentEshaArrowD && (
-                    <TouchableOpacity onPress={()=> setshowComponmentEshaArrowD(false) || setshowComponmentEshaArrowU(true) || setshowComponmentEsha(false) || setshowComponmentEshabgcolor(Colors.white)||setEshaogglebgcolor(Colors.white)}>
-                        <DuaCollapseSVG/>
-                    </TouchableOpacity>
-                    )}
-                    </View>
-                    </View>
-                    {showComponmentEsha && (
-                    <View style={styles.advImageContainerEsha1}>
-                    <View style={{backgroundColor:Colors.prayercolor,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('IshaFirst4Sunnah')}} style={styles.submit}>
-                    <Text style={styles.submitText}>Sunnah: 4 rak’ah</Text> 
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1.1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <View style={{height:20,width:"99.5%",flex:1,backgroundColor:Colors.prayercolor}}></View>
-                    <TouchableOpacity onPress={() => {navigation.navigate('IshaFirst4Farz')}} style={styles.submit1}>
-                    <Text style={styles.submitText}>Farz: 4 rak’ah</Text>  
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <View style={{height:20,width:"99.5%",flex:0.5,backgroundColor:Colors.prayercolor,}}></View>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Isha2Sunnah')}} style={styles.submit1}>
-                    <Text style={styles.submitText}>Sunnah: 2 rak’ah</Text>  
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('Isha2Nafil')}} style={styles.submit1}>
-                    <Text style={styles.submitText}>Nafil: 2 rak’ah</Text>  
-                    </TouchableOpacity>
-             
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('IshaWitr')}} style={styles.submit1}>
-                    <Text style={styles.submitText}>Witr: 3 rak’ah</Text>  
-                    </TouchableOpacity>
-                    <View style={{height:20,width:"99.5%",flex:0.5,backgroundColor:Colors.prayercolor}}></View>
-                    </View>
-                    <View style={{backgroundColor:Colors.prayercolor,height:10,flex:1,width:"99.5%",alignItems:"center",justifyContent:"center",borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-                    <TouchableOpacity onPress={() => {navigation.navigate('IshaLast2Nafil')}} style={styles.submit1}>
-                    <Text style={styles.submitText}>Nafil: 2 rak’ah</Text>  
-                    </TouchableOpacity>
-                    <View style={{height:5,width:"99.5%",flex:0.7,backgroundColor:Colors.prayercolor}}></View>
-                    </View>
-  
-                    </View>
-                    )}
-
-                  </View>
-              </View>             
-            <View style={{height:200}}></View>
-       </ScrollView>
-
-      <View style={{flex:1,flexDirection:"row",alignSelf:"center",top:100,justifyContent: "space-between",width:"95%",height:80,position:"absolute",borderRadius:10}}>
-   
-    <View style={{flexDirection:"column",flex:1,right:1,height:80,backgroundColor:Fajrbgcolor,borderRadius:10}}>
-      <View style={{height:7}}></View>
-    <Text style={{flex:0.8,color:Fajrtextcolor,textAlign:"center",fontSize:13,fontFamily:"Raleway"}}>Fajr</Text>
-    <View style={{flex:0.8,alignItems:"center",bottom:3}}>
-    {Fajricon}
-    </View>
-    <View style={{flex:0.7,flexDirection:"row",alignSelf:"center"}}>
-    <Text style={{color:Fajrtimecolor,textAlign:"center",fontSize:12,fontFamily:"PoppinsLight"}}>{usermyadsdatatimes.Fajr}</Text>
-    <Text style={{color:Fajrtimecolor,textAlign:"center",fontSize:12,fontFamily:"Raleway"}}></Text>
-    </View>
-    
-    </View>
-    <View style={{flexDirection:"column",flex:1,height:80,backgroundColor:Dhuhrbgcolor,borderRadius:10}}>
-      <View style={{height:7}}></View>
-      <Text style={{flex:0.8,color:Dhuhrtextcolor,textAlign:"center",fontSize:13,fontFamily:"Raleway"}}>Dhuhr</Text>
-    <View style={{flex:0.8,alignItems:"center",bottom:3}}>
-    {Dhuhricon}
-    </View>
-    <View style={{flex:0.7,flexDirection:"row",alignSelf:"center"}}>
-    <Text style={{color:Dhuhrtimecolor,textAlign:"center",fontSize:12,fontFamily:"PoppinsLight"}}>{usermyadsdatatimes.Dhuhr}</Text>
-    <Text style={{color:Dhuhrtimecolor,textAlign:"center",fontSize:12,fontFamily:"Raleway"}}></Text>
-    </View>
-    
-    </View>
-    <View style={{flexDirection:"column",flex:1,left:1,height:80,backgroundColor:Asrbgcolor,borderRadius:10}}>
-      <View style={{height:7}}></View>
-      <Text style={{flex:0.8,color:Asrtextcolor,textAlign:"center",fontSize:13,fontFamily:"Raleway"}}>Asr</Text>
-    <View style={{flex:0.8,alignItems:"center",bottom:3}}>
-    {Asricon}
-    </View>
-    <View style={{flex:0.7,flexDirection:"row",alignSelf:"center"}}>
-    <Text style={{color:Asrtimecolor,textAlign:"center",fontSize:12,fontFamily:"PoppinsLight"}}>{usermyadsdatatimes.Asr}</Text>
-    <Text style={{color:Asrtimecolor,textAlign:"center",fontSize:12,fontFamily:"Raleway"}}></Text>
-    </View>
-    
-    </View>
-    <View style={{flexDirection:"column",flex:1,left:2,height:80,backgroundColor:Maghribbgcolor,borderRadius:10}}>
-      <View style={{height:7}}></View>
-      <Text style={{flex:0.8,color:Maghribtextcolor,textAlign:"center",fontSize:13,fontFamily:"Raleway"}}>Maghrib</Text>
-    <View style={{flex:0.8,alignItems:"center",bottom:3}}>
-    {Maghribicon}
-    </View>
-    <View style={{flex:0.7,flexDirection:"row",alignSelf:"center"}}>
-    <Text style={{color:Maghribtimecolor,textAlign:"center",fontSize:12,fontFamily:"PoppinsLight"}}>{usermyadsdatatimes.Maghrib}</Text>
-    <Text style={{color:Maghribtimecolor,textAlign:"center",fontSize:12,fontFamily:"Raleway"}}></Text>
-    </View>
-  
-    </View>
-    <View style={{flexDirection:"column",flex:1,left:3,height:80,backgroundColor:Ishabgcolor,borderRadius:10}}>
-      <View style={{height:7}}></View>
-      <Text style={{flex:0.8,color:Ishatextcolor,textAlign:"center",fontSize:13,fontFamily:"Raleway"}}>Isha</Text>
-    <View style={{flex:0.8,alignItems:"center",bottom:3}}>
-    {Ishaicon}
-    </View>
-    <View style={{flex:0.7,flexDirection:"row",alignSelf:"center"}}>
-    <Text style={{color:Ishatimecolor,textAlign:"center",fontSize:12,fontFamily:"PoppinsLight"}}>{usermyadsdatatimes.Isha}</Text>
-    <Text style={{color:Ishatimecolor,textAlign:"center",fontSize:12,fontFamily:"Raleway"}}></Text>
-    </View>
-    </View>
-
-      </View>  
-  </View>
-
-  )};
-  
-  const styles = StyleSheet.create({
-    containerMain: {
-      backgroundColor:Colors.transparent
-    },
-    slidercontainer: {
-      backgroundColor: Colors.primary,
-      height: 120,
-      borderBottomLeftRadius:20,
-      borderBottomRightRadius:20,
-      justifyContent: 'center',
-    },
-  
-  advImageContainerFajr: {
-    width: "94%",
-    height: 70,  
-    flexDirection:'row',
-    marginTop:10,
-    alignSelf:"center",
-    borderRadius:10,
-    borderWidth:1.6,
-    borderColor:Colors.bordercolor,
-  },
-  advImageContainerFajr1: {
-    width: "94%",
-    height: 150,  
-    flexDirection:'column',
-    alignSelf:"center",
-    borderTopColor:Colors.prayercolor,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    bottom:15,
-  
-  },
-  advImageContainerDhuhr: {
-    width: "94%",
-    height: 70,  
-    flexDirection:'row',
-    marginTop:10,
-    alignSelf:"center",
-    borderRadius:10,
-    borderWidth:1.6,
-    borderColor:Colors.bordercolor,
-  },
-  advImageContainerDhuhr1: {
-    width: "94%",
-    height: 250,  
-    flexDirection:'column',
-    alignSelf:"center",
-    borderTopColor:Colors.prayercolor,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    bottom:15,
-  
-  },
-  advImageContainerAsr: {
-    width: "94%",
-    height: 70,  
-    flexDirection:'row',
-    marginTop:10,
-    alignSelf:"center",
-    borderRadius:10,
-    borderWidth:1.6,
-    borderColor:Colors.bordercolor,
-  },
-  advImageContainerAsr1: {
-    width: "94%",
-    height: 150,  
-    flexDirection:'column',
-    alignSelf:"center",
-    borderTopColor:Colors.prayercolor,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    bottom:15,
-  
-  },
-  advImageContainerMaghrib: {
-    width: "94%",
-    height: 70,  
-    flexDirection:'row',
-    marginTop:10,
-    alignSelf:"center",
-    borderRadius:10,
-    borderWidth:1.6,
-    borderColor:Colors.bordercolor,
-  },
-  advImageContainerMaghrib1: {
-    width: "94%",
-    height: 180,  
-    flexDirection:'column',
-    alignSelf:"center",
-    borderTopColor:Colors.prayercolor,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    bottom:15,
-  
-  },
-  advImageContainerEsha: {
-    width: "94%",
-    height: 70,  
-    flexDirection:'row',
-    marginTop:10,
-    alignSelf:"center",
-    borderRadius:10,
-    borderWidth:1.6,
-    borderColor:Colors.bordercolor,
-  },
-  advImageContainerEsha1: {
-    width: "94%",
-    height: 380,  
-    flexDirection:'column',
-    alignSelf:"center",
-    borderTopColor:Colors.prayercolor,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
-    borderWidth:1,
-    borderColor:Colors.bordercolor,
-    bottom:15,
-  
-  },
-  submit: {
-    backgroundColor: Colors.white,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor:Colors.bordercolor,
-    height:40,
-    width:"85%",
-    alignSelf:"center",
-    top:10
-  },
-  submit1: {
-    backgroundColor: Colors.white,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor:Colors.bordercolor,
-    height:40,
-    width:"85%",
-    alignSelf:"center",
-    bottom:10
-  },
-  submitText: {
-    fontSize:15,
-    top:9,
-    color: Colors.intermediate,
-    fontFamily:"Raleway",
-    alignSelf:'center',
-    fontWeight:"400"
-  },
-   toggleGroup: {
-    paddingHorizontal: 10,
-    paddingTop: 20,
-    marginBottom: 10,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  loadingContainer: {
+     backgroundColor:Colors.primary,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
   },
-  toggleLabel: {
+
+  loadingText: {
+    marginTop: 15,
+    color: Colors.white,
     fontSize: 14,
-    fontFamily: 'Poppins',
-    color: Colors.primary,
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
   },
-  });
- 
-  export default PrayerGuide;
+
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    backgroundColor:
+      Colors.intermediate1,
+  },
+
+  errorTitle: {
+    color: Colors.white,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
+  },
+
+  errorMessage: {
+    marginTop: 10,
+    color: Colors.white,
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: 'center',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
+  },
+
+  retryButton: {
+    marginTop: 25,
+    minWidth: 130,
+    height: 44,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:
+      Colors.primary,
+  },
+
+  retryButtonText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '600',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
+  },
+
+  scrollContent: {
+    paddingTop: 90,
+    paddingBottom:
+      Platform.OS === 'ios'
+        ? 0
+        : 0,
+  },
+
+  prayerListContainer: {
+    width: '100%',
+    paddingBottom: 20,
+  },
+
+  accordionWrapper: {
+    width: '94%',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+
+  prayerHeaderRow: {
+    width: '100%',
+    minHeight: 70,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor:
+      Colors.secondary1,
+    backgroundColor:
+      Colors.secondary1,
+  },
+
+  prayerHeaderRowExpanded: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+     backgroundColor:
+      Colors.secondary1,
+  },
+
+  prayerIconContainer: {
+    flex: 0.4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:
+      Colors.secondary1,
+  },
+
+  prayerEnglishContainer: {
+    flex: 0.9,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    backgroundColor:
+      Colors.intermediate1,
+  },
+
+  prayerEnglishText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '600',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
+  },
+
+  prayerArabicContainer: {
+    flex: 0.4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:
+      Colors.intermediate1,
+  },
+
+  prayerArabicText: {
+    color: Colors.white,
+    fontSize: 25,
+    textAlign: 'center',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Al Qalam Quran Majeed Web'
+        : 'AlQalamQuran',
+        bottom:6
+  },
+
+  arrowContainer: {
+    flex: 0.3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:
+      Colors.intermediate1,
+  },
+
+
+  accordionContent: {
+    width: '100%',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderWidth: 1.2,
+    borderTopWidth: 0,
+    borderColor:
+      Colors.secondary1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor:
+      Colors.secondary1,
+  },
+
+  actionRow: {
+    width: '100%',
+    minHeight: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 3,
+  },
+
+
+  submitButton: {
+    width: '85%',
+    minHeight: 40,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor:
+      Colors.secondary1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    backgroundColor:
+      Colors.intermediate1,
+  },
+
+  submitText: {
+    color: Colors.white,
+    fontSize: 15,
+    top:1,
+    textAlign: 'center',
+    fontWeight: '400',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Poppins-Regular'
+        : 'Raleway',
+  },
+});
+
+export default PrayerGuide;

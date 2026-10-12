@@ -6,20 +6,22 @@ const initialState = {
   juzList: [],
   verseList: [],
   pagesList: [],
+  pageLayout: 'VERSE',
+  pageTheme: 'DEFAULT',
   isVisible: false,
   isSpeedCounting: 1,
   isArabic: true,
   isTranslation: true,
   isTransliteration: true,
-  arabicFontSize: 24,
+  arabicFontSize: 26,
   translationFontSize: 12,
   isArabicFont: {
     id: 1,
-    key: 'arabic_Al_Qalam',
-    fontTitle: 'Al Qalam Quran Majeed',
+    key: 'arabic_Indopak',
+    fontTitle: 'IndoPak',
   },
-  translationList: 84,
-  transliterationList: 84,
+  translationList: 85,
+  transliterationList: 85,
   translationLanguage: {_index: 0, id: 1, language: 'english', name: 'English'},
   transliterationLanguage: {
     _index: 0,
@@ -49,10 +51,17 @@ const servicesSlice = createSlice({
     setVerseList: (state, action) => {
       state.verseList = action.payload;
     },
-
     setPagesList: (state, action) => {
       state.pagesList = action.payload;
     },
+
+    setPageLayout: (state, action) => {
+      state.pageLayout = action.payload;
+    },
+    setPageTheme: (state, action) => {
+      state.pageTheme = action.payload;
+    },
+
     setArabicFontSize: (state, action) => {
       state.arabicFontSize = action.payload;
     },
@@ -107,6 +116,8 @@ export const {
   setJuzList,
   setVerseList,
   setPagesList,
+  setPageLayout,
+  setPageTheme,
   setVisible,
   setArabicFontSize,
   setTranslationFontSize,

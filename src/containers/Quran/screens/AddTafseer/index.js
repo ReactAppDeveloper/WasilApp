@@ -110,7 +110,7 @@ const AddTafseer = ({navigation, route}) => {
   return (
     <View style={styles.safeAreaView}>
       <Header
-        title={'Tafseer'}
+        title={'Tafsir'}
         onPressLeftIcon={() => {
           navigation.goBack();
         }}
@@ -119,7 +119,7 @@ const AddTafseer = ({navigation, route}) => {
 
       {showLoader ? (
         <View style={styles?.loaderViewStyle}>
-          <ActivityIndicator size="large" color={COLORS.primaryBlue} />
+          <ActivityIndicator size="large" color={COLORS.wasilnewthemecolorsecondBlue} />
         </View>
       ) : (
         <>
@@ -133,16 +133,24 @@ const AddTafseer = ({navigation, route}) => {
                 contentWidth={400}
                 tagsStyles={{
                   h1: {
-                    ...FONTSTYLE(FONTS.poppinsBold).title, //
-                    color: COLORS.black,
+                    fontFamily: FONTS.poppinsRegular,
+                    fontSize: 26,
+                    lineHeight: 26,
+                    color: COLORS.blue,
                   },
                   h2: {
-                    ...FONTSTYLE(FONTS.poppinsMedium).smallTitle,
-                    color: COLORS.black,
+                    fontFamily: FONTS.poppinsMedium,
+                    fontSize: 16,
+                    lineHeight: 18,
+                    color: COLORS.wasilnewthemecolorsecondBlue,
+                    top:5
                   },
                   h3: {
-                    ...FONTSTYLE(FONTS.poppinsMedium).inputs,
-                    color: COLORS.black,
+                    fontFamily: FONTS.poppinsMedium,
+                    fontSize: 14,
+                    lineHeight: 16,
+                    color: COLORS.wasilnewthemecolorsecondBlue,
+                   
                   },
                   h4: {
                     ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
@@ -157,9 +165,9 @@ const AddTafseer = ({navigation, route}) => {
                     color: COLORS.black,
                   },
                   p: {
-                    marginTop: 0,
-                    ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
-                    lineHeight: 20,
+                    marginTop: 12,
+                    ...FONTSTYLE(FONTS.poppinsMedium).inputs,
+                    lineHeight: 22,
                     color: COLORS.black,
                   },
                 }}
@@ -218,10 +226,10 @@ const styles = ScaledSheet.create({
   },
   safeAreaView: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
   },
   mainView: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
     paddingVertical: '8@s',
     paddingHorizontal: '15@s',
     marginBottom: '8@s',

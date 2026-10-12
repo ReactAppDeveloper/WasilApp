@@ -1,16 +1,22 @@
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {Image, TouchableOpacity, View} from 'react-native';
-import {ScaledSheet} from 'react-native-size-matters';
-import {getStorageItem} from '../mmkvStorage/storeData';
-import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { ScaledSheet } from 'react-native-size-matters';
+import { getStorageItem } from '../mmkvStorage/storeData';
+import { COLORS, FONTS, FONTSTYLE, IMAGES } from '../theme';
 import VerticalText from './VerticalText';
+import {
+  QuranNewPinIcon,
+  QuranNewBookmarkIcon,
+  QuranNewFavouriteIcon
+} from "../../../assets/icons";
+import { Colors } from '../../../theme';
 
 const QuranSaveBox = ({
   Icon = '',
   titleText = '',
   subText = '',
-  onPress = () => {},
+  onPress = () => { },
 }) => {
   const navigation = useNavigation();
 
@@ -19,53 +25,62 @@ const QuranSaveBox = ({
   const favoritesList = getStorageItem('favorites');
 
   const subTextValue =
-    titleText === 'Resume'
-      ? `Surah ${
-          pinAyah?.AyahItem?.verseKey ? pinAyah?.AyahItem?.verseKey:''
-        }`
+    titleText === 'Pin Ayah'
+      ? `Surah ${pinAyah?.AyahItem?.verseKey ? pinAyah?.AyahItem?.verseKey : ''
+      }`
       : titleText === 'Bookmarks'
-      ? `Total Ayahs ${
-          bookmarksList?.length !== 0 ? bookmarksList?.length : ''
+        ? `Total Ayahs ${bookmarksList?.length !== 0 ? bookmarksList?.length : ''
         }`
-      : titleText === 'Favorite'
-      ? `Surah ${favoritesList?.length !== 0 ? favoritesList?.length : ''}`
-      : subText;
+        : titleText === 'Favourite'
+          ? `Surah ${favoritesList?.length !== 0 ? favoritesList?.length : ''}`
+          : subText;
 
+
+ const renderIcon = () => {
+  switch (titleText) {
+    case 'Pin Ayah':
+      return <QuranNewPinIcon width={28} height={28} style={{ right: 7 }} />;
+
+    case 'Bookmarks':
+      return <QuranNewBookmarkIcon width={28} height={28} style={{ right: 4 }} />;
+
+    case 'Favourite':
+      return <QuranNewFavouriteIcon width={28} height={28} style={{ right: 10 }} />;
+
+    default:
+      return <Image style={styles.iconStyle} source={Icon} />;
+  }
+};
   const IconSource =
-    titleText === 'Resume'
-      ? IMAGES.pinIcon
+    titleText === 'Pin Ayah'
+      ? <QuranNewPinIcon/>
       : titleText === 'Bookmarks'
-      ? IMAGES.addBookmarkIcon
-      : titleText === 'Favorite'
-      ? IMAGES.heartIcon
-      : Icon;
+        ? <QuranNewBookmarkIcon/>
+        : titleText === 'Favourite'
+          ? <QuranNewFavouriteIcon/>
+          : Icon;
 
   const InPressTouchable = () => {
-    titleText === 'Resume'
+    titleText === 'Pin Ayah'
       ? pinAyah?.AyahItem?.verseKey &&
-        navigation.navigate('SurahDetailPage', {
-          selectedAyahItems: pinAyah?.AyahItem,
-          selectedSurahItems: pinAyah?.SurahItem,
-          fromPinAyah: true,
-        })
+      navigation.navigate('SurahDetailPage', {
+  selectedAyahItems: pinAyah?.AyahItem,
+  selectedSurahItems: pinAyah?.SurahItem,
+  fromPinAyah: true,
+
+  fromjuz: pinAyah?.fromjuz,
+  from: pinAyah?.from,
+  rukuNumber: pinAyah?.rukuNumber,
+  fromqc: pinAyah?.fromqc,
+  surahNumber: pinAyah?.surahNumber,
+  headersurahname: pinAyah?.headersurahname,
+})
       : titleText === 'Bookmarks'
-      ? navigation.navigate('Bookmark')
-      : titleText === 'Favorite'
-      ? navigation.navigate('Favorite')
-      : onPress();
+        ? navigation.navigate('Bookmark')
+        : titleText === 'Favourite'
+          ? navigation.navigate('Favorite')
+          : onPress();
   };
-
-  // useEffect(() => {
-  // // Find date and time for pin ayah
-  //   const getCurrentDateTime = () => {
-  //     const date = moment().format('YYYY-MM-DD');
-  //     const time = moment().format('HH:mm:ss');
-  //     return {date, time};
-  //   };
-
-  //   const {date, time} = getCurrentDateTime();
-  //   console.log('currentDateTime=======>', date, time);
-  // }, []);
 
   return (
     <>
@@ -75,9 +90,9 @@ const QuranSaveBox = ({
           InPressTouchable();
         }}
         activeOpacity={0.7}>
-        <View>
-          <Image style={styles.iconStyle} source={IconSource} />
-        </View>
+       <View>
+  {renderIcon()}
+</View>
         <View style={styles.textView}>
           <VerticalText
             titleText={titleText}
@@ -96,14 +111,14 @@ export default QuranSaveBox;
 const styles = ScaledSheet.create({
   mainView: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: Colors.intermediate,
     flexDirection: 'row',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderRadius: '5@s',
+    borderWidth: 0.2,
+    borderRadius: '10@s',
     borderColor: COLORS?.lightSlateGray,
     paddingHorizontal: '5@s',
-    paddingVertical: '10@s',
+    paddingVertical: '8@s',
     marginRight: '8@s',
     alignSelf: 'center',
     alignItems: 'center',
@@ -112,14 +127,15 @@ const styles = ScaledSheet.create({
     height: '22@s',
     width: '22@s',
     resizeMode: 'contain',
+    right:10
   },
-  textView: {maxWidth: 100},
+  textView: { maxWidth: 100 },
   titleTextStyle: {
     ...FONTSTYLE(FONTS.poppinsRegular).body,
-    color: COLORS.primaryGray,
+    color: COLORS.white,
   },
   subTextStyle: {
     ...FONTSTYLE(FONTS.poppinsRegular).smallText,
-    color: COLORS.yellow,
+    color: COLORS.white,
   },
 });

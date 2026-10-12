@@ -28,11 +28,13 @@ import {
   setTranslation,
   setTranslationFontSize,
   setTransliteration,
+  setPageLayout,
+  setPageTheme,
 } from '../../redux/reduxToolkit/store/servicesSlice';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../../theme';
 
 const Setting = ({navigation, route}) => {
-  const {isFromPage, selectedPageItem} = route?.params;
+  const {isFromPage,isFromQuranComp,selectedPageItem,fromjuz,from,rukuNumber,fromqc,surahNumber,headersurahname,selectedSurahItems,} = route?.params;
   const isArabicFont = useSelector(state => state.services.isArabicFont);
   const selectedSurahItem = useSelector(
     state => state.services.selectedSurahItem,
@@ -61,30 +63,33 @@ const Setting = ({navigation, route}) => {
   const [selectFont, setSelectFont] = useState(isArabicFont);
   const dispatch = useDispatch();
 
+  const pageLayout = useSelector(state => state.services.pageLayout);
+  const pageTheme = useSelector(state => state.services.pageTheme);
+  const [selectedLayout, setSelectedLayout] = useState(pageLayout);
+  const [selectedTheme, setSelectedTheme] = useState(pageTheme);
+
   const arabicFontList = [
-    {id: 1, key: 'arabic_Al_Qalam', fontTitle: 'Al Qalam Quran Majeed'},
+    {id: 1, key: 'arabic_Indopak', fontTitle: 'IndoPak'},
     {id: 2, key: 'arabic_Uthmani', fontTitle: 'Uthmani'},
-    {id: 3, key: 'arabic_Indopak', fontTitle: 'IndoPak'},
-    {id: 4, key: 'arabic_Tajweed', fontTitle: 'Tajweed'},
-    {id: 5, key: 'arabic_Al_Mushaf_Quran', fontTitle: 'Al_Mushaf'},
-    {id: 6, key: 'arabic_AmiriQuran_Regular', fontTitle: 'Amiri_Quran'},
-    {id: 7, key: 'arabic_Lateef_Regular', fontTitle: 'Lateef'},
-    {id: 8, key: 'arabic_Madina', fontTitle: 'Madina'},
-    {id: 9, key: 'arabic_Me_Quran_Regular', fontTitle: 'Me_Quran'},
-    {id: 10, key: 'arabic_noorehidayat_Regular', fontTitle: 'Noorehidayat'},
-    {id: 11, key: 'arabic_noorehira_Regular', fontTitle: 'Noorehira'},
-    {id: 12, key: 'arabic_noorehuda_Regular', fontTitle: 'Noorehuda'},
+    {id: 3, key: 'arabic_Tajweed', fontTitle: 'Tajweed'},
+    {id: 4, key: 'arabic_Al_Mushaf_Quran', fontTitle: 'Al_Mushaf'},
+    {id: 5, key: 'arabic_AmiriQuran_Regular', fontTitle: 'Amiri_Quran'},
+    {id: 6, key: 'arabic_Lateef_Regular', fontTitle: 'Lateef'},
+    {id: 7, key: 'arabic_Madina', fontTitle: 'Madina'},
+    {id: 8, key: 'arabic_noorehidayat_Regular', fontTitle: 'Noorehidayat'},
+    {id: 9, key: 'arabic_noorehira_Regular', fontTitle: 'Noorehira'},
+    {id: 10, key: 'arabic_noorehuda_Regular', fontTitle: 'Noorehuda'},
     {
-      id: 13,
+      id: 11,
       key: 'arabic_PDMS_IslamicFont_Regular',
       fontTitle: 'PDMS_IslamicFont',
     },
     {
-      id: 14,
+      id: 12,
       key: 'arabic_PDMS_Saleem_QuranFont_Regular',
       fontTitle: 'PDMS_Saleem',
     },
-    {id: 15, key: 'arabic_ScheherazadeNew_Regular', fontTitle: 'Scheherazade'},
+    {id: 13, key: 'arabic_ScheherazadeNew_Regular', fontTitle: 'Scheherazade'},
   ];
 
   useEffect(() => {
@@ -93,11 +98,14 @@ const Setting = ({navigation, route}) => {
         navigation.push('SurahFullView', {
           selectedPageItem: selectedPageItem,
         });
-      } else {
+      } 
+      else if (isFromQuranComp) {
+         navigation?.goBack();
+      } 
+      else {
         navigation.push('SurahDetailPage', {
           selectedSurahItems: selectedSurahItem,
         });
-        // navigation?.goBack();
       }
     };
 
@@ -125,159 +133,168 @@ const Setting = ({navigation, route}) => {
       </View>
     );
   };
-  const onClickReset = () => {
-    setStorageItem('dynamicArabicFontSize', 24);
-    dispatch(setArabicFontSize(24));
 
-    setStorageItem('dynamicTranslationFontSize', 12);
-    dispatch(setTranslationFontSize(12));
+  const onSelectFont = font => {  
+  setSelectFont(font);
 
-    const defaultFont = {
-      id: 1,
-      key: 'arabic_Al_Qalam',
-      fontTitle: 'Al Qalam Quran Majeed',
-    };
-    setStorageItem('isArabicFont', defaultFont);
-    dispatch(setArabicFont(defaultFont));
-
-    setStorageItem('isArabic', true);
-    dispatch(setArabic(true));
-
-    setStorageItem('isTranslation', true);
-    dispatch(setTranslation(true));
-
-    setStorageItem('isTransliteration', true);
-    dispatch(setTransliteration(true));
-
-    if (isFromPage) {
-      navigation.push('SurahFullView', {
-        selectedPageItem: selectedPageItem,
-      });
-    } else {
-      // navigation?.goBack();
-      navigation.push('SurahDetailPage', {
-        selectedSurahItems: selectedSurahItem,
-      });
-    }
-  };
-  const onClickSave = () => {
-    // === for Arabic font ===
-    setStorageItem('dynamicArabicFontSize', arabicFontSizeValue);
-    dispatch(setArabicFontSize(arabicFontSizeValue));
-
-    // === for Translation and Transliteration font ===
-    setStorageItem('dynamicTranslationFontSize', translationFontSizeValue);
-    dispatch(setTranslationFontSize(translationFontSizeValue));
-
-    setStorageItem('isArabicFont', selectFont);
-    dispatch(setArabicFont(selectFont));
-
-    setStorageItem('isArabic', isEnableArabic);
-    dispatch(setArabic(isEnableArabic));
-
-    setStorageItem('isTranslation', isEnableTranslation);
-    dispatch(setTranslation(isEnableTranslation));
-
-    setStorageItem('isTransliteration', isEnableTransliteration);
-    dispatch(setTransliteration(isEnableTransliteration));
-
-    if (isFromPage) {
-      navigation.push('SurahFullView', {
-        selectedPageItem: selectedPageItem,
-      });
-    } else {
-      navigation.push('SurahDetailPage', {
-        selectedSurahItems: selectedSurahItem,
-      });
-      // navigation?.goBack();
-    }
-  };
-
-  const onSelectFont = font => {
-    setSelectFont(font);
-  };
+  dispatch(setArabicFont(font));
+  setStorageItem('isArabicFont', font);
+};
   const onChangeArabicFontSize = fontSize => {
-    setArabicFontSizeValue(fontSize);
-  };
+  setArabicFontSizeValue(fontSize);
+
+  dispatch(setArabicFontSize(fontSize));
+  setStorageItem('dynamicArabicFontSize', fontSize);
+};
   const onChangeTranslationFontSize = fontSize => {
-    setTranslationFontSizeValue(fontSize);
-  };
+  setTranslationFontSizeValue(fontSize);
+
+  dispatch(setTranslationFontSize(fontSize));
+  setStorageItem('dynamicTranslationFontSize', fontSize);
+};
+  useEffect(() => {
+  setSelectedLayout(pageLayout);
+  setSelectedTheme(pageTheme);
+}, [isFocused]);
   return (
     <View style={styles.safeAreaView}>
       <Header
-        title={'Setting'}
-        onPressLeftIcon={() => {
-          if (isFromPage) {
-            navigation.push('SurahFullView', {
-              selectedPageItem: selectedPageItem,
-            });
-          } else {
-            navigation.push('SurahDetailPage', {
-              selectedSurahItems: selectedSurahItem,
-            });
-            // navigation?.goBack();
-          }
-        }}
+        title={'Display & Setting'}
+       onPressLeftIcon={() => {
+  if (isFromPage) {
+    navigation.push('SurahFullView', {
+      selectedPageItem: selectedPageItem,
+    });
+  }
+  else if (from === 'ruku') {
+    navigation.navigate('SurahDetailPage', {
+      from: 'ruku',
+      rukuNumber: rukuNumber,
+      selectedSurahItems: selectedSurahItems,
+    });
+  }
+  else if (fromqc === 'qurancompletion') {
+    navigation.navigate('SurahDetailPage', {
+      fromqc: 'qurancompletion',
+      surahNumber: surahNumber,
+      headersurahname: headersurahname,
+      selectedSurahItems: selectedSurahItems,
+    });
+  }
+  else if (fromjuz) {
+    navigation.navigate('SurahDetailPage', {
+      fromjuz: true,
+      selectedSurahItems: selectedSurahItems,
+    });
+  }
+  else {
+    navigation.navigate('SurahDetailPage', {
+      selectedSurahItems: selectedSurahItems,
+    });
+  }
+}}
         rightIcon={false}
       />
 
 
 <ScrollView>
         <View style={styles.mainView}>
+ <Text style={styles.sectionTitle}>Page Layout</Text>
+<View style={styles.layoutRow}>
+  {[
+    { key: 'VERSE', label: 'Verses By Rows', icon: IMAGES.layoutVerse },
+    { key: 'TWO_COLUMN', label: '2 Columns', icon: IMAGES.layoutColumn },
+  ].map(item => (
+   <TouchableOpacity
+  key={item.key}
+  style={[
+    styles.layoutCard,
+    selectedLayout === item.key && styles.layoutCardActive,
+  ]}
+  onPress={() => {
+  setSelectedLayout(item.key);
 
-           <TouchableOpacity onPress={() => {navigation.navigate('TranslatePage')}}>
-                  <View style={styles.advImageContainer}>
-                    <View style={{backgroundColor:Colors.white,flex:2}}>
-                        <Text style={{fontWeight:"500",color:Colors.primary,fontSize:15,fontFamily:"Raleway"}}>Translation & Transliteration</Text>
-                    </View>
-                    <View style={{backgroundColor:Colors.white,flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
-                        <DuaForwardSVG/>
-                    </View>
-                  </View>
-           </TouchableOpacity>
+  dispatch(setPageLayout(item.key));
+  setStorageItem('pageLayout', item.key);
+}}
+>
+  {selectedLayout === item.key && (
+    <View style={styles.tickContainer}>
+      <Text style={styles.tickText}>✓</Text>
+    </View>
+  )}
+
+  <Image source={item.icon} style={styles.layoutIcon} />
+  <Text
+    style={[
+      styles.layoutLabel,
+      selectedLayout === item.key && styles.layoutLabelActive,
+    ]}
+  >
+    {item.label}
+  </Text>
+</TouchableOpacity>
+  ))}
+</View>
+          
           
            <View style={styles.advImageContainer}>
-           <View style={{backgroundColor:Colors.white,flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.primary,fontSize:15,fontFamily:"Raleway"}}>Arabic</Text>
+           <View style={{backgroundColor:'#FFFFFF',flex:2}}>
+              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Arabic</Text>
            </View>
-           <View style={{backgroundColor:Colors.white,flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
+           <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
           value={isEnableArabic}
           onValueChange={() => {
-            if (!(!isEnableTranslation && !isEnableTransliteration)) {
-              setIsEnableArabic(!isEnableArabic);
-            }
-          }}
+  if (!(!isEnableTranslation && !isEnableTransliteration)) {
+    const value = !isEnableArabic;
+
+    setIsEnableArabic(value);
+
+    dispatch(setArabic(value));
+    setStorageItem('isArabic', value);
+  }
+}}
         />
             </View>
            </View>
            <View style={styles.advImageContainer}>
-           <View style={{backgroundColor:Colors.white,flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.primary,fontSize:15,fontFamily:"Raleway"}}>Translation</Text>
+           <View style={{backgroundColor:'#FFFFFF',flex:2}}>
+              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Translation</Text>
            </View>
-           <View style={{backgroundColor:Colors.white,flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
+           <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
           value={isEnableTranslation}
-          onValueChange={() => {
-            if (!(!isEnableArabic && !isEnableTransliteration)) {
-              setIsEnableTranslation(!isEnableTranslation);
-            }
-          }}
+         onValueChange={() => {
+  if (!(!isEnableArabic && !isEnableTransliteration)) {
+    const value = !isEnableTranslation;
+
+    setIsEnableTranslation(value);
+
+    dispatch(setTranslation(value));
+    setStorageItem('isTranslation', value);
+  }
+}}
           />
             </View>
            </View>
            <View style={styles.advImageContainer}>
-           <View style={{backgroundColor:Colors.white,flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.primary,fontSize:15,fontFamily:"Raleway"}}>Transliteration</Text>
+           <View style={{backgroundColor:'#FFFFFF',flex:2}}>
+              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Transliteration</Text>
            </View>
-           <View style={{backgroundColor:Colors.white,flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
+           <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
           value={isEnableTransliteration}
-          onValueChange={() => {
-            if (!(!isEnableArabic && !isEnableTranslation)) {
-              setIsEnableTransliteration(!isEnableTransliteration);
-            }
-          }}
+         onValueChange={() => {
+  if (!(!isEnableArabic && !isEnableTranslation)) {
+    const value = !isEnableTransliteration;
+
+    setIsEnableTransliteration(value);
+
+    dispatch(setTransliteration(value));
+    setStorageItem('isTransliteration', value);
+  }
+}}
         />
             </View>
            </View>
@@ -342,7 +359,7 @@ const Setting = ({navigation, route}) => {
                       ? selectFont?.key
                       : FONTS[selectFont?.key],
                     arabicFontSizeValue,
-                  ).arabicText,
+                  ).arabicText1,
                   lineHeight:
                     Platform.OS === 'android' ? arabicFontSizeValue * 1.9 : 0,
                 },
@@ -377,7 +394,7 @@ const Setting = ({navigation, route}) => {
                 styles.caption,
                 {
                   ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue)
-                    .arabicText,
+                    .arabicText1,
                 },
               ]}>
               {'Bismillah hir rahman nir raheem'}
@@ -388,7 +405,7 @@ const Setting = ({navigation, route}) => {
                 styles.caption,
                 {
                   ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue)
-                    .arabicText,
+                    .arabicText1,
                 },
               ]}>
               {
@@ -396,40 +413,9 @@ const Setting = ({navigation, route}) => {
               }
             </Text>
           </View>
+
         </View>
       </ScrollView>
-
-
-
-      <View style={styles.buttonMainView}>
-        <View style={styles.buttonViewStyle}>
-          <Button
-            title="Reset"
-            onPress={() => {
-              onClickReset();
-            }}
-            textColor={COLORS.white}
-            style={{
-              backgroundColor: COLORS.yellow,
-              borderRadius: 10,
-            }}
-          />
-        </View>
-
-        <View style={styles.buttonViewStyle}>
-          <Button
-            title="Save"
-            onPress={() => {
-              onClickSave();
-            }}
-            textColor={COLORS.white}
-            style={{
-              backgroundColor: COLORS.primaryBlue,
-              borderRadius: 10,
-            }}
-          />
-        </View>
-      </View>
     </View>
   );
 };
@@ -441,7 +427,7 @@ const styles = ScaledSheet.create({
     flex: 1,
   },
   mainView: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
     paddingVertical: '8@s',
     paddingHorizontal: '15@s',
     marginBottom: '8@s',
@@ -537,6 +523,97 @@ const styles = ScaledSheet.create({
     width: "100%",
     height: 30,  
     flexDirection:'row',
-    marginTop:10,
+    marginTop:20,
   },
+  sectionTitle: {
+  fontSize: '16@s',
+  fontWeight: '600',
+  color: COLORS.wasilnewthemecolorsecondBlue,
+  marginBottom: '10@s',
+},
+
+layoutRow: {
+  flexDirection: 'row',
+  alignSelf:"center",
+  
+},
+
+layoutCard: {
+  width: '23%',
+  height:140,
+  marginLeft:20,
+  paddingHorizontal: '6@s',
+  alignItems: 'center',
+  position: 'relative', 
+},
+
+layoutCardActive: {
+ height:100,
+ borderColor: COLORS.wasilnewthemecolorsecondBlue,
+ borderRadius: 10,
+ borderWidth: 1,
+},
+
+layoutIcon: {
+  width: '80@s',
+  height: '90@s',
+  resizeMode: 'contain',
+  marginBottom: '2@s',
+},
+
+layoutLabel: {
+  marginTop:10,
+  fontSize: '8@s',
+  color: COLORS.black,
+  textAlign: 'center',
+},
+
+layoutLabelActive: {
+  color: COLORS.wasilnewthemecolorsecondBlue,
+  fontWeight: '600',
+},
+
+themeCard: {
+  padding: '14@s',
+  borderRadius: 14,
+  marginBottom: '12@s',
+  borderWidth: 1,
+  borderColor: COLORS.paleGray,
+},
+
+themeActive: {
+  borderWidth: 2,
+  borderColor: COLORS.wasilnewthemecolorsecondBlue,
+},
+
+themeArabic: {
+  fontSize: '18@s',
+  textAlign: 'center',
+  marginBottom: '6@s',
+},
+
+themeTranslation: {
+  fontSize: '13@s',
+  textAlign: 'center',
+},
+tickContainer: {
+  position: 'absolute',
+  top: '6@s',
+  right: '6@s',
+  width: '18@s',
+  height: '18@s',
+  borderRadius: 9,
+  backgroundColor: COLORS.wasilnewthemecolorsecondBlue,
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  zIndex: 10,          // ✅ iOS
+  elevation: 10,       // ✅ Android
+},
+
+tickText: {
+  color: '#FFFFFF',
+  fontSize: '12@s',
+  fontWeight: '700',
+},
 });

@@ -2,15 +2,17 @@ import React, {useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import AyahsList from '../../components/AyahsList';
-import EmptyView from '../../components/EmptyView';
-import Header from '../../components/Header';
+import EmptyViewFav from '../../components/EmptyViewFav';
 import ar from '../../data/chapters/ar.json';
 import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
-
+import Header from '../../components/Header';
+import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
+import { Colors } from '../../../../theme';
 const Favorite = ({navigation}) => {
   const [favorites, setFavorites] = useState([]);
+ 
 
   useEffect(() => {
     getFavoriteList();
@@ -25,15 +27,17 @@ const Favorite = ({navigation}) => {
     setFavorites(updatedFavorites);
     setStorageItem('favorites', updatedFavorites);
   };
+const renderItem = ({item, index}) => {
+  const surahInfo = SURAH_NAMES[item?.id];
+  const arabicName = surahInfo?.arabic ?? '';
 
-  const renderItem = ({item, index}) => (
+  return (
     <View style={styles.ayahsListView}>
       <AyahsList
         numberCounting={item?.id}
         leftTitleText={item?.transliteratedName}
-        leftSubText={item?.translatedName}
-        rightTitleText={ar[item?.id]?.transliteratedName}
-        rightSubText={`${item?.versesCount} Ayahs`}
+        leftSubText={`${item?.versesCount} Ayahs`}
+        rightTitleText={arabicName}
         isFavorite={true}
         onPressFavoriteIcon={() => removeFavorite(item)}
         onPress={() => {
@@ -45,11 +49,12 @@ const Favorite = ({navigation}) => {
       />
     </View>
   );
-
+};
+  
   return (
     <View style={styles.safeAreaView}>
       <Header
-        title="Favorite"
+        title="Favourite"
         onPressLeftIcon={() => {
           navigation?.goBack();
         }}
@@ -62,7 +67,7 @@ const Favorite = ({navigation}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyViewStyle}>
-              <EmptyView />
+              <EmptyViewFav />
             </View>
           }
         />
@@ -76,9 +81,10 @@ export default Favorite;
 const styles = ScaledSheet.create({
   safeAreaView: {
     flex: 1,
+    backgroundColor: Colors.intermediate1,
   },
   ayahsListView: {
-    backgroundColor: COLORS.white,
+    backgroundColor: Colors.intermediate1,
   },
-  emptyViewStyle: {marginTop: SIZES.height / 2.2},
+  emptyViewStyle: {marginTop: SIZES.height / 3},
 });

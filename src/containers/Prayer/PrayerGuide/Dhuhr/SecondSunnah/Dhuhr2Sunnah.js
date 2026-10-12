@@ -1,10 +1,10 @@
 import React from 'react';
-import {LogBox,View,Text,StyleSheet} from 'react-native';
+import {LogBox,View,StatusBar,StyleSheet,Platform} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import FirstRakat from "./FirstRakat"
 import SecondRakat from "./SecondRakat"
-
 import { Colors} from '../../../../../theme';
+import {WasilNewBTBTPrayerDhuhrTSunnahSvg} from '../../../../../assets/icons';
 
 LogBox.ignoreAllLogs();
 
@@ -13,53 +13,62 @@ const Tab = createMaterialTopTabNavigator();
 const Dhuhr2Sunnah = ({ navigation }) => { 
   return (
     <View style={styles.containerMain}>
+   <StatusBar backgroundColor={Colors.intermediate1}/>
     <View style={styles.slidercontainer}>
-    <View style={{ height: 50,alignItems:"center",top:22}}>
-          <Text
-                style={{
-                  height:100,
-                  fontSize: 22,
-                  color: "white",
-                  fontWeight: "500",
-                  fontFamily: "PoppinsLight",
-                  textAlign:"center"
-                }}>
-                Dhuhr Prayer{'\n'}Sunnah: 2 rak’ah
-          </Text>
-         
-          </View>
-          </View>
+      <WasilNewBTBTPrayerDhuhrTSunnahSvg/>
+    </View>
     <Tab.Navigator
-    screenOptions={{
-      tabBarActiveTintColor: Colors.intermediate,
-      tabBarInactiveTintColor: Colors.primary,
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-      },
-      tabBarLabelStyle: {
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight:"bold",
-        fontFamily:"Raleway",
-        textTransform:"capitalize"
-      },
-      tabBarIndicatorStyle: {
-        borderBottomColor: Colors.intermediate,
-        borderBottomWidth: 3,
-      },
-    }}>
-    <Tab.Screen
-      name="1st rakah"
-      component={FirstRakat}
-      options={{
-        tabBarLabel:"1st rakah",
-      }}  />
-    <Tab.Screen
-        name="2nd rakah"
-      component={SecondRakat}
-      options={{
-        tabBarLabel:"2nd rakah",
-      }} />
+  screenOptions={{
+    tabBarStyle: {
+      backgroundColor:Colors.secondary1,
+      marginHorizontal: 16,
+      marginTop: 16,
+      borderRadius: 12,
+      elevation: 0,
+      shadowOpacity: 0,
+      height: 50,
+    },
+
+    tabBarItemStyle: {
+      borderRadius: 14,
+      top:1
+    },
+
+    tabBarIndicatorStyle: {
+      backgroundColor: "#5F50A1",
+      height: '100%',
+      borderRadius: 14,
+    },
+
+    tabBarActiveTintColor: Colors.white,
+    tabBarInactiveTintColor: '#444',
+    tabBarLabelStyle: {
+      fontSize: 15,
+      textTransform: 'none',
+      fontWeight: '600',
+      fontFamily:
+        Platform.OS === 'ios'
+          ? 'Poppins-Regular'
+          : 'Raleway',
+    },
+    tabBarPressColor: 'transparent',
+    
+  }}>
+  <Tab.Screen
+  name="FirstRakat"
+  component={FirstRakat}
+  options={{
+    tabBarLabel: '1st Rakah',
+  }}
+/>
+
+<Tab.Screen
+  name="SecondRakat"
+  component={SecondRakat}
+  options={{
+    tabBarLabel: '2nd Rakah',
+  }}
+/>
       
       
   </Tab.Navigator>
@@ -71,10 +80,11 @@ export default Dhuhr2Sunnah;
 const styles = StyleSheet.create({
   containerMain: {
     flex: 1,
-    backgroundColor:Colors.white
+    backgroundColor:Colors.intermediate1
   },
   slidercontainer: {
-    backgroundColor: Colors.primary,
+    top:20,
+    alignSelf:"center",
     height: 120,
    
   },

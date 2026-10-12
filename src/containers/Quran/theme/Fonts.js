@@ -1,6 +1,7 @@
 import {Platform} from 'react-native';
 import {COLORS} from './Colors';
 import {SIZES} from './Sizes';
+import { Colors } from '../../../theme';
 
 export const FONTS = {
   poppinsLight: 'Poppins-Light',
@@ -13,7 +14,6 @@ export const FONTS = {
   trochutBold: 'Trochut-Bold',
   trochutItalic: 'Trochut-Italic',
   trochutRegular: 'Trochut',
-  arabic_AI_Qalam: 'AlQalamQuranMajeed',
   arabic_Indopak: 'AlQuran-IndoPak-by-QuranWBW',
   arabic_Tajweed: 'me_quran2',
   arabic_Uthmani: 'KFGQPC HAFS Uthmanic Script',
@@ -53,67 +53,90 @@ export const FONTSTYLE = (font, dynamicFontSize) => ({
     fontFamily: font,
     fontSize: SIZES.bigTitle,
     lineHeight: 28,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   title: {
     fontFamily: font,
     fontSize: SIZES.title,
     lineHeight: 26,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   headerText: {
     fontFamily: font,
     fontSize: SIZES.headerText,
     lineHeight: 20,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   smallTitle: {
     fontFamily: font,
     fontSize: SIZES.smallTitle,
     lineHeight: 18,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   inputs: {
     fontFamily: font,
     fontSize: SIZES.inputs,
     lineHeight: 16,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   inputBody: {
     fontFamily: font,
     fontSize: SIZES.inputBody,
     lineHeight: 15,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   body: {
     fontFamily: font,
     fontSize: SIZES.body,
     lineHeight: 14,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
+  bodynew: {
+    fontFamily: font,
+    fontSize: SIZES.body,
+    lineHeight: 14,
+    paddingTop:2,
+    color: COLORS.wasilnewthemecolorsecondBlue,
+  },
+  
   caption: {
     fontFamily: font,
     fontSize: SIZES.caption,
     lineHeight: 13,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   smallText: {
     fontFamily: font,
     fontSize: SIZES.smallText,
     lineHeight: 12,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
   smallInputText: {
     fontFamily: font,
     fontSize: SIZES.smallInputText,
     lineHeight: 10,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
 
   arabicText: {
     fontFamily: font,
     fontSize: dynamicFontSize,
-    // lineHeight: dynamicFontSize + 5,
-    color: COLORS.black,
+    color: COLORS.white,
+  },
+  arabicText1: {
+    fontFamily: font,
+    fontSize: dynamicFontSize,
+    color: Colors.primary,
+  },
+   ayahlistnumber: {
+    fontFamily: font,
+    fontSize: dynamicFontSize,
+    color: '#FFFFFF',
+  },
+   headerTextNew: {
+    fontFamily: font,
+    fontSize: SIZES.headerText,
+    lineHeight: 20,
+    color: '#FFFFFF',
   },
 });

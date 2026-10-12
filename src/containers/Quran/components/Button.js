@@ -8,7 +8,7 @@ const Button = ({
   onPress = () => {},
   style,
   labelStyle,
-  textColor = COLORS.white,
+  textColor = '#FFFFFF',
   disabled = false,
 }) => {
   return (

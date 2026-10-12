@@ -11,7 +11,7 @@ const HadithsFavourites = () => {
 
   return (
     <View style={styles.containerMain}>
-    <StatusBar backgroundColor={Colors.primary}/>
+    <StatusBar backgroundColor={Colors.intermediate1}/>
         
     <View>
     {favouriteshadith.length > 0 ? (
@@ -25,8 +25,8 @@ const HadithsFavourites = () => {
           <View >
         <FavouriteEmptySVG/>
         </View>
-        <Text style={{top:20,fontSize:12,color:Colors.secondary,fontWeight:"500",textAlign:"center",fontFamily:"Cairo-Regular"}}>
-           No Favorites yet!
+        <Text style={{top:20,fontSize:12,color:Colors.white,fontWeight:"500",textAlign:"center",fontFamily:"Poppins-Regular"}}>
+           No Favourites yet!
         </Text>
       
 </View>
@@ -41,7 +41,8 @@ export default HadithsFavourites;
 const styles = StyleSheet.create({
 
   containerMain: {
+    paddingTop:10,
     height:"100%",
-    backgroundColor:Colors.transparent,
+    backgroundColor:Colors.intermediate1,
   }, 
 });

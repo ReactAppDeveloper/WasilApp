@@ -4,8 +4,18 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
-
+import {reciterImages} from './reciterImages';
+import { Colors } from '../../../theme';
+const speedLabel = {
+  0: '',
+  1: '1',
+  2: '2',
+  3: '3',
+};
 const BottomView = ({
+  selectedReciter, 
+  playbackSpeed,
+  onChangePlaybackSpeed = () => {},
   onPressPlaySetting = () => {},
   onPressPlayMusic = () => {},
   onPressPlayPrevious = () => {},
@@ -15,7 +25,6 @@ const BottomView = ({
   onPressPlayBook = () => {},
   onPressPreviousPage = () => {},
   onPressNextPage = () => {},
-
   playImageSource = '',
   minimumValue,
   maximumValue,
@@ -32,7 +41,6 @@ const BottomView = ({
   const isSpeedCounting = useSelector(state => state.services.isSpeedCounting);
 
   const hitSlop = {bottom: 10, top: 10, left: 10, right: 10};
-
   return (
     <View style={[styles.container]}>
       {isFromPage ? (
@@ -45,6 +53,7 @@ const BottomView = ({
                   source={IMAGES.playPrevious}
                 />
               </TouchableOpacity>
+              
               <TouchableOpacity
                 style={styles.leftPlayIconView}
                 hitSlop={hitSlop}
@@ -67,8 +76,8 @@ const BottomView = ({
               </TouchableOpacity>
               <TouchableOpacity hitSlop={hitSlop} onPress={onPressPlayMusic}>
                 <Image
-                  style={styles.playNextIconStyle}
-                  source={IMAGES.playMusic}
+                  style={styles.playNextIconStyle1}
+                source={reciterImages[selectedReciter?.reciter_id]}
                 />
               </TouchableOpacity>
               {isVisibleSpeedIcon ? (
@@ -96,7 +105,7 @@ const BottomView = ({
                   <View style={styles.lineView}></View>
                   <View style={styles.speedNumberView}>
                     <Text style={styles.speedNumberStyle}>
-                      {isSpeedCounting - 1}
+                      {speedLabel[isSpeedCounting] || ''}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -146,18 +155,21 @@ const BottomView = ({
         <>
           <View style={styles.mainView}>
             <View style={styles.leftIconView}>
-              <TouchableOpacity hitSlop={hitSlop} onPress={onPressPlaySetting}>
-                <Image
-                  style={styles.playNextIconStyle}
-                  source={IMAGES.playSetting}
-                />
-              </TouchableOpacity>
               <TouchableOpacity hitSlop={hitSlop} onPress={onPressPlayMusic}>
-                <Image
-                  style={styles.playNextIconStyle}
-                  source={IMAGES.playMusic}
+                 <Image
+                  style={styles.playNextIconStyle1}
+                source={reciterImages[selectedReciter?.reciter_id]}
                 />
               </TouchableOpacity>
+              <TouchableOpacity
+  style={styles.playbackSpeedButton}
+  hitSlop={hitSlop}
+  onPress={onChangePlaybackSpeed}>
+  <Text style={styles.playbackSpeedText}>
+    {playbackSpeed}x
+  </Text>
+              </TouchableOpacity>
+              
             </View>
             <View style={styles.middlePlayView}>
               <TouchableOpacity hitSlop={hitSlop} onPress={onPressPlayPrevious}>
@@ -204,9 +216,9 @@ const BottomView = ({
                   <View style={styles.lineView}></View>
                   <View style={styles.lineView}></View>
                   <View style={styles.speedNumberView}>
-                    <Text style={styles.speedNumberStyle}>
-                      {isSpeedCounting - 1}
-                    </Text>
+                  <Text style={styles.speedNumberStyle}>
+                    {speedLabel[isSpeedCounting] || ''}
+                  </Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -225,8 +237,11 @@ const BottomView = ({
               style={styles.slider}
               minimumValue={minimumValue}
               maximumValue={maximumValue}
-              value={value} // Use progressValue instead of progressValue
+              value={value}
               onSlidingComplete={onSlidingComplete}
+              minimumTrackTintColor={Colors.intermediate1}
+              maximumTrackTintColor="#D3D3D3"
+              thumbTintColor={Colors.white}
             />
           ) : null}
         </>
@@ -239,14 +254,14 @@ export default BottomView;
 
 const styles = ScaledSheet.create({
   container: {
-    backgroundColor: COLORS.white,
-    width: '90%',
+    backgroundColor: Colors.intermediate,
+    width: '100%',
     position: 'absolute',
-    bottom: '20@s',
+    bottom: '0.5@s',
     alignItems: 'center',
     alignSelf: 'center',
     padding: '5@s',
-    borderRadius: '50@s',
+    borderRadius: '5@s',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.3,
@@ -266,8 +281,9 @@ const styles = ScaledSheet.create({
   playView: {marginHorizontal: '10@s'},
   playIconStyle: {height: '38@s', width: '38@s', resizeMode: 'contain'},
   playNextIconStyle: {height: '26@s', width: '26@s', resizeMode: 'contain'},
+  playNextIconStyle1: {height: '26@s', width: '26@s', resizeMode: 'contain',borderRadius:30},
   middlePlayView: {
-    backgroundColor: COLORS.lGray,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
@@ -320,7 +336,7 @@ const styles = ScaledSheet.create({
   lineView: {
     height: 0.7,
     borderWidth: 0.7,
-    borderColor: COLORS.primaryGray,
+    borderColor: COLORS.white,
     marginTop: '3@s',
   },
   speedNumberView: {
@@ -337,6 +353,20 @@ const styles = ScaledSheet.create({
   speedNumberStyle: {
     ...FONTSTYLE(FONTS.poppinsRegular).caption,
     lineHeight: 15,
-    color: COLORS.white,
+    color: '#FFFFFF',
   },
+  playbackSpeedButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.transparent,
+},
+
+playbackSpeedText: {
+    color: Colors.secondary,
+    fontSize: 12,
+    fontWeight: '600',
+},
 });

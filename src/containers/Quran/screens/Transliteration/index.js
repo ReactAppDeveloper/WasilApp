@@ -99,7 +99,7 @@ const Transliteration = ({navigation}) => {
             styles.horizontalViewCustomeStyle,
             {borderColor: borderColor},
           ]}
-          leftViewTextStyle={{color: COLORS?.primaryGray}}
+          leftViewTextStyle={{color: COLORS?.wasilnewthemecolorsecondGray}}
           leftViewText={item?.translatedName?.name}
           isLeftImage={IMAGES.unSelectBackGroundImg}
           onPress={() => {
@@ -142,7 +142,7 @@ const Transliteration = ({navigation}) => {
             onPress={() => {
               onClickReset();
             }}
-            textColor={COLORS.white}
+            textColor={'#FFFFFF'}
             style={{
               backgroundColor: COLORS.yellow,
               borderRadius: 10,
@@ -156,9 +156,9 @@ const Transliteration = ({navigation}) => {
             onPress={() => {
               onClickSave();
             }}
-            textColor={COLORS.white}
+            textColor={'#FFFFFF'}
             style={{
-              backgroundColor: COLORS.primaryBlue,
+              backgroundColor: COLORS.wasilnewthemecolorsecondBlue,
               borderRadius: 10,
             }}
           />
@@ -177,7 +177,7 @@ const styles = ScaledSheet.create({
     flex: 1,
     paddingVertical: '10@s',
     paddingHorizontal: '15@s',
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
   },
   horizontalViewCustomeStyle: {
     paddingHorizontal: '12@s',
@@ -185,7 +185,7 @@ const styles = ScaledSheet.create({
     paddingVertical: '8@s',
     borderRadius: '10@s',
     borderWidth: 1.3,
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
   },
   leftIcon: {
     height: '65@s',

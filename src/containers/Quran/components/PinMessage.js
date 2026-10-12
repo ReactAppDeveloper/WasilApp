@@ -58,12 +58,12 @@ const styles = ScaledSheet.create({
     height: '38@s',
     width: '38@s',
     resizeMode: 'contain',
-    tintColor: COLORS.white,
+    tintColor: '#FFFFFF',
   },
   secondTextView: {marginTop: '4@s'},
   textView: {justifyContent: 'center'},
   textstyle: {
     ...FONTSTYLE(FONTS.poppinsMedium).smallTitle,
-    color: COLORS.white,
+    color: '#FFFFFF',
   },
 });

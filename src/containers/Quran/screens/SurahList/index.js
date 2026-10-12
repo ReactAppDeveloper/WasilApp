@@ -8,17 +8,19 @@ import {useDispatch, useSelector} from 'react-redux';
 import AyahsList from '../../components/AyahsList';
 import EmptyView from '../../components/EmptyView';
 import QuranSaveBox from '../../components/QuranSaveBox';
-import ar from '../../data/chapters/ar.json';
 import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
 import {setSelectedSurahItem} from '../../redux/reduxToolkit/store/servicesSlice';
 import {COLORS, IMAGES} from '../../theme';
+import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
 import {SIZES} from '../../theme/Sizes';
+import { Colors } from '../../../../theme';
 
 const SurahList = ({navigation, route}) => {
   const chapterDetail = useSelector(state => state.services.chapterDetail);
   const [favorites, setFavorites] = useState([]);
   const [isPinAyah, setIsPinAyah] = useState([]);
   const [surahList, setSurahList] = useState(chapterDetail);
+ 
 
   const dispatch = useDispatch();
   const scrollingRef = useRef();
@@ -64,8 +66,11 @@ const SurahList = ({navigation, route}) => {
     setStorageItem('favorites', updatedFavorites);
   };
 
+
   const chapterDataRenderItem = ({item, index}) => {
     const isFavorite = favorites.some(fav => fav?.id === item?.id);
+     const surahInfo = SURAH_NAMES[item?.id];
+     const arabicName = surahInfo?.arabic ?? '';
 
     return (
       <View style={styles.ayahsListView}>
@@ -73,9 +78,8 @@ const SurahList = ({navigation, route}) => {
           numberCounting={item?.id}
           isFavorite={isFavorite}
           leftTitleText={item?.transliteratedName}
-          leftSubText={item?.translatedName}
-          rightTitleText={ar[index + 1]?.transliteratedName}
-          rightSubText={`${item?.versesCount} Ayahs`}
+          leftSubText={`${item?.versesCount} Ayahs`}
+          rightTitleText={arabicName}
           favoriteIconCustomStyle={{
             tintColor: !item?.isFavorite ? COLORS.lightSlateGray : null,
           }}
@@ -102,9 +106,9 @@ const SurahList = ({navigation, route}) => {
   return (
     <View style={styles.safeAreaView}>
       <View style={styles.quranSaveBoxView}>
-        <QuranSaveBox titleText={'Resume'} />
+        <QuranSaveBox titleText={'Pin Ayah'} />
         <QuranSaveBox titleText={'Bookmarks'} />
-        <QuranSaveBox titleText={'Favorite'} />
+        <QuranSaveBox titleText={'Favourite'} />
       </View>
       <FlashList
         ref={scrollingRef}
@@ -136,6 +140,7 @@ const SurahList = ({navigation, route}) => {
         }
         extraData={{favorites, isPinAyah, surahList}}
       />
+      <View style={{height:30}}></View>
     </View>
   );
 };
@@ -144,6 +149,7 @@ export default SurahList;
 const styles = ScaledSheet.create({
   safeAreaView: {
     flex: 1,
+    backgroundColor:Colors.intermediate1,
   },
   quranSaveBoxView: {
     flexDirection: 'row',
@@ -151,7 +157,7 @@ const styles = ScaledSheet.create({
     paddingLeft: '8@s',
   },
   ayahsListView: {
-    backgroundColor: COLORS.white,
+    backgroundColor:Colors.intermediate1,
   },
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

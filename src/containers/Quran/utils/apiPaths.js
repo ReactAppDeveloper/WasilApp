@@ -15,9 +15,9 @@ import {QuranFont} from '../types/QuranReader';
 
 export const DEFAULT_VERSES_PARAMS = {
   words: true,
-  translationFields: 'resource_name,language_id', // needed to show the name of the translation
+  translationFields: 'resource_name,language_id',
   perPage: ITEMS_PER_PAGE,
-  fields: `${QuranFont.Uthmani},chapter_id,hizb_number,text_imlaei_simple`, // we need text_uthmani field when copying the verse. text_imlaei_simple is for SEO description meta tag. Also the chapter_id for when we want to share the verse or navigate to Tafsir, hizb_number is for when we show the context menu.
+  fields: `${QuranFont.Uthmani},chapter_id,hizb_number,text_imlaei_simple`,
 };
 
 export const getVersesParams = (
@@ -57,7 +57,6 @@ export const makeTranslationsUrl = language =>
 
 export const makeAvailableRecitersUrl = (locale, fields) =>
  'https://api.quran.com/api/qdc/audio/reciters';
-
 
 export const makeAudioUrlByPage = (recitationsId, pageId) =>
   `https://api.quran.com/api/v4/recitations/${recitationsId}/by_page/${pageId}?per_page=all`;
@@ -105,3 +104,20 @@ export const makeDonateUrl = (showDonationPopup = false) =>
   `https://donate.quran.foundation${
     showDonationPopup ? '?showDonationPopup' : ''
   }`;
+
+export const makeRukusUrl = () =>
+  makeUrl('/rukus');
+
+export const makeRukuVersesUrl = (
+  rukuNumber,
+  currentLocale,
+  params,
+  includeTranslationFields = true,
+) =>
+  makeUrl(
+    `/verses/by_ruku/${rukuNumber}`,
+    getVersesParams(currentLocale, params, includeTranslationFields),
+  );
+
+export const makeAudioUrlByRuku = (recitationsId, rukuNumber) =>
+  `https://api.quran.com/api/v4/recitations/${recitationsId}/by_ruku/${rukuNumber}?per_page=all`;

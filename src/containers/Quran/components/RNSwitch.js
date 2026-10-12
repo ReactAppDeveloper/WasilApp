@@ -1,17 +1,18 @@
 import React from 'react';
 import {Platform, Switch, View} from 'react-native';
 import {COLORS} from '../theme';
+import { Colors } from '../../../theme';
 
 const RNSwitch = ({onValueChange, value}) => {
   return (
     <View>
       <Switch
         trackColor={{
-          false: COLORS.lightSlateGray,
-          true: COLORS.lightSlateYellow,
+          false: COLORS.thirdGray,
+          true: Colors.secondary1,
         }}
-        thumbColor={COLORS.yellow}
-        ios_backgroundColor={COLORS.lightSlateGray}
+        thumbColor={Colors.primary}
+        ios_backgroundColor={COLORS.blue}
         onValueChange={onValueChange}
         value={value}
         style={{

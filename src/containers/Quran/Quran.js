@@ -6,13 +6,14 @@ import store from './redux/reduxToolkit/store';
 const Quran = () => {
   useEffect(() => {
     LogBox.ignoreLogs([
-      'Warning: ...', // Ignore specific warning messages
-      'Deprecation warning: ...', // Ignore specific deprecation warnings
+      'Warning: ...',
+      'Deprecation warning: ...',
     ]);
 
     LogBox.ignoreAllLogs(true);
   }, []);
 
+  
   return (
     <Provider store={store}>
       <AppNavigation />

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import AnimatedSelectorItem from './AnimatedSelectorItem';
-import AnimatedArrowButton from './AnimatedArrowButton';
+import { View, Text, StyleSheet, Image ,BackHandler, LogBox,StatusBar} from 'react-native';
+import AnimatedSelectorItem from './AnimatedSelectorItemBlue';
+import AnimatedArrowButton from './AnimatedArrowButtonBlue';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {HijriAdjustSVG} from '../../assets/icons';
 import { Colors } from '../../theme';
+
 export default class HijriDates extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +13,38 @@ export default class HijriDates extends Component {
       selectedOffset: 0,
     };
   }
+ componentDidMount() {
+    LogBox.ignoreLogs([
+      'A props object containing a "key" prop is being spread into JSX',
+    ]);
+
+    if (!BackHandler.removeEventListener) {
+      BackHandler.removeEventListener = () => {};
+    }
+
+    // Load saved value when screen opens
+    this.loadHijriOffset();
+
+    // Load again whenever screen comes into focus
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.loadHijriOffset();
+    });
+  }
+
+   loadHijriOffset = async () => {
+    try {
+      const value = await AsyncStorage.getItem('HIJRI_OFFSET');
+
+      if (value !== null) {
+        this.setState({
+          selectedOffset: parseInt(value, 10),
+        });
+      }
+    } catch (e) {
+      console.log('Error loading Hijri Offset:', e);
+    }
+  };
+
 
   setSelectedOffset = (value) => {
     this.setState({ selectedOffset: value });
@@ -25,13 +58,12 @@ export default class HijriDates extends Component {
     } Saudi Arabia`;
   };
 
- // Inside your handleContinue method
 handleContinue = async () => {
   const { selectedOffset } = this.state;
   try {
     await AsyncStorage.setItem('HIJRI_OFFSET', selectedOffset.toString());
     console.log('Saved offset:', selectedOffset);
-    this.props.navigation.navigate('Guest', { refresh: true });
+    this.props.navigation.navigate('GuestNew', { refresh: true });
 
   } catch (e) {
     console.error('Error saving Hijri Offset:', e);
@@ -43,6 +75,7 @@ handleContinue = async () => {
 
     return (
       <View style={styles.container}>
+         <StatusBar backgroundColor={Colors.intermediate1}/>
         <View style={styles.image}>
           <HijriAdjustSVG />
         </View>
@@ -74,7 +107,7 @@ handleContinue = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -84,7 +117,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: Colors.intermediate,
+    color: Colors.primary,
     marginTop: 10,
     fontFamily:"Poppins-Medium"
   },
@@ -104,7 +137,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   statusText: {
-    color: '#FFF',
+    color: Colors.white,
     marginTop: 10,
     fontSize: 14,
   },

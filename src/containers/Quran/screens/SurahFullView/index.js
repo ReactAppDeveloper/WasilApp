@@ -38,6 +38,7 @@ import {
 } from '../../utils/staticPageGeneration';
 import {isValidPageId} from '../../utils/validator';
 const { height} = Dimensions.get('window');
+import { Colors } from '../../../../theme';
 const SurahFullView = ({navigation, route}) => {
   const {selectedPageItem} = route.params;
   const totalPages = 604;
@@ -445,9 +446,7 @@ const SurahFullView = ({navigation, route}) => {
 
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate('DashBoard', {
-        tabIndex: 2,
-      });
+      navigation.navigate('PageList');
       return true;
     };
 
@@ -461,12 +460,9 @@ const SurahFullView = ({navigation, route}) => {
   return (
     <View style={styles.safeAreaView}>
       <Header
-        title={`Page ${currentPageIndex}`}
+        title={`Page  ${currentPageIndex}`}
         onPressLeftIcon={() => {
-          // navigation.goBack();
-          navigation.navigate('DashBoard', {
-            tabIndex: 2,
-          });
+          navigation.navigate('PageList');
         }}
       />
 
@@ -476,7 +472,7 @@ const SurahFullView = ({navigation, route}) => {
         style={styles.backgroundImageStyle}>
         {showLoader ? (
           <View style={styles?.loaderViewStyle}>
-            <ActivityIndicator size="large" color={COLORS.primaryBlue} />
+            <ActivityIndicator size="large" color={COLORS.wasilnewthemecolorsecondBlue} />
           </View>
         ) : (
           <View
@@ -524,7 +520,7 @@ const SurahFullView = ({navigation, route}) => {
                 ref={ayahRefs}
                 onLayout={handleLayout}>
 
-                <Text style={{ flex: 1,marginTop: 15,textAlign: "justify",}} adjustsFontSizeToFit>
+                <Text style={{ flex: 1,marginTop: 15,textAlign: "justify"}}>
           {verseDetailList &&
             verseDetailList.map((item, index) => (
               <Text key={index} allowFontScaling={false} selectable={true}>
@@ -543,7 +539,7 @@ const SurahFullView = ({navigation, route}) => {
                               color:
                                 currentPlayingAyah?.verseKey == item?.verseKey
                                   ? COLORS.yellow
-                                  : COLORS.primaryGray,
+                                  : COLORS.wasilnewthemecolorsecondGray,
                             }}>
                             {item?.textUthmani}
                           </Text>
@@ -562,7 +558,7 @@ const SurahFullView = ({navigation, route}) => {
                                       currentPlayingAyah?.verseKey ==
                                       item?.verseKey
                                         ? COLORS.yellow
-                                        : COLORS.primaryGray,
+                                        : COLORS.wasilnewthemecolorsecondGray,
                                     position: 'absolute',
                                   },
                                 ]}
@@ -668,7 +664,7 @@ const styles = ScaledSheet.create({
   mainView: {
     margin: '12@s',
     borderRadius: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: '10@s',
     marginBottom: '15@s',
   },
@@ -691,7 +687,7 @@ const styles = ScaledSheet.create({
     flex: 1,
   },
   fab: {
-    backgroundColor: '#170266',
+    backgroundColor: '#673AB7',
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -700,7 +696,7 @@ const styles = ScaledSheet.create({
     elevation: 5,
   },
   fabText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: 'bold',
   },

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {camelizeKeys} from 'humps';
 import {makeUrl} from './utils/api';
 import {
@@ -15,6 +14,9 @@ import {
   makeTafsirContentUrl,
   makeTafsirsUrl,
   makeTranslationsUrl,
+  makeRukusUrl,
+  makeRukuVersesUrl,
+  makeAudioUrlByRuku
 } from './utils/apiPaths';
 
 export const fetcher = async (input, init) => {
@@ -113,3 +115,18 @@ export const getTafsirContent = async (
   );
   return res;
 };
+
+export const getRukus = async () => {
+  const res = await fetcher(makeRukusUrl());
+  return res;
+};
+
+export const getRukuVerses = async (rukuNumber, locale, params) => {
+  const res = await fetcher(
+    makeRukuVersesUrl(rukuNumber, locale, params),
+  );
+  return res;
+};
+
+export const getAudioUrlByRuku = async (recitationsId, rukuNumber) =>
+  await fetcher(makeAudioUrlByRuku(recitationsId, rukuNumber));

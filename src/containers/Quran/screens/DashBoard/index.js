@@ -1,16 +1,19 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import {
   Animated,
   TouchableOpacity,
   View,
   useWindowDimensions,
-  BackHandler
+  BackHandler,
+  ScrollView,
+  Text,
+  Platform
 } from 'react-native';
-import {ScaledSheet} from 'react-native-size-matters';
-import {SceneMap, TabView} from 'react-native-tab-view';
-import {useDispatch, useSelector} from 'react-redux';
-import {getAvailableReciters, getTafsirs} from '../../api';
-import Header from '../../components/Header';
+import { ScaledSheet } from 'react-native-size-matters';
+import { SceneMap, TabView } from 'react-native-tab-view';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTafsirs } from '../../api';
+
 import {
   setArabic,
   setArabicFont,
@@ -28,19 +31,20 @@ import {
   setTransliterationLanguage,
   setTransliterationList,
 } from '../../redux/reduxToolkit/store/servicesSlice';
-import {COLORS, FONTS, FONTSTYLE} from '../../theme';
-import {getAllChaptersData} from '../../utils/chapter';
+import { COLORS, FONTS, FONTSTYLE } from '../../theme';
+import { getAllChaptersData } from '../../utils/chapter';
 import JuzList from '../JuzList';
-import PageList from '../PageList';
 import SurahList from '../SurahList';
-
-import {useFocusEffect} from '@react-navigation/native';
-import {juzDataList} from '../../data/juzDataList';
+import Rukuz from '../Rukuz';
+import { useFocusEffect } from '@react-navigation/native';
+import { juzDataList } from '../../data/juzDataList';
 import localeLanguage from '../../helper/localLanguage';
-import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
-import {setRecitersDataList} from '../../redux/reduxToolkit/store/recitersDataList';
+import { getStorageItem, setStorageItem } from '../../mmkvStorage/storeData';
+import { setRecitersDataList } from '../../redux/reduxToolkit/store/recitersDataList';
 import recitersData from '../../utils/reciters.json'
-const DashBoard = ({navigation, route}) => {
+import { Colors } from '../../../../theme';
+
+const DashBoard = ({ navigation, route }) => {
   const selectedTafseerLanguage = useSelector(
     state => state.services.tafseerLanguage,
   );
@@ -67,69 +71,69 @@ const DashBoard = ({navigation, route}) => {
   const [allSurahList, setAllSurahList] = useState([]);
   const [allJuzList, setAllJuzList] = useState([]);
   const [allPagesList, setAllPagesList] = useState([]);
+  const tabScrollRef = useRef(null);
+  const tabLayouts = useRef({});
 
   const dispatch = useDispatch();
   const layout = useWindowDimensions();
   const [routes] = useState([
-    {key: 'surah', title: 'Surah'},
-    {key: 'juz', title: 'Juz'},
-    {key: 'pages', title: 'Pages'},
+    { key: 'surah', title: 'Surah' },
+    { key: 'juz', title: 'Juz' },
+    { key: 'rukus', title: 'Rukus' },
+    
   ]);
+
+  const MemoizedSurahList = React.memo(SurahList);
+  const MemoizedJuzList = React.memo(JuzList);
+  const MemoizedRukuzList = React.memo(Rukuz);
+
   const renderScene = SceneMap({
-    surah: () => <SurahList navigation={navigation} route={route} />,
-    juz: () => <JuzList navigation={navigation} />,
-    pages: () => <PageList navigation={navigation} />,
+    surah: () => <MemoizedSurahList navigation={navigation} route={route} />,
+    juz: () => <MemoizedJuzList navigation={navigation} />,
+    rukus: () => <MemoizedRukuzList navigation={navigation} />,
   });
 
-  const renderTabBar = props => {
-    const currentPageIndex = props?.navigationState?.index;
-    const inputRange = props?.navigationState?.routes?.map((x, i) => i);
-    const currentIndex = currentPageIndex;
-    setCurrentPageIndex(currentPageIndex);
-    return (
-      <View style={styles.tabBar}>
-        {props.navigationState.routes.map((route, i) => {
-          const opacity = props.position.interpolate({
-            inputRange,
-            outputRange: inputRange.map(inputIndex =>
-              inputIndex === i ? 1 : 0.5,
-            ),
-          });
-          const color = currentIndex === i ? COLORS.yellow : COLORS.white;
+const renderTabBar = props => {
+  const currentIndex = props.navigationState.index;
 
-          return (
-            <TouchableOpacity
-              key={route.key}
-              style={styles.tabItem}
-              onPress={() => setIndex(i)}>
-              <Animated.Text
-                style={{
-                  ...FONTSTYLE(
-                    currentIndex === i
-                      ? FONTS.poppinsMedium
-                      : FONTS.poppinsRegular,
-                  ).body,
-                  color,
-                }}>
-                {route.title}
-              </Animated.Text>
-              {currentIndex === i && (
-                <Animated.View
-                  style={{
-                    width: '100%',
-                    height: 4,
-                    backgroundColor: color,
-                    position: 'absolute',
-                    bottom: 0,
-                  }}
-                />
-              )}
-            </TouchableOpacity>
-          );
-        })}
+  return (
+    <View style={styles.tabWrapper}>
+      <View style={styles.browseRow}>
+
+        <View style={styles.titleContainer}>
+          <View style={styles.leftIndicator} />
+          <Text style={styles.headerText}>Browse Quran</Text>
+        </View>
+
+        <View style={styles.segmentContainer}>
+          {props.navigationState.routes.map((route, i) => {
+            const isFocused = currentIndex === i;
+
+            return (
+              <TouchableOpacity
+                key={route.key}
+                activeOpacity={0.8}
+                onPress={() => setIndex(i)}
+                style={[
+                  styles.segmentButton,
+                  isFocused && styles.segmentButtonActive,
+                ]}>
+                <Text
+                  style={[
+                    styles.segmentText,
+                    isFocused && styles.segmentTextActive,
+                  ]}>
+                  {route.title}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
       </View>
-    );
-  };
+    </View>
+  );
+};
 
   const onClickSearchIcon = () => {
     setSearchText('');
@@ -137,21 +141,21 @@ const DashBoard = ({navigation, route}) => {
     getJuzData();
     setSearchbarVisible(true);
   };
-
   useEffect(() => {
     getChaptersData(localeLanguage);
     getJuzData();
     pagesListData();
-  }, []);
-
-  useFocusEffect(React.useCallback(() => {}, []));
+  }, [localeLanguage]);
+  useFocusEffect(React.useCallback(() => { }, []));
   useEffect(() => {
     if (route?.params?.selectedSurahItems) {
       setIndex(route?.params?.tabIndex);
     }
   }, [route?.params]);
-
-  useEffect(async () => {
+  useEffect(() => {
+   getAll();
+  }, []);
+ const getAll = async () => {
     if (dynamicArabicFontSize?.length != 0) {
       dispatch(setArabicFontSize(dynamicArabicFontSize));
     }
@@ -205,22 +209,21 @@ const DashBoard = ({navigation, route}) => {
     return () => {
       unsubscribe();
     };
-  }, []);
-
+  };
   const getChaptersData = async lag => {
     const chaptersData = await getAllChaptersData();
-
+  
     const chapterDataWithIds = Object.entries(chaptersData).map(
       ([id, chapter]) => ({
         ...chapter,
-        id,
+        id, 
       }),
     );
-
+  
     setAllSurahList(chapterDataWithIds);
+
     dispatch(setChapterDetail(chapterDataWithIds));
   };
-
   const getJuzData = async () => {
     const juzData = juzDataList;
     const juzList = juzData.map((item, index) => ({
@@ -231,30 +234,30 @@ const DashBoard = ({navigation, route}) => {
     setAllJuzList(juzList);
     dispatch(setJuzList(juzList));
   };
-
   const pagesListData = () => {
     const pageItems = [];
     for (let i = 1; i <= 604; i++) {
-      pageItems.push({id: i, pageNumber: `Page ${i}`});
+      pageItems.push({ id: i, pageNumber: `Page ${i}` });
     }
     setAllPagesList(pageItems);
     dispatch(setPagesList(pageItems));
   };
-
   const getReciterData = async () => {
- 
-    const updatedArray = recitersData?.filter(
+  const updatedArray = recitersData
+    ?.filter(
       (value, index, self) =>
-        index === self.findIndex(item => item?.name === value?.name),
-    );
-    dispatch(setRecitersDataList(updatedArray));
-    if (reciters?.length === 0) {
-      setStorageItem('reciters', updatedArray[0]);
-    } else {
-      console.log("Waqas");
-    }
-  };
+        index === self.findIndex(item => item?.name === value?.name)
+    )
+    .filter(item => ![161, 168, 173].includes(item?.id));
 
+  dispatch(setRecitersDataList(updatedArray));
+
+  if (reciters?.length === 0) {
+    setStorageItem('reciters', updatedArray[0]);
+  } else {
+    console.log("Data");
+  }
+  };
   const getTafseerAuthor = async () => {
     const lang = selectedTafseerLanguage?.name
       ? selectedTafseerLanguage?.name
@@ -262,13 +265,11 @@ const DashBoard = ({navigation, route}) => {
     const tafseerAuthorData = await getTafsirs(lang);
     dispatch(setTafseerAuthor(tafseerAuthorData?.tafsirs[0]));
   };
-
   useEffect(() => {
     handleSearchBySurah(searchText);
     handleSearchByJuz(searchText);
     handleSearchByPage(searchText);
   }, [searchText]);
-
   const handleSearchBySurah = text => {
     if (text) {
       const filterChapterDetail = allSurahList?.filter(item => {
@@ -281,7 +282,6 @@ const DashBoard = ({navigation, route}) => {
       getChaptersData(localeLanguage);
     }
   };
-
   const handleSearchByJuz = text => {
     if (text) {
       const filterJuzDetail = allJuzList.filter(item => {
@@ -294,7 +294,6 @@ const DashBoard = ({navigation, route}) => {
       getJuzData();
     }
   };
-
   const handleSearchByPage = text => {
     if (text) {
       const filterPagesDetail = allPagesList?.filter(item => {
@@ -309,9 +308,7 @@ const DashBoard = ({navigation, route}) => {
   };
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate('Guest', {
-        tabIndex: 2,
-      });
+      navigation.navigate('QuranMainDashboard');
       return true;
     };
 
@@ -324,39 +321,16 @@ const DashBoard = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <Header
-        title={'Al-Quran'}
-        onPressLeftIcon={() => {
-          navigation.navigate('Guest');
-        }}
-        leftIcon={true}
-        onPressRightIcon={() => {
-          onClickSearchIcon();
-        }}
-        onClickCloseSearch={() => {
-          setSearchText('');
-          setSearchbarVisible(false);
-        }}
-        searchText={searchText}
-        onChangeText={text => {
-          setSearchText(text);
-          if (currentPageIndex == 0) {
-            handleSearchBySurah(text);
-          } else if (currentPageIndex == 1) {
-            handleSearchByJuz(text);
-          } else if (currentPageIndex == 2) {
-          } else {
-          }
-        }}
-        searchEnable={searchbarVisible}
-      />
-      <TabView
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={{width: layout.width}}
-      />
+    
+    
+     <TabView
+  navigationState={{ index, routes }}
+  renderScene={renderScene}
+  renderTabBar={renderTabBar}
+  onIndexChange={setIndex}
+  initialLayout={{ width: layout.width }}
+  lazy
+/>
     </View>
   );
 };
@@ -366,10 +340,23 @@ export default DashBoard;
 const styles = ScaledSheet.create({
   container: {
     flex: 1,
+    backgroundColor:Colors.intermediate1
+  },
+  tabBarContent: {
+  paddingHorizontal: 30,
+  alignItems: 'center',
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: COLORS.primaryBlue,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: '10@s',
+  },
+  chip: {
+    paddingVertical: '8@s',
+    paddingHorizontal: '18@s',
+    borderRadius: '8@s',
+    borderWidth: 1,
+    marginHorizontal: '2@s',
   },
   tabItem: {
     flex: 1,
@@ -377,4 +364,68 @@ const styles = ScaledSheet.create({
     paddingTop: '5@s',
     paddingBottom: '14@s',
   },
+
+  tabWrapper: {
+  backgroundColor: Colors.intermediate1,
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+},
+
+browseRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+},
+
+titleContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+leftIndicator: {
+  width: 4,
+  left:5,
+  height: 32,
+  borderRadius: 10,
+  backgroundColor: Colors.secondary1,
+},
+
+headerText: {
+  marginLeft: 15,
+  fontSize: 14,
+  fontWeight: '700',
+  color: Colors.white,
+},
+
+segmentContainer: {
+  backgroundColor:Colors.secondary1,
+  flexDirection: 'row',
+  width: 230, 
+  height: 42,
+  borderWidth: 2,
+  borderColor: Colors.secondary1,
+  borderRadius: 10,
+  overflow: 'hidden',
+},
+
+segmentButton: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+segmentButtonActive: {
+  backgroundColor: Colors.primary,
+},
+
+segmentText: {
+  fontSize: 15,
+  color: Colors.black,
+  fontFamily: Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
+},
+
+segmentTextActive: {
+  color: '#FFFFFF',
+  fontWeight: '600',
+},
 });

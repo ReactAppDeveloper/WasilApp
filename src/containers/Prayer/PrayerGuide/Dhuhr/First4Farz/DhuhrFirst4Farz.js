@@ -1,94 +1,129 @@
 import React from 'react';
-import {LogBox,View,Text,StyleSheet} from 'react-native';
+import {
+  LogBox,
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  StatusBar
+} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import FirstRakat from "./FirstRakat"
-import SecondRakat from "./SecondRakat"
-import ThirdRakat from "./ThirdRakat"
-import FourthRakat from "./FourthRakat"
 
-import { Colors} from '../../../../../theme';
+import FirstRakat from './FirstRakat';
+import SecondRakat from './SecondRakat';
+import ThirdRakat from './ThirdRakat';
+import FourthRakat from './FourthRakat';
+
+import {Colors} from '../../../../../theme';
+import {WasilNewBTPrayerDhuhrFarzSvg} from '../../../../../assets/icons';
 
 LogBox.ignoreAllLogs();
 
 const Tab = createMaterialTopTabNavigator();
 
-const DhuhrFirst4Farz = ({ navigation }) => { 
+const renderTabLabel = (label, color) => (
+  <Text
+    allowFontScaling={false}
+    numberOfLines={1}
+    adjustsFontSizeToFit
+    minimumFontScale={0.8}
+    style={{
+      color,
+      fontSize: 13,
+      fontWeight: '600',
+      fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
+    }}>
+    {label}
+  </Text>
+);
+
+const DhuhrFirst4Farz = () => {
   return (
     <View style={styles.containerMain}>
-    <View style={styles.slidercontainer}>
-    <View style={{ height: 50,alignItems:"center",top:22}}>
-          <Text
-                style={{
-                  height:100,
-                  fontSize: 22,
-                  color: "white",
-                  fontWeight: "500",
-                  fontFamily: "PoppinsLight",
-                  textAlign:"center"
-                }}>
-                Dhuhr Prayer{'\n'}Farz: 4 rak’ah
-          </Text>
-         
-          </View>
-          </View>
-    <Tab.Navigator
-    screenOptions={{
-      tabBarActiveTintColor: Colors.intermediate,
-      tabBarInactiveTintColor: Colors.primary,
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-      },
-      tabBarLabelStyle: {
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight:"bold",
-        fontFamily:"Raleway",
-        textTransform:"capitalize"
-      },
-      tabBarIndicatorStyle: {
-        borderBottomColor: Colors.intermediate,
-        borderBottomWidth: 3,
-      },
-    }}>
-   <Tab.Screen
-      name="1st  rakah"
-      component={FirstRakat}
-      options={{
-        tabBarLabel:"1st  rakah",
-      }}  />
-    <Tab.Screen
-        name="2nd  rakah"
-      component={SecondRakat}
-      options={{
-        tabBarLabel:"2nd  rakah",
-      }} />
-       <Tab.Screen
-      name="3rd  rakah"
-      component={ThirdRakat}
-      options={{
-        tabBarLabel:"3rd  rakah",
-      }}  />
-    <Tab.Screen
-        name="4th  rakah"
-      component={FourthRakat}
-      options={{
-        tabBarLabel:"4th  rakah",
-      }} />
-      
-  </Tab.Navigator>
-  </View>
+       <StatusBar backgroundColor={Colors.intermediate1}/>
+      <View style={styles.slidercontainer}>
+        <WasilNewBTPrayerDhuhrFarzSvg />
+      </View>
+
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {
+           backgroundColor:Colors.secondary1,
+            marginHorizontal: 16,
+            marginTop: 16,
+            borderRadius: 12,
+            elevation: 0,
+            shadowOpacity: 0,
+            height: 50,
+          },
+
+          tabBarItemStyle: {
+            borderRadius: 14,
+            paddingHorizontal: 4,
+          },
+
+          tabBarIndicatorStyle: {
+           backgroundColor: "#5F50A1",
+            height: '100%',
+            borderRadius: 14,
+          },
+
+          tabBarActiveTintColor: Colors.white,
+          tabBarInactiveTintColor: '#444',
+
+          tabBarLabelStyle: {
+            textTransform: 'none',
+          },
+
+          tabBarPressColor: 'transparent',
+        }}>
+        <Tab.Screen
+          name="FirstRakat"
+          component={FirstRakat}
+          options={{
+            tabBarLabel: ({color}) => renderTabLabel('1st Rakah', color),
+          }}
+        />
+
+        <Tab.Screen
+          name="SecondRakat"
+          component={SecondRakat}
+          options={{
+            tabBarLabel: ({color}) => renderTabLabel('2nd Rakah', color),
+          }}
+        />
+
+        <Tab.Screen
+          name="ThirdRakat"
+          component={ThirdRakat}
+          options={{
+            tabBarLabel: ({color}) => renderTabLabel('3rd Rakah', color),
+          }}
+        />
+
+        <Tab.Screen
+          name="FourthRakat"
+          component={FourthRakat}
+          options={{
+            tabBarLabel: ({color}) => renderTabLabel('4th Rakah', color),
+          }}
+        />
+      </Tab.Navigator>
+    </View>
   );
 };
 
 export default DhuhrFirst4Farz;
+
 const styles = StyleSheet.create({
   containerMain: {
     flex: 1,
-    backgroundColor:Colors.white
+    backgroundColor: Colors.intermediate1,
   },
+
   slidercontainer: {
-    backgroundColor: Colors.primary,
+    top: 20,
+    alignSelf: 'center',
     height: 120,
-   
   },
 });

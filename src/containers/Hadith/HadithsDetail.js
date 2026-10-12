@@ -1,66 +1,88 @@
-import React,{ useState, useEffect }  from 'react';
-import {StatusBar, StyleSheet,View,Text,ScrollView,LogBox,ActivityIndicator} from 'react-native';
-import {Colors} from '../../theme';
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import {
+  StatusBar,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  Platform
+} from 'react-native';
+import axios from 'axios';
+import { Colors } from '../../theme';
 import useStorehadith from '../../hadithstore';
 import HadithCard from './HadithCard';
-LogBox.ignoreAllLogs();
 
-const HadithsDetail = ({ route }) => { 
-    const { favouriteshadith } = useStorehadith();
-    const {hadithchapternumber,hadithbookname} = route.params;
-    const [hadithsdetaildata, sethadithsdetaildata] = useState([]);
-    const [isLoading,setisLoading] = useState(false);
-    const [error,seterror] = useState(null);
-    useEffect(() => {
-      setisLoading(true);
-      const fetchData = async () => 
-      {
-        try {
-          const response = await axios.get(
-            'https://www.hadithapi.com/public/api/hadiths?book='+hadithbookname+'&chapter='+hadithchapternumber+'&&paginate=50&apiKey=$2y$10$qSQzGL8GxgFsxQDqeb7MMe9mzdAfCNf2dOorH6mokC70Unhfli')
-          console.log("received response")
-          const data = response.data.hadiths.data
-          sethadithsdetaildata(data);
- 
-        } catch (e) {
-          console.log("Error")
-        }
-        setisLoading(false);
-      }
-       fetchData()
-    }, [])
-  
-    if(isLoading){
-      return(
-        <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-        <ActivityIndicator size={"large"} color={Colors.primary}>
-  
-        </ActivityIndicator>
-        </View>
-      );
+const HadithsDetail = ({ route }) => {
+  const { favouriteshadith } = useStorehadith();
+  const { hadithchapternumber, hadithbookname } = route.params;
+  const [hadithsdetaildata, setHadithsDetailData] = useState([]);
+  const [chapternumber, setchapternumber] = useState("");
+  const [chapterenglishname, setchapterenglishname] = useState("");
+  const [chapterarabicname, setchapterarabicname] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+  fetchData();
+  }, []);
+
+  const fetchData = async () => {
+  setIsLoading(true);
+  try {
+    const response = await axios.get(
+      `https://www.hadithapi.com/public/api/hadiths?book=${hadithbookname}&chapter=${hadithchapternumber}&paginate=50&apiKey=$2y$10$qSQzGL8GxgFsxQDqeb7MMe9mzdAfCNf2dOorH6mokC70Unhfli`
+    );
+
+    const hadiths = response.data.hadiths.data;
+    setHadithsDetailData(hadiths);
+
+     if (hadiths.length > 0) {
+      const chapter = hadiths[0].chapter; 
+      
+      setchapternumber(chapter.chapterNumber);
+      setchapterenglishname(chapter.chapterEnglish);
+      setchapterarabicname(chapter.chapterArabic);
     }
-    if(error){
-      return(
-        <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-        <Text>
-        Error in Fetching Data..... Please Check Your Internet Connection.
-        </Text>
-        </View>
-      );
-    }
-   
+  } catch (e) {
+    console.log(e);
+  }
+  setIsLoading(false);
+};
+
+  if (isLoading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.containerMain}>
-       <StatusBar backgroundColor={Colors.primary}/>
-       <View style={{flexDirection:"column"}}>
-                <ScrollView>
-                 {hadithsdetaildata.map((item, index) => (
-              <HadithCard key={index} hadith={item} favouriteshadith={favouriteshadith} index={index}/>
-            ))}
-                <View style={{height:70}}></View>
-                </ScrollView>           
-           </View>
+    <View style={styles.container}>
+      <StatusBar backgroundColor={Colors.intermediate1} />
+
+       <View style={styles.headerCard}>
+  <Text style={styles.headerTitle}>
+    ({chapternumber}) Chapter: {chapterenglishname}
+  </Text>
+
+  <Text style={styles.headerArabic}>
+    {chapterarabicname}
+  </Text>
+</View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        
+        {hadithsdetaildata.map((item, index) => (
+          <HadithCard
+            key={index}
+            hadith={item}
+            index={index}
+            favouriteshadith={favouriteshadith}
+          />
+        ))}
+
+        <View style={{ height: 20 }} />
+      </ScrollView>
     </View>
   );
 };
@@ -68,24 +90,33 @@ const HadithsDetail = ({ route }) => {
 export default HadithsDetail;
 
 const styles = StyleSheet.create({
-  containerMain: {
+  container: {
     flex: 1,
-    backgroundColor:Colors.transparent
+    backgroundColor: Colors.intermediate1,
   },
-  cardfirst: {  
-    flexDirection:"column",
-    alignSelf:"center",
-    flex:1,
-    marginTop:10,
-    borderRadius:7,
-    borderWidth:0.7,
-    borderColor:Colors.bordercolor,
-    width:"85%",
-    backgroundColor: 'white',  
-    borderRadius: 8,  
-    elevation:5,
-    shadowColor: Colors.secondary,
-    overflow: 'hidden',
-    marginBottom: 10,
-  }
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerCard: {
+    backgroundColor: Colors.secondary1,
+    margin: 16,
+    borderRadius: 12,
+    padding: 16,
+    width:"95%",
+    alignSelf:"center"
+  },
+  headerTitle: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  headerArabic: {
+    color: Colors.white,
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 30,
+    fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
+  },
 });

@@ -17,7 +17,7 @@ export const Paginator = ({data,scrollx}) => {
             })
             const dotColor = scrollx.interpolate({
               inputRange,
-              outputRange: ['#BDBDBD', '#DFAA16', '#BDBDBD'], // Change colors as needed
+              outputRange: ['#BDBDBD', '#7164FA', '#BDBDBD'], // Change colors as needed
               extrapolate: 'clamp',
           });
             return<Animated.View style={[styles.dot,{width:dotWidth,backgroundColor: dotColor,}]} key={i.toString()}/>

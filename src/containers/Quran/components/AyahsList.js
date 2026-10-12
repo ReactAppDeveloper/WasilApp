@@ -11,10 +11,13 @@ import {useSelector} from 'react-redux';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import FavoriteView from './FavoriteView';
 import VerticalText from './VerticalText';
-
+import {
+  DuaListNumberBTSVGG,
+} from '../../../assets/icons';
+import { Colors } from '../../../theme';
 export const LineView = () => {
   return (
-    <View style={{height: 1.4, backgroundColor: COLORS.primaryGray}}></View>
+    <View style={{height: 1.4, backgroundColor: COLORS.wasilnewthemecolorsecondGray}}></View>
   );
 };
 
@@ -42,31 +45,22 @@ const AyashList = ({
         style={[styles.mainView, mainViewCustomStyle]}
         onPress={onPress}
         activeOpacity={0.5}>
-        <ImageBackground
-          source={backgroundImage}
-          resizeMode="cover"
-          style={styles.backgroundImageStyle}>
-          <View style={styles.leftViewStyle}>
-            <Text style={styles.idStyle}>{numberCounting}</Text>
-          </View>
-        </ImageBackground>
+         <View style={{flex: 0.8,}}>
+            <View style={{ height: Platform.OS === 'ios' ? 30 : 30}}></View>
+            <View style={{ left: Platform.OS === 'ios' ? 16 : 16}}>
+             <DuaListNumberBTSVGG />
+             </View>
+            <Text style={{ left: Platform.OS === 'ios' ? 3 : 4,bottom: Platform.OS === 'ios' ? 33 : 33, textAlign: "center", fontWeight: "500", color: Colors.white, fontSize: 18, fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway' }}>{numberCounting}</Text>
+            </View>
         <View style={styles.middleTextView}>
           <VerticalText
             titleText={leftTitleText}
             subText={leftSubText}
             titleTextStyle={styles.leftTitleTextStyle}
             subTextStyle={styles.leftSubTextStyle}
-            isShowSubText={isShowLeftSubText}
           />
         </View>
-        {isFavoriteIconShow && (
-          <FavoriteView
-            onPressFavoriteIcon={onPressFavoriteIcon}
-            isFavorite={isFavorite}
-            surahId={numberCounting}
-            item={item}
-          />
-        )}
+       
         {isShowRightTextView && (
           <View style={styles.rightViewStyle}>
             <VerticalText
@@ -80,14 +74,20 @@ const AyashList = ({
                       : FONTS[isArabicFont?.key],
                   ).headerText,
                   lineHeight: Platform.OS === 'android' ? 40 : 0,
-                  // lineHeight: 0,
                 },
                 styles.rightTitleTextStyle,
               ]}
-              subTextStyle={styles.rightSubTextStyle}
-              isShowSubText={isShowRightSubText}
+             
             />
           </View>
+        )}
+         {isFavoriteIconShow && (
+          <FavoriteView
+            onPressFavoriteIcon={onPressFavoriteIcon}
+            isFavorite={isFavorite}
+            surahId={numberCounting}
+            item={item}
+          />
         )}
       </TouchableOpacity>
     </>
@@ -97,13 +97,15 @@ const AyashList = ({
 export default AyashList;
 const styles = ScaledSheet.create({
   mainView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: '18@s',
-    paddingVertical: '12@s',
-    borderBottomWidth: 1,
-    borderColor: COLORS.lightSlateGray,
+   flexDirection: 'row',
+   alignItems: 'center',
+   width: "95%",
+   height: 70,
+   alignSelf:"center",
+   borderRadius:12,
+   borderWidth:0.2,
+   marginTop:10,
+   borderColor: COLORS.lightSlateGray,
   },
   backgroundImageStyle: {
     height: '45@s',
@@ -118,21 +120,32 @@ const styles = ScaledSheet.create({
   idStyle: {
     ...FONTSTYLE(FONTS.poppinsSemiBold).body,
   },
-  middleTextView: {flex: 1, marginHorizontal: '8@vs'},
+  middleTextView: {flex: 1,left: Platform.OS === 'ios' ? 8 : 8},
   leftTitleTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsSemiBold).inputs,
+   width:130,
+   fontFamily: Platform.OS === 'ios' ? 'Asul-Regular' : 'AsulRegular',
+   fontSize:16,
+   right:4,
+   top:Platform.OS === 'ios' ? 2 : 0,
+   color:Colors.white
   },
   leftSubTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).smallText,
-    color: COLORS.slateGray,
+   fontFamily: Platform.OS === 'ios' ? 'Asul-Regular' : 'AsulRegular',
+   fontSize:12,
+   right:4,
+   color:Colors.white
   },
-  rightViewStyle: {width: '26%'},
+  rightViewStyle: {width: '55%'},
   rightTitleTextStyle: {
-    textAlign: 'right',
+     top:10,
+     textAlign: 'center',
+     fontFamily: "sura_names",
+     fontSize:35,
+     color:Colors.white
   },
   rightSubTextStyle: {
     ...FONTSTYLE(FONTS.poppinsRegular).caption,
-    color: COLORS.slateGray,
-    textAlign: 'right',
+    color: COLORS.white,
+    textAlign: 'center',
   },
 });

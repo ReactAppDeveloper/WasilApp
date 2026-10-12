@@ -101,6 +101,6 @@ const styles = ScaledSheet.create({
     width: '100%',
     height: '35@vs',
     ...FONTSTYLE(FONTS.sfProRegular).inputs,
-    color: COLORS.white,
+    color: '#FFFFFF',
   },
 });

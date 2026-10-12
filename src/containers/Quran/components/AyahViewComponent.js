@@ -4,12 +4,12 @@ import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import {getStorageItem} from '../mmkvStorage/storeData';
 import {COLORS, FONTS, FONTSTYLE} from '../theme';
+import { Colors } from '../../../theme';
 
 const AyahViewComponent = ({
   detailTextCustomeStyle,
   detailContainerCustomeStyle,
   ayahItem,
-  searchingText,
 }) => {
   const isArabic = getStorageItem('isArabic');
   const isTranslation = getStorageItem('isTranslation');
@@ -20,61 +20,47 @@ const AyahViewComponent = ({
   const translationFontSize = useSelector(
     state => state.services.translationFontSize,
   );
-  const highlightText = text => {
-    const parts = text.split(new RegExp(`(${searchingText})`, 'gi'));
-    return parts.map((part, index) =>
-      part?.toLowerCase() === searchingText?.toLowerCase() ? (
-        <Text
-          key={index}
-          style={[
-            styles.caption,
 
-            {
-              ...FONTSTYLE(FONTS.poppinsLight, translationFontSize).arabicText,
-              color: COLORS.yellow,
-            },
-          ]}>
-          {part}
-        </Text>
-      ) : (
-        <Text
-          style={[
-            {
-              ...FONTSTYLE(FONTS.poppinsLight, translationFontSize).arabicText,
-            },
-            styles.caption,
-          ]}
-          key={index}>
-          {part}
-        </Text>
-      ),
-    );
-  };
 
   return (
     <>
       <View style={[styles.detailContainer, detailContainerCustomeStyle]}>
-        {isArabic && (
-          <Text style={styles.detailText}>
-            {ayahItem?.words?.map(item => (
-              <Text
-                key={item?.id}
-                style={[
-                  {
-                    ...FONTSTYLE(
-                      Platform.OS === 'android'
-                        ? isArabicFont?.key
-                        : FONTS[isArabicFont?.key],
-                      arabicFontSize,
-                    ).arabicText,
-                  },
-                  detailTextCustomeStyle,
-                ]}>
-            {`${item?.textUthmani.replace(/[\d\u0660-\u0669]+/g, '')} `}
-              </Text>
-            ))}
-          </Text>
-        )}
+         {isArabic && (
+  <Text
+    style={[
+      styles.detailText,
+      {
+        ...FONTSTYLE(
+          Platform.OS === 'android'
+            ? isArabicFont?.key
+            : FONTS[isArabicFont?.key],
+          arabicFontSize,
+        ).arabicText,
+      },
+      detailTextCustomeStyle,
+    ]}>
+    {ayahItem?.words
+      ?.map(item =>
+        item?.textUthmani
+          ?.replace(/[\d\u0660-\u0669]+/g, '')
+          ?.trim(),
+      )
+      .join(' ')}
+    <Text
+      style={[
+      styles.detailText,
+      {
+        ...FONTSTYLE(
+          FONTS.trochutBold,
+          arabicFontSize*0.8,
+        ).arabicText,
+      },
+      detailTextCustomeStyle,
+    ]}>
+      {'﴿'}{ayahItem?.verseKey?.split(':')[1]}{'﴾'}
+    </Text>
+  </Text>
+)}
 
         {isTransliteration && (
           <>
@@ -130,15 +116,16 @@ export default AyahViewComponent;
 const styles = ScaledSheet.create({
   detailContainer: {
     padding: '15@s',
-    borderBottomWidth: 2,
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.lightSlateGray,
+    borderBottomWidth: 1,
+    backgroundColor: Colors.primary,
   },
   detailText: {
     alignSelf: 'flex-end',
+    writingDirection: 'rtl',
+    textAlign: 'right',
   },
   caption: {
-    color: COLORS.primaryGray,
+    color: COLORS.white,
   },
   line: {
     height: 1,

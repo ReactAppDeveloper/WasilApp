@@ -130,14 +130,14 @@ const styles = ScaledSheet.create({
   detailContainer: {
     padding: '15@s',
     borderBottomWidth: 2,
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
     borderColor: COLORS.lightSlateGray,
   },
   detailText: {
     alignSelf: 'flex-end',
   },
   caption: {
-    color: COLORS.primaryGray,
+    color: COLORS.wasilnewthemecolorsecondGray,
   },
   line: {
     height: 1,

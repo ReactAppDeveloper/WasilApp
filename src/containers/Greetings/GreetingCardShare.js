@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, StyleSheet,View,Image,TouchableOpacity,Text,LogBox,ScrollView,FlatList} from 'react-native';
+import {StatusBar, StyleSheet,View,Image,TouchableOpacity,Text,LogBox,ScrollView,FlatList,Platform} from 'react-native';
 import {Colors} from '../../theme';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Share from 'react-native-share';
@@ -100,20 +100,20 @@ const GreetingCardShare = ({ route,navigation}) => {
               console.log(r);
             })
             .catch(e => {
-              console.log(r);
+              console.log(e);
             });
         } else {
-          console.log(r);
+          console.log("issue occured");
         }
       })
       .catch(err => {
-        console.log(r);
+        console.log(err);
       });
   };
 
   return (
     <View style={styles.containerMain}>
-       <StatusBar backgroundColor={Colors.primary}/>
+       <StatusBar backgroundColor={Colors.intermediate1}/>
          <ScrollView 
          style={styles.maincontainer}>
          <View style={{alignSelf:"center",top:10}}>
@@ -143,7 +143,7 @@ const GreetingCardShare = ({ route,navigation}) => {
             data={greetingsdata}
             renderItem={({ item,index}) => (
               <TouchableOpacity key={index} onPress={() => {
-                navigation.navigate('GreetingCardList', {
+                navigation.navigate('GreetingCardListNew', {
                   cardid: item._id,
                   categoryname:item.name,
                   name:item.name
@@ -155,7 +155,7 @@ const GreetingCardShare = ({ route,navigation}) => {
                   style={{
                     backgroundColor: Colors.primary,
                     height: 40,
-                    width:140,
+                    width: Platform.OS === 'ios' ? 139 : 140,
                     bottom:15,
                     flex:0.3,
                     marginRight: 10,
@@ -165,10 +165,10 @@ const GreetingCardShare = ({ route,navigation}) => {
                   <Text
                     style={{
                       color: Colors.white,
-                      fontSize: 10,
+                      fontSize: 12,
                       alignSelf: "center",
-                      top: 10,
-                      fontFamily: "Raleway",
+                      top: Platform.OS === 'ios' ? 12: 10,
+                      fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
                     }}>
                     {item.name}
                   </Text>
@@ -189,13 +189,13 @@ export default GreetingCardShare;
 
 const styles = StyleSheet.create({
   maincontainer: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.intermediate1,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
   },
   containerMain: {
     flex: 1,
-    backgroundColor:Colors.white,
+    backgroundColor:Colors.intermediate1,
   },
   advImage: {
     height:500,
@@ -204,10 +204,10 @@ const styles = StyleSheet.create({
     resizeMode:"stretch"
   },
   submit: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.secondary1,
     borderRadius: 20,
     borderWidth: 0.5,
-    borderColor: Colors.primary,
+    borderColor: Colors.secondary1,
     height:45,
     width:200,
     alignSelf:"center",
@@ -215,9 +215,9 @@ const styles = StyleSheet.create({
   },
   submitText: {
     fontSize:15,
-    top:9,
+    top:Platform.OS === 'ios' ? 12 : 10,
     color: Colors.white,
-    fontFamily:"Raleway",
+    fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
     alignSelf:'center',
     fontWeight:"400"
   },
@@ -229,9 +229,9 @@ const styles = StyleSheet.create({
   advTextFontStyle: {
     fontSize: 18,
     top:7,
-    color: Colors.secondary,
+    color: Colors.white,
     fontWeight:"600",
-    fontFamily: "heading",
+    fontFamily: Platform.OS === 'ios' ? 'DM Serif Text' : 'heading',
   },
   advImage1: {
     flex:1,
@@ -248,13 +248,13 @@ const styles = StyleSheet.create({
     height:80,
     alignSelf:"center",
     marginBottom:10,
-    backgroundColor:Colors.transparent,
+    backgroundColor:Colors.intermediate1,
     top:-4,
     zIndex:-1,
     borderBottomLeftRadius:7,
     borderBottomRightRadius:7,
     elevation:3,
-    shadowColor: Colors.bordercolor,
+    shadowColor: Colors.intermediate1,
     shadowOffset: { width: 0.5, height: 0.5 },
     shadowOpacity:  0.5,
     shadowRadius: 0.5,

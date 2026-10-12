@@ -21,6 +21,6 @@ const styles = ScaledSheet.create({
   },
   noDataTextStyle: {
     ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
-    color: COLORS.primaryBlue,
+    color: COLORS.wasilnewthemecolorsecondBlue,
   },
 });

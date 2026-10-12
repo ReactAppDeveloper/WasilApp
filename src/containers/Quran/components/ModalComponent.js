@@ -35,7 +35,7 @@ const ModalComponent = ({
                 onPress={() => {
                   onClickClose();
                 }}
-                textColor={COLORS.white}
+                textColor={'#FFFFFF'}
                 style={[styles.buttonStyle, {backgroundColor: COLORS.yellow}]}
                 labelStyle={styles.pinButtonlabelStyle}
               />
@@ -47,10 +47,10 @@ const ModalComponent = ({
                 onPress={() => {
                   onClickConfirm();
                 }}
-                textColor={COLORS.white}
+                textColor={'#FFFFFF'}
                 style={[
                   styles.buttonStyle,
-                  {backgroundColor: COLORS.primaryBlue},
+                  {backgroundColor: COLORS.wasilnewthemecolorsecondBlue},
                 ]}
                 labelStyle={styles.pinButtonlabelStyle}
               />
@@ -92,16 +92,16 @@ const styles = ScaledSheet.create({
   subTextView: {marginVertical: '8@s', width: '60%'},
   pinButtonlabelStyle: {
     ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
-    color: COLORS.white,
+    color: '#FFFFFF',
   },
   pinTitleText: {
     ...FONTSTYLE(FONTS.poppinsMedium).headerText,
-    color: COLORS.primaryGray,
+    color: COLORS.wasilnewthemecolorsecondGray,
     textAlign: 'center',
   },
   pinsubText: {
     ...FONTSTYLE(FONTS.poppinsLight).inputBody,
-    color: COLORS.primaryGray,
+    color: COLORS.wasilnewthemecolorsecondGray,
     textAlign: 'center',
   },
 });

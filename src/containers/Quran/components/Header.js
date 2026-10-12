@@ -11,14 +11,18 @@ import {getStatusBarHeight} from 'react-native-iphone-screen-helper';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import Searchbar from './Searchbar';
+import { Colors } from '../../../theme';
+import { WasilNewBackArrowBTSvg,WasilNewTranslateBTSvg,WasilNewSettingBTSvg } from '../../../assets/icons';
 
 const HIT_SLOP = {bottom: 40, top: 40, left: 20, right: 20};
 const Header = ({
   title = '',
   leftIcon = true,
   rightIcon = true,
+  secondRightIcon = false,
   onPressLeftIcon = () => {},
   onPressRightIcon = () => {},
+  onPressSecondRightIcon = () => {},
   onClickCloseSearch = () => {},
   onChangeText = () => {},
   customBackIcon = null,
@@ -31,7 +35,7 @@ const Header = ({
     <View style={styles.container}>
       <StatusBar
         barStyle="light-content"
-        backgroundColor={COLORS.primaryBlue}
+        backgroundColor={Colors.intermediate1}
       />
       <View style={styles.mainView}>
         {searchEnable ? (
@@ -48,7 +52,7 @@ const Header = ({
             <View style={styles.leftIconView}>
               {leftIcon ? (
                 <TouchableOpacity hitSlop={HIT_SLOP} onPress={onPressLeftIcon}>
-                  <Image style={styles.backIcon} source={IMAGES.backIcon} />
+                  <WasilNewBackArrowBTSvg/>
                 </TouchableOpacity>
               ) : customBackIcon ? (
                 customBackIcon()
@@ -57,15 +61,26 @@ const Header = ({
             <View style={[styles.titleTextView, customTitleTextStyle]}>
               <Text style={styles.titleText}>{title}</Text>
             </View>
-            <View style={styles.rightIconView}>
-              {rightIcon ? (
-                <TouchableOpacity hitSlop={HIT_SLOP} onPress={onPressRightIcon}>
-                  <Image style={styles.searchIcon} source={IMAGES.searchIcon} />
-                </TouchableOpacity>
-              ) : customRightIcon ? (
-                customRightIcon()
-              ) : null}
-            </View>
+         <View style={styles.rightIconView}>
+  {secondRightIcon && (
+    <TouchableOpacity
+      hitSlop={HIT_SLOP}
+      onPress={onPressSecondRightIcon}
+      style={{marginRight: 12}}>
+      <WasilNewTranslateBTSvg/>
+    </TouchableOpacity>
+  )}
+
+  {rightIcon ? (
+    <TouchableOpacity
+      hitSlop={HIT_SLOP}
+      onPress={onPressRightIcon}>
+     <WasilNewSettingBTSvg/>
+    </TouchableOpacity>
+  ) : customRightIcon ? (
+    customRightIcon()
+  ) : null}
+          </View>
           </>
         )}
       </View>
@@ -79,7 +94,7 @@ const styles = ScaledSheet.create({
   container: {
     justifyContent: 'center',
     paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : '10@s',
-    backgroundColor: COLORS.primaryBlue,
+    backgroundColor: Colors.intermediate1,
     minHeight: '46@s',
   },
   mainView: {
@@ -95,24 +110,29 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
   },
   titleTextView: {
+    top:3,
     width: '50%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rightIconView: {
-    width: '20%',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
+ rightIconView: {
+  width: '25%',
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+},
   backIcon: {
     height: '17@s',
     width: '17@s',
     resizeMode: 'contain',
   },
   searchIcon: {height: '24@s', width: '24@s', resizeMode: 'contain'},
+  searchIcon1: {height: '24@s', width: '24@s', resizeMode: 'contain',right:5},
   titleText: {
     ...FONTSTYLE(FONTS.poppinsSemiBold).headerText,
     alignSelf: 'center',
-    color: COLORS.yellow,
+    color: COLORS.white,
+    left:10,
+    top:2
   },
 });

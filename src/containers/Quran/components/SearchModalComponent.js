@@ -35,8 +35,8 @@ const SearchModalComponent = ({
               mode="outlined"
               onChangeText={onChangeText}
               outlineColor={COLORS.paleGray}
-              activeOutlineColor={COLORS.primaryBlue}
-              style={{backgroundColor: COLORS.white}}
+              activeOutlineColor={COLORS.wasilnewthemecolorsecondBlue}
+              style={{backgroundColor: '#FFFFFF'}}
             />
           </View>
           <View style={styles.buttonMainView}>
@@ -46,7 +46,7 @@ const SearchModalComponent = ({
                 onPress={() => {
                   onClickSearch();
                 }}
-                textColor={COLORS.white}
+                textColor={'#FFFFFF'}
                 style={[styles.buttonStyle, {backgroundColor: COLORS.yellow}]}
                 labelStyle={styles.searchButtonLabelStyle}
               />
@@ -58,10 +58,10 @@ const SearchModalComponent = ({
                 onPress={() => {
                   onClickReturn();
                 }}
-                textColor={COLORS.white}
+                textColor={'#FFFFFF'}
                 style={[
                   styles.buttonStyle,
-                  {backgroundColor: COLORS.primaryBlue},
+                  {backgroundColor: COLORS.wasilnewthemecolorsecondBlue},
                 ]}
                 labelStyle={styles.searchButtonLabelStyle}
               />
@@ -101,16 +101,16 @@ const styles = ScaledSheet.create({
   },
   searchButtonLabelStyle: {
     ...FONTSTYLE(FONTS.poppinsRegular).body,
-    color: COLORS.white,
+    color: '#FFFFFF',
   },
   titleText: {
     ...FONTSTYLE(FONTS.poppinsMedium).inputs,
-    color: COLORS.primaryGray,
+    color: COLORS.wasilnewthemecolorsecondGray,
   },
   subTextView: {marginVertical: '8@s'},
   subText: {
     ...FONTSTYLE(FONTS.poppinsRegular).smallText,
-    color: COLORS.primaryGray,
+    color: COLORS.wasilnewthemecolorsecondGray,
   },
 });
 

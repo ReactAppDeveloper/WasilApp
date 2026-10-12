@@ -3,6 +3,7 @@ import {Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import BookmarkPageImage from './BookmarkPageImage';
+import { Colors } from '../../../theme';
 
 const TopRowComponent = ({
   isLeftPinIcon = false,
@@ -22,7 +23,7 @@ const TopRowComponent = ({
   item,
   surahDetail,
   fromBookmark = false,
-  additionalText // New prop for additional text
+  additionalText 
 }) => {
   return (
     <>
@@ -36,8 +37,9 @@ const TopRowComponent = ({
             </View>
           ) : null}
           <View style={styles.numberCountView}>
-            <Text style={styles.idStyle}>{item?.verseKey}</Text>
-          </View>
+                      <Text style={{...FONTSTYLE(FONTS.poppinsRegular).inputs,
+                        textAlign: 'center'}}>{item?.verseKey}</Text>
+                    </View>
           {isLeftPinIcon && (
             <BookmarkPageImage
               iconCustomeStyle={[styles.pinIconStyle, pinIconCustomeStyle]}
@@ -87,7 +89,8 @@ const styles = ScaledSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: '15@s',
     paddingVertical: '7@s',
-    borderWidth: 1,
+    borderWidth: 2,
+    backgroundColor:Colors.white,
     borderColor: COLORS.lightSlateGray,
   },
   leftViewStyle: {

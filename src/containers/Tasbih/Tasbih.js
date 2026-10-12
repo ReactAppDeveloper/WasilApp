@@ -1,1904 +1,222 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  StatusBar,
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
+  ActivityIndicator,
+  TextInput,
   LogBox,
+  Platform,
+  StatusBar
 } from "react-native";
 import { Colors } from "../../theme";
-import { DuaListNumberSVG, DuaForwardSVG } from "../../assets/icons";
+import {
+  WasilNewAllBTTasbihSvg,
+  SearchSVG,
+  WasilNewBTAllahTasbihSvg
+} from "../../assets/icons";
+
 LogBox.ignoreAllLogs();
 
 const Tasbih = ({ navigation }) => {
-  return (
-    <View style={styles.containerMain}>
-      <StatusBar backgroundColor={Colors.primary} />
+  const [data, setData] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [noMatch, setnoMatch] = useState(false);
 
-      <View style={{ top: 5 }}>
-        <ScrollView>
-          <View style={{ flexDirection: "column", alignItems: "center" }}>
+  useEffect(() => {
+    fetchTasbihs();
+  }, []);
 
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihOne")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    1
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Names of Allah
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
+  const fetchTasbihs = async () => {
+    try {
+      const response = await fetch(
+        "https://islamicapp.vercel.app/api/tasbihs"
+      );
+      const json = await response.json();
+        setData(json);
+        setFiltered(json);
+    } catch (error) {
+      console.log("API Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwo")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    2
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Throughout the day, Times of distress
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
+const handleSearch = (text) => {
+    setSearch(text);
+    const filteredData = data.filter((item) =>
+      item.tasbihnameenglish.toLowerCase().includes(text.toLowerCase())
+    );
+    setFiltered(filteredData);
+    setnoMatch(filtered.length === 0);
+  };
 
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihThree")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    3
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    After prayer, Seeking peace
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
+const renderItem = ({ item }) => (
+  <TouchableOpacity
+    onPress={() =>
+      navigation.navigate("TasbihCounterScreen", { tasbihNameEnglish: item.tasbihnameenglish })
+    }
+  >
+    {item.tasbihnameenglish === "Names of Allah" ? (
+      <View style={styles.advImageContainer}>
+        <View style={styles.leftBox}>
+          <WasilNewBTAllahTasbihSvg />
+        </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihFour")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    4
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Expressing gratitude, Seeking blessings
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihFive")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    5
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Expressing awe, Seeking strength
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihSix")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    6
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking forgiveness, Times of hardship
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihSeven")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    7
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Trusting Allah, Overcoming challenges
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihEight")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    8
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Trusting Allah, Seeking Ease
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihNine")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    9
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking ease, Overcoming challenges
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    10
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Times of distress, Seeking strength
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihEleven")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    11
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking forgiveness, After wrongdoing
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwelve")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    12
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    In times of need, Seeking comfort
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihThirteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    13
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking mercy and compassion, Family matters
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihFourteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    14
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking guidance and support, Daily affairs
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihFifteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    15
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking answers to prayers, Seeking help
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihSixteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    16
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking sustenance and generosity, Financial stability
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihSeventeen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    17
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking blessings and favors, Family harmony
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihEighteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    18
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking strength and dignity, Empowerment
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihNinteen")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    19
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Strengthening familial bonds, Seeking love
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwenty")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    20
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Financial Stability, Seeking provision
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyOne")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    21
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking closeness to Allah, Seeking assistance
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyTwo")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    22
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking closeness to Allah, Seeking assistance
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyThree")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    23
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Raising in status or honor, Seeking upliftment
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyFour")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    24
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Maintaining peace
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyFive")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    25
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Seeking knowledge
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentySix")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    26
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Praying for Parents
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentySeven")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    27
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Praying for Parents
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyEight")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    28
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Easing Anxiety
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihTwentyNine")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    29
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Overcoming Depression
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihThirty")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    30
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Protection and Success for Children
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihThirtyOne")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    31
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Protection from Evil Eye for Children
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate("TasbihThirtyTwo")}>
-              <View style={styles.advImageContainer}>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                  }}
-                >
-                  <View style={{ height: 30 }}></View>
-                  <DuaListNumberSVG />
-                  <View style={{ height: 3 }}></View>
-                  <Text
-                    style={{
-                      bottom: 40,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      color: Colors.primary,
-                      fontSize: 15,
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    32
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: "#FFF", flex: 1.4 }}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      alignSelf: "flex-start",
-                      top: 24,
-                      color: Colors.primary,
-                      fontSize: 14,
-                      fontWeight: "600",
-                      fontFamily: "Raleway",
-                    }}
-                  >
-                    Protection from Evil Eye
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: "#FFF",
-                    flex: 0.3,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <DuaForwardSVG />
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <View style={{ height: 20 }}></View>
-          </View>
-        </ScrollView>
+        <View style={styles.middleBox}>
+          <Text numberOfLines={1} style={styles.titleText1}>
+            99 Names of Allah
+          </Text>
+          <Text numberOfLines={1} style={styles.titleText}>
+            {item.tasbihnameenglish}
+          </Text>
+        </View>
       </View>
+    ) : (
+      <View style={styles.advImageContainer}>
+        <View style={styles.leftBox}>
+          <WasilNewAllBTTasbihSvg />
+        </View>
+
+        <View style={styles.middleBox}>
+          <Text numberOfLines={1} style={styles.titleText1}>
+            General Tasbih
+          </Text>
+          <Text numberOfLines={1} style={styles.titleText}>
+            {item.tasbihnameenglish}
+          </Text>
+        </View>
+      </View>
+    )}
+  </TouchableOpacity>
+);
+
+if (loading) 
+{
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
+      </View>
+    );
+}
+
+  return (
+    <View style={styles.container}>
+    <StatusBar backgroundColor={Colors.intermediate1}/>
+      <View style={styles.searchBox}>
+        <SearchSVG />
+        <TextInput
+          placeholder="Search Tasbih"
+          value={search}
+          onChangeText={handleSearch}
+          style={styles.searchInput}
+          
+          placeholderTextColor={Colors.white}
+        />
+      </View>
+
+ {noMatch ? (
+          <Text style={styles.noMatch}>No Match Found</Text>
+        ) : (
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item._id}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+      />
+)}
+   <View style={{height:20}}></View>
     </View>
   );
 };
 
 export default Tasbih;
 
+
 const styles = StyleSheet.create({
-  containerMain: {
+  container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: Colors.intermediate1,
+    paddingHorizontal: 15,
   },
+
   advImageContainer: {
-    width: "94%",
+    width: "100%",
     height: 70,
     flexDirection: "row",
     marginTop: 10,
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 10,
+    borderWidth: 0.8,
     borderColor: Colors.bordercolor,
+    backgroundColor: Colors.intermediate1,
+  },
+
+  leftBox: {
+    flex: 0.4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+
+
+  middleBox: {
+    flex: 1.5,
+    justifyContent: "center",
+  },
+
+  titleText1: {
+    color: Colors.yellowgoldcolor,
+    fontSize: 8,
+    fontFamily: "NunitoSans-SemiBold"
+  },
+  titleText: {
+    color: Colors.white,
+    fontSize: 13,
+    fontFamily: "NunitoSans-SemiBold"
+  },
+
+  rightBox: {
+    flex: 0.3,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 0.8,
+    borderColor: Colors.bordercolor,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 46,
+    marginVertical: 14,
+  },
+
+  searchInput: {
+    flex: 1,
+    top:1.8,
+    paddingBottom:Platform.OS=== 'ios'?4:10,
+    marginLeft: 8,
+    fontSize: 14,
+    color: Colors.white,
+    fontFamily: "Poppins-Medium",
+  },
+  noMatch: {
+    height: '100%',
+    top: 300,
+    fontSize: 15,
+    alignSelf: 'center',
+    color: Colors.white,
+    fontFamily: 'Poppins-Light',
   },
 });

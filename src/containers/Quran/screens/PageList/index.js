@@ -1,11 +1,11 @@
-import {FlashList} from '@shopify/flash-list';
+
 import React, {useEffect} from 'react';
-import {View} from 'react-native';
+import {FlatList, View,BackHandler} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import AyahsList from '../../components/AyahsList';
 import EmptyView from '../../components/EmptyView';
-import QuranSaveBox from '../../components/QuranSaveBox';
+import Header from '../../components/Header';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
 
@@ -17,6 +17,19 @@ const PageList = ({navigation, route}) => {
   };
 
   useEffect(() => {}, []);
+
+    useEffect(() => {
+      const backAction = () => {
+        navigation.navigate('QuranMainDashboard');
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+      return () => backHandler.remove();
+    }, []);
 
   const renderItem = ({item, index}) => {
     return (
@@ -36,15 +49,14 @@ const PageList = ({navigation, route}) => {
   };
   return (
     <View style={styles.safeAreaView}>
-      <View style={styles.quranSaveBoxView}>
-        <QuranSaveBox titleText={'Resume'} />
-
-        <QuranSaveBox titleText={'Bookmarks'} />
-
-        <QuranSaveBox titleText={'Favorite'} />
-      </View>
+      <Header
+        title={`Page By Page`}
+        onPressLeftIcon={() => {
+          navigation.navigate('QuranMainDashboard');
+        }}
+      />
       <View style={{flex: 1}}>
-        <FlashList
+        <FlatList
           data={pagesList}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
@@ -79,6 +91,6 @@ const styles = ScaledSheet.create({
     margin: '8@s',
     paddingLeft: '8@s',
   },
-  ayahsListView: {backgroundColor: COLORS.white},
+  ayahsListView: {backgroundColor: '#FFFFFF'},
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

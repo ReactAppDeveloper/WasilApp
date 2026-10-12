@@ -4,14 +4,16 @@ import {FlatList, View} from 'react-native';
 import Share from 'react-native-share';
 import {ScaledSheet} from 'react-native-size-matters';
 import AyahViewComponent from '../../components/AyahViewComponent';
-import EmptyView from '../../components/EmptyView';
-import Header from '../../components/Header';
+import EmptyViewBook from '../../components/EmptyViewBook';
 import TopRowComponent from '../../components/TopRowComponent';
 import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
+import Header from '../../components/Header';
+import { Colors } from '../../../../theme';
 
 const Bookmark = ({navigation, route}) => {
+  
   const [isBookmark, setBookmark] = useState([]);
   const [isPlay, setIsPlay] = useState('');
 
@@ -33,10 +35,16 @@ const Bookmark = ({navigation, route}) => {
   };
   const onClickPlayIcon = item => {
     navigation.navigate('SurahDetailPage', {
-      selectedAyahItems: item?.BookmarkAyahItem,
+       selectedAyahItems: item?.BookmarkAyahItem,
       selectedSurahItems: item?.BookmarkSurahItem,
       fromBookmarkAyah: true,
-      ayahIdFromBookmark: item?.BookmarkAyahItem?.verseNumber,
+      ayahKeyFromBookmark: item?.BookmarkAyahItem?.verseKey,
+      fromjuz: item?.fromjuz,
+      from: item?.from,
+      rukuNumber: item?.rukuNumber,
+      fromqc: item?.fromqc,
+      surahNumber: item?.surahNumber,
+      headersurahname: item?.headersurahname,
     });
   };
 
@@ -62,11 +70,14 @@ const Bookmark = ({navigation, route}) => {
     }
   };
   const renderItem = ({item, index}) => {
-   
+    const caption = item?.BookmarkAyahItem?.translations[0]?.resourceName;
+    const captionTwo = item?.BookmarkAyahItem?.translations[0]?.text;
+
+    const pinColor = item == isPlay ? COLORS.SlateYellow : COLORS.gray;
     return (
       <View>
-        <TopRowComponent
-          isLeftPinIcon={true}
+        <AyahViewComponent ayahItem={item?.BookmarkAyahItem} index={index} />
+         <TopRowComponent
           surahDetail={item?.BookmarkSurahItem}
           onPressPlayIcon={() => {
             onClickPlayIcon(item);
@@ -88,7 +99,6 @@ const Bookmark = ({navigation, route}) => {
           item={item?.BookmarkAyahItem}
           fromBookmark={true}
         />
-        <AyahViewComponent ayahItem={item?.BookmarkAyahItem} index={index} />
       </View>
     );
   };
@@ -102,7 +112,7 @@ const Bookmark = ({navigation, route}) => {
         onPressRightIcon={() => {}}
         rightIcon={false}
       />
-
+      
       <View style={{flex: 1}}>
         <FlatList
           data={isBookmark}
@@ -111,7 +121,7 @@ const Bookmark = ({navigation, route}) => {
           keyExtractor={(item, index) => index.toString()}
           ListEmptyComponent={
             <View style={styles.emptyViewStyle}>
-              <EmptyView />
+              <EmptyViewBook />
             </View>
           }
         />
@@ -125,6 +135,7 @@ export default Bookmark;
 const styles = ScaledSheet.create({
   safeAreaView: {
     flex: 1,
+    backgroundColor: Colors.intermediate1,
   },
-  emptyViewStyle: {marginTop: SIZES.height / 2.2},
+  emptyViewStyle: {marginTop: SIZES.height / 3},
 });

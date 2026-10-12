@@ -75,7 +75,7 @@ const styles = ScaledSheet.create({
     borderRadius: '6@s',
     borderColor: COLORS.secondGray,
     borderWidth: 1.3,
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
   },
   placeholderStyle: {
     fontSize: 14,
