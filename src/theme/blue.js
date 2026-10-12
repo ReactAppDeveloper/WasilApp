@@ -28,6 +28,8 @@ export default {
     onAccent: "#FFFFFF",
     action: "#43288A",          // filled buttons / step badges on cards
     onAction: "#FFFFFF",
+    button: "#CC9944",            // primary buttons on the screen background
+    onButton: "#1E1040",
     cardBg: "#FFFFFF",          // content cards
     cardBorder: "#E0E0E0",
     cardTitle: "#43288A",

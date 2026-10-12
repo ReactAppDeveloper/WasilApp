@@ -28,6 +28,8 @@ export default {
     onAccent: "#FFFFFF",
     action: "#673AB7",
     onAction: "#FFFFFF",
+    button: "#673AB7",            // primary buttons on the screen background
+    onButton: "#FFFFFF",
     cardBg: "#FFFFFF",
     cardBorder: "#673AB7",
     cardTitle: "#673AB7",
