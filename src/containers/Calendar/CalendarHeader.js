@@ -1,71 +1,73 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getGregorianMonthName } from './calendarUtils';
-import {Colors} from '../../theme'
-const CalendarHeader = ({
-  month,
-  year,
-  hijriMonth,
-  hijriYear,
-  onNext,
-  onPrev
-}) => {
+import { useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH } from '../../theme';
 
-  const gregorianName = getGregorianMonthName(month);
+const NavButton = ({ label, glyph, onPress, styles }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={styles.navButton}
+    hitSlop={8}
+    accessibilityRole="button"
+    accessibilityLabel={label}>
+    <Text style={styles.navGlyph}>{glyph}</Text>
+  </TouchableOpacity>
+);
+
+const CalendarHeader = ({ month, year, hijriRange, onNext, onPrev, onToday, showToday }) => {
+  const { Colors } = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   return (
     <View style={styles.container}>
-
-      <TouchableOpacity onPress={onPrev}>
-        <Text style={styles.btn}>◀</Text>
-      </TouchableOpacity>
-      <View style={styles.center}>
+      <NavButton label="Previous month" glyph="‹" onPress={onPrev} styles={styles} />
+      <View style={styles.center} accessible accessibilityRole="header">
         <Text style={styles.gregorian}>
-          {gregorianName} {year}
+          {getGregorianMonthName(month)} {year}
         </Text>
-        <Text style={styles.hijri}>
-          {hijriMonth} {hijriYear}
+        <Text style={styles.hijri} numberOfLines={1}>
+          {hijriRange || ' '}
         </Text>
-
+        {showToday ? (
+          <TouchableOpacity onPress={onToday} style={styles.todayChip} accessibilityRole="button">
+            <Text style={styles.todayChipText}>Back to today</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
-      <TouchableOpacity onPress={onNext}>
-        <Text style={styles.btn}>▶</Text>
-      </TouchableOpacity>
-
+      <NavButton label="Next month" glyph="›" onPress={onNext} styles={styles} />
     </View>
   );
 };
 
 export default CalendarHeader;
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 15,
-    alignItems: 'center',
-    backgroundColor:Colors.intermediate1
-  },
-
-  center: {
-    alignItems: 'center'
-  },
-
-  gregorian: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.white
-  },
-
-  hijri: {
-    fontSize: 14,
-     color: Colors.white,
-    marginTop: 2
-  },
-
-  btn: {
-    color:Colors.white,
-    fontSize: 20,
-    fontWeight: 'bold'
-  }
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.lg,
+    },
+    center: { flex: 1, alignItems: 'center', paddingHorizontal: Spacing.sm },
+    gregorian: { fontSize: TypeScale.title, color: Colors.heading, fontFamily: Fonts.heading },
+    hijri: { marginTop: 2, fontSize: TypeScale.body, color: Colors.textSecondary, fontFamily: Fonts.body },
+    navButton: {
+      width: MIN_TOUCH,
+      height: MIN_TOUCH,
+      borderRadius: MIN_TOUCH / 2,
+      borderWidth: 1,
+      borderColor: Colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    navGlyph: { fontSize: 26, lineHeight: 28, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
+    todayChip: {
+      marginTop: Spacing.sm,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.xs,
+      borderRadius: Radius.pill,
+      backgroundColor: Colors.button,
+    },
+    todayChipText: { fontSize: TypeScale.small, color: Colors.onButton, fontFamily: Fonts.bodyBold },
+  });

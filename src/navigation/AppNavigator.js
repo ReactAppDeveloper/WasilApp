@@ -323,9 +323,7 @@ import RecitersListGreen from '../containers/RecitersGreen/RecitersList';
 import ReciterDetailGreen from '../containers/RecitersGreen/ReciterDetail';
 
 //Calendar
-import CalendarScreenBlue from '../containers/Calendar/CalendarScreenBlue';
-import CalendarScreenWhite from '../containers/CalendarWhite/CalendarScreenWhite';
-import CalendarScreenGreen from '../containers/CalendarGreen/CalendarScreenGreen';
+import CalendarScreen from '../containers/Calendar/CalendarScreen';
 
 //Wall
 import Wallofremember from '../containers/WallOfRemembrance/Wallofremember';
@@ -420,7 +418,6 @@ const Themed_ReadStory = themedScreen({ blue: ReadStoryDetail, green: ReadStoryD
 const Themed_PlayStory = themedScreen({ blue: PlayStory, green: PlayStoryGreen, white: PlayStoryWhite });
 const Themed_RecitersList = themedScreen({ blue: RecitersList, green: RecitersListGreen, white: RecitersListWhite });
 const Themed_ReciterDetail = themedScreen({ blue: ReciterDetail, green: ReciterDetailGreen, white: ReciterDetailWhite });
-const Themed_CalendarScreen = themedScreen({ blue: CalendarScreenBlue, green: CalendarScreenGreen, white: CalendarScreenWhite });
 const Themed_Wallofremember = themedScreen({ blue: Wallofremember, green: Wallofremembergreen, white: Wallofrememberwhite });
 const Themed_WallofrememberDetail = themedScreen({ blue: WallBlueDetail, green: WallGreenDetail, white: WallWhiteDetail });
 const Themed_RemembranceForm = themedScreen({ blue: RemembranceFormBlue, green: RemembranceFormGreen, white: RemembranceFormWhite });
@@ -1173,9 +1170,7 @@ const Stack = createNativeStackNavigator();
         <Stack.Screen name="ReciterDetail" component={Themed_ReciterDetail} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-        <Stack.Screen name="CalendarScreen" component={Themed_CalendarScreen} options={({ route }) => ({ title: "Calendar",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
+        <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={headerOptions(Colors, "Calendar")}/>
         <Stack.Screen name="Wallofremember" component={Themed_Wallofremember} options={({ route }) => ({ title: "Wall of Remembrance",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>

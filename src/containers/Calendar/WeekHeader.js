@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../theme';
+import { useTheme, Fonts, TypeScale, Spacing } from '../../theme';
 
-const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const WeekHeader = () => {
+  const { Colors } = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.container}>
-      {days.map(day => (
-        <Text key={day} style={styles.day}>
+      {DAYS.map((day) => (
+        <Text key={day} style={[styles.day, day === 'Fri' && styles.friday]}>
           {day}
         </Text>
       ))}
@@ -18,16 +20,15 @@ const WeekHeader = () => {
 
 export default WeekHeader;
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    paddingHorizontal: 5,
-    backgroundColor:Colors.intermediate1
-  },
-  day: {
-    width: '14.2%',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color:Colors.white
-  }
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flexDirection: 'row', paddingHorizontal: Spacing.sm, paddingBottom: Spacing.sm },
+    day: {
+      flex: 1,
+      textAlign: 'center',
+      fontSize: TypeScale.small,
+      color: Colors.textSecondary,
+      fontFamily: Fonts.bodyBold,
+    },
+    friday: { color: Colors.gold },
+  });
