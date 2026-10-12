@@ -1,21 +1,6 @@
 import React from 'react';
-import { View, StatusBar } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { Colors } from '../../theme';
+import WebPage from './WebPage';
 
-const RateFeedback = () => {
-  return (
-    <View style={{ flex: 1}}>
-      <StatusBar
-        backgroundColor={Colors.intermediate1}
-      />
-
-      <WebView
-        source={{ uri: 'https://wasil.io/mobileReview' }}
-        style={{ flex: 1 }}
-      />
-    </View>
-  );
-};
+const RateFeedback = () => <WebPage uri="https://wasil.io/mobileReview" />;
 
 export default RateFeedback;

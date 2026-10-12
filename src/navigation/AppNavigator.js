@@ -14,26 +14,12 @@ import GuestDrawerNew from '../containers/Drawer/guestdrawernew';
 import ThemeSetting from '../containers/Drawer/ThemeSetting';
 import HomeNew from '../containers/HomeNew/HomeNew';
 import AboutUs from '../containers/Drawer/AboutUs';
-import AboutUsWhite from '../containers/Drawer/AboutUsWhite';
-import AboutUsGreen from '../containers/Drawer/AboutUsGreen';
 import RateFeedback from '../containers/Drawer/RateFeedback';
-import RateFeedbackWhite from '../containers/Drawer/RateFeedbackWhite';
-import RateFeedbackGreen from '../containers/Drawer/RateFeedbackGreen';
 import ContactUs from '../containers/Drawer/ContactUs';
-import ContactUsWhite from '../containers/Drawer/ContactUsWhite';
-import ContactUsGreen from '../containers/Drawer/ContactUsGreen';
 import FAQs from '../containers/Drawer/FAQs';
-import FAQsWhite from '../containers/Drawer/FAQsWhite';
-import FAQsGreen from '../containers/Drawer/FAQsGreen';
 import Privacypolicy from '../containers/Drawer/Privacypolicy';
-import PrivacypolicyWhite from '../containers/Drawer/PrivacypolicyWhite';
-import PrivacypolicyGreen from '../containers/Drawer/PrivacypolicyGreen';
 import FounderMsg from '../containers/Drawer/FounderMsg';
-import FounderMsgWhite from '../containers/Drawer/FounderMsgWhite';
-import FounderMsgGreen from '../containers/Drawer/FounderMsgGreen';
 import HijriDates from '../containers/Drawer/HijriDates';
-import HijriDatesWhite from '../containers/Drawer/HijriDatesWhite';
-import HijriDatesGreen from '../containers/Drawer/HijriDatesGreen';
 
 //Onboarding
 import Onboarding from '../containers/onboarding/Onboarding';
@@ -272,13 +258,6 @@ import Wallofremembergreen from '../containers/WallOfRemembrance/Wallofrememberg
 import WallGreenDetail from '../containers/WallOfRemembrance/WallGreenDetail';
 
 // One route per screen; the component follows the active theme.
-const Themed_AboutUs = themedScreen({ blue: AboutUs, green: AboutUsGreen, white: AboutUsWhite });
-const Themed_RateFeedback = themedScreen({ blue: RateFeedback, green: RateFeedbackGreen, white: RateFeedbackWhite });
-const Themed_ContactUs = themedScreen({ blue: ContactUs, green: ContactUsGreen, white: ContactUsWhite });
-const Themed_FAQs = themedScreen({ blue: FAQs, green: FAQsGreen, white: FAQsWhite });
-const Themed_Privacypolicy = themedScreen({ blue: Privacypolicy, green: PrivacypolicyGreen, white: PrivacypolicyWhite });
-const Themed_FounderMsg = themedScreen({ blue: FounderMsg, green: FounderMsgGreen, white: FounderMsgWhite });
-const Themed_HijriDates = themedScreen({ blue: HijriDates, green: HijriDatesGreen, white: HijriDatesWhite });
 const Themed_Quran = themedScreen({ blue: Quran, green: QuranGreen, white: QuranWhite });
 const Themed_QuranMainDashboard = themedScreen({ blue: QuranMainDashboard, green: QuranMainDashboardGreen, white: QuranMainDashboardWhite });
 const Themed_DashBoard = themedScreen({ blue: DashBoard, green: DashBoardGreen, white: DashBoardWhite });
@@ -345,16 +324,14 @@ const Stack = createNativeStackNavigator();
           backgroundColor: Colors.cardDark
           },}}/>
           <Stack.Screen name="Onboarding" component={Onboarding} options={{headerShown: false,animation:"slide_from_right",headerTintColor: Colors.black,}}/>
-           <Stack.Screen name="ThemeSetting" component={ThemeSetting} options={{animation:'slide_from_right',headerTitle:"Choose Theme",headerTitleAlign:"center",headerTintColor: Colors.white, headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-          backgroundColor: Colors.primary
-          },}}/>
-          <Stack.Screen name="AboutUs" component={Themed_AboutUs} options={headerOptions(Colors, "About Us")}/>
-          <Stack.Screen name="RateFeedback" component={Themed_RateFeedback} options={headerOptions(Colors, "Rate & Feedback")}/> 
-          <Stack.Screen name="ContactUs" component={Themed_ContactUs} options={headerOptions(Colors, "Contact Us")}/> 
-          <Stack.Screen name="FAQs" component={Themed_FAQs} options={headerOptions(Colors, "FAQs")}/> 
-          <Stack.Screen name="Privacypolicy" component={Themed_Privacypolicy} options={headerOptions(Colors, "Privacy Policy")}/> 
-          <Stack.Screen name="FounderMsg" component={Themed_FounderMsg} options={headerOptions(Colors, "Founder Message")}/>
-          <Stack.Screen name="HijriDates" component={Themed_HijriDates} options={headerOptions(Colors, "Hijri Dates Adjustment")}/>
+           <Stack.Screen name="ThemeSetting" component={ThemeSetting} options={headerOptions(Colors, "Choose Theme")}/>
+          <Stack.Screen name="AboutUs" component={AboutUs} options={headerOptions(Colors, "About Us")}/>
+          <Stack.Screen name="RateFeedback" component={RateFeedback} options={headerOptions(Colors, "Rate & Feedback")}/> 
+          <Stack.Screen name="ContactUs" component={ContactUs} options={headerOptions(Colors, "Contact Us")}/> 
+          <Stack.Screen name="FAQs" component={FAQs} options={headerOptions(Colors, "FAQs")}/> 
+          <Stack.Screen name="Privacypolicy" component={Privacypolicy} options={headerOptions(Colors, "Privacy Policy")}/> 
+          <Stack.Screen name="FounderMsg" component={FounderMsg} options={headerOptions(Colors, "Founder Message")}/>
+          <Stack.Screen name="HijriDates" component={HijriDates} options={headerOptions(Colors, "Hijri Dates Adjustment")}/>
           <Stack.Screen name="Quran" component={Themed_Quran} options={{headerShown: false,animation:"slide_from_right"}}/>
 
           <Stack.Screen name="QuranMainDashboard" component={Themed_QuranMainDashboard} options={({ route }) => ({ title: "Quran",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
