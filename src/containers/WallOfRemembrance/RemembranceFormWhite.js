@@ -251,6 +251,7 @@ const RemembranceFormWhite = () => {
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
         showsVerticalScrollIndicator={false}>
 
         <StatusBar backgroundColor={Colors.black} />

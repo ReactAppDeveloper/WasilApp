@@ -214,7 +214,7 @@ image: {
    color: Colors.white,
   },
   year: {
-    fontSize: 8,
+    fontSize: 10,
     marginTop: 5,
    color: Colors.white,
     fontWeight: '600',

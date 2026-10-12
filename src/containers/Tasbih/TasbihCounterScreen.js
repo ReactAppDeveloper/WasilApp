@@ -699,7 +699,7 @@ targetInput: {
 beadSelector: {
   alignSelf: "center",
   flexDirection: "row",
-  backgroundColor: "Colors.white",
+  backgroundColor: Colors.white,
   borderRadius: 30,
   padding: 8,
   bottom:Platform.OS==='ios'?50:50,

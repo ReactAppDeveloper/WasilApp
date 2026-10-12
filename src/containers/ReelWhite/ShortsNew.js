@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useRef, useState } from 'react';
 import { FlatList, StyleSheet, View, Dimensions } from 'react-native';
 import ShortItemNew from './ShortItemNew';
-import uuid from 'react-native-uuid';
 
 const { height } = Dimensions.get('window');
 const viewabilityConfig = { viewAreaCoveragePercentThreshold: 80 };
@@ -45,7 +44,7 @@ function ShortsNew({ items, onEndReached, onRefresh }) {
         ref={flatListRef}
         data={items}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item._id || uuid.v4().toString()}
+        keyExtractor={(item, index) => item._id || String(index)}
         refreshing={false}
         onRefresh={onRefresh}
         onEndReached={onEndReached}

@@ -123,37 +123,6 @@ const HomeNewBlue = ({ navigation, route }) => {
   };
   }, []);
 
-  useEffect(() => {
-  const focusListener = navigation.addListener('focus', async () => {
-    const opened = getStorageItem('hasOpenedSurah');
-
-    setHasOpenedSurah(!!opened);
-
-    if (hasFocusedOnce.current) {
-      runAzanSetup();
-    } else {
-      hasFocusedOnce.current = true;
-    }
-
-    fetchHomeData();
-
-    backHandler.current = BackHandler.addEventListener(
-      'hardwareBackPress',
-      onBackPress,
-    );
-  });
-
-  const blurListener = navigation.addListener('blur', () => {
-    backHandler.current?.remove();
-  });
-
-  return () => {
-    focusListener();
-    blurListener();
-    backHandler.current?.remove();
-  };
-  }, []);
-
   const requestNotificationPermission = async () => {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
     try {

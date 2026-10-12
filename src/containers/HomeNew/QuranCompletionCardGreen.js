@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
 
   smallText: {
     color: Colors.white,
-    fontSize: 9,
+    fontSize: 10,
     fontFamily:
       Platform.OS === 'ios'
         ? 'Nunito Sans 7pt'

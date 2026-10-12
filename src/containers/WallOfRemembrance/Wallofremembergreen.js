@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran'
   },
   subtitle: {
-    fontSize: 9,
+    fontSize: 11,
      color: Colors.white,
     top:20,
     fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",

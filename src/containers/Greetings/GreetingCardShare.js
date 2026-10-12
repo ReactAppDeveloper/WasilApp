@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, StyleSheet,View,Image,TouchableOpacity,Text,LogBox,ScrollView,FlatList,Platform} from 'react-native';
+import {StatusBar, StyleSheet,View,Image,TouchableOpacity,Text,LogBox,ScrollView,FlatList,Platform,useWindowDimensions} from 'react-native';
 import {Colors} from '../../theme';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Share from 'react-native-share';
@@ -82,6 +82,8 @@ const greetingsdata =
 ]
 const GreetingCardShare = ({ route,navigation}) => { 
   const {cardimage,catname} = route.params;
+  const { width } = useWindowDimensions();
+  const cardWidth = Math.min(400, width - 32);
   
   const shareImage = () => {
     ReactNativeBlobUtil.fetch(
@@ -118,12 +120,12 @@ const GreetingCardShare = ({ route,navigation}) => {
          style={styles.maincontainer}>
          <View style={{alignSelf:"center",top:10}}>
             <View>
-            <Image style={styles.advImage} source={{uri:cardimage}}/>
+            <Image style={[styles.advImage, {width: cardWidth}]} source={{uri:cardimage}}/>
             </View>
          </View>
         
         
-         <View style={styles.extralayer}>
+         <View style={[styles.extralayer, {width: cardWidth}]}>
              <TouchableOpacity style={styles.submit} onPress={shareImage}>
                 <Text style={styles.submitText}>Send eCard</Text>  
              </TouchableOpacity>
@@ -198,10 +200,9 @@ const styles = StyleSheet.create({
     backgroundColor:Colors.intermediate1,
   },
   advImage: {
-    height:500,
-    width:400,
+    aspectRatio: 4 / 5,
     borderRadius:7,
-    resizeMode:"stretch"
+    resizeMode:"cover"
   },
   submit: {
     backgroundColor: Colors.secondary1,
@@ -211,11 +212,12 @@ const styles = StyleSheet.create({
     height:45,
     width:200,
     alignSelf:"center",
+    justifyContent:"center",
+    alignItems:"center",
     top:20
   },
   submitText: {
     fontSize:15,
-    top:Platform.OS === 'ios' ? 12 : 10,
     color: Colors.white,
     fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
     alignSelf:'center',
@@ -244,7 +246,6 @@ const styles = StyleSheet.create({
 
   extralayer: {
     marginTop:10,
-    width:400,
     height:80,
     alignSelf:"center",
     marginBottom:10,

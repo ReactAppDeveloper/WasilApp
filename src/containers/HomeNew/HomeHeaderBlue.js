@@ -404,14 +404,14 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 7 : 10,
     borderRadius: 7,
     borderWidth: 1,
-    width:100,
-    height:20,
+    width:120,
+    height:22,
     borderColor: Colors.white,
     backgroundColor: Colors.white,
     left:15
   },
   locationText1: {
-    fontSize: 8,
+    fontSize: 10,
     color: Colors.primary,
     flex: 1,
     fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   },
 
   gregorian: {
-    fontSize: 9,
+    fontSize: 10,
     marginTop: 3,
     left:17,
     color: Colors.white,
