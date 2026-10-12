@@ -1,122 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StatusBar,
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-  Platform
-} from 'react-native';
-import axios from 'axios';
-import { Colors } from '../../theme';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StatusBar, StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useStorehadith from '../../hadithstore';
+import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
+import { ScreenState } from '../../components';
 import HadithCard from './HadithCard';
+import { fetchHadiths } from './hadithApi';
 
 const HadithsDetail = ({ route }) => {
-  const { favouriteshadith } = useStorehadith();
   const { hadithchapternumber, hadithbookname } = route.params;
-  const [hadithsdetaildata, setHadithsDetailData] = useState([]);
-  const [chapternumber, setchapternumber] = useState("");
-  const [chapterenglishname, setchapterenglishname] = useState("");
-  const [chapterarabicname, setchapterarabicname] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const { favouriteshadith } = useStorehadith();
+
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
+  const [status, setStatus] = useState('loading');
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const loadPage = useCallback(
+    async (next) => {
+      const res = await fetchHadiths(hadithbookname, hadithchapternumber, next);
+      setItems((prev) => (next === 1 ? res.items : [...prev, ...res.items]));
+      setPage(res.page);
+      setLastPage(res.lastPage);
+      return res;
+    },
+    [hadithbookname, hadithchapternumber],
+  );
+
+  const loadFirst = useCallback(async () => {
+    setStatus('loading');
+    try {
+      const res = await loadPage(1);
+      setStatus(res.items.length ? 'ready' : 'empty');
+    } catch (e) {
+      setStatus('error');
+    }
+  }, [loadPage]);
 
   useEffect(() => {
-  fetchData();
-  }, []);
+    loadFirst();
+  }, [loadFirst]);
 
-  const fetchData = async () => {
-  setIsLoading(true);
-  try {
-    const response = await axios.get(
-      `https://www.hadithapi.com/public/api/hadiths?book=${hadithbookname}&chapter=${hadithchapternumber}&paginate=50&apiKey=$2y$10$qSQzGL8GxgFsxQDqeb7MMe9mzdAfCNf2dOorH6mokC70Unhfli`
-    );
-
-    const hadiths = response.data.hadiths.data;
-    setHadithsDetailData(hadiths);
-
-     if (hadiths.length > 0) {
-      const chapter = hadiths[0].chapter; 
-      
-      setchapternumber(chapter.chapterNumber);
-      setchapterenglishname(chapter.chapterEnglish);
-      setchapterarabicname(chapter.chapterArabic);
+  const loadMore = async () => {
+    if (loadingMore || page >= lastPage) return;
+    setLoadingMore(true);
+    try {
+      await loadPage(page + 1);
+    } catch (e) {
+      // keep what we have; the user can scroll again to retry
+    } finally {
+      setLoadingMore(false);
     }
-  } catch (e) {
-    console.log(e);
-  }
-  setIsLoading(false);
-};
+  };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
-      </View>
-    );
+  if (status !== 'ready') {
+    return <ScreenState status={status} title={status === 'empty' ? 'No hadith in this chapter' : "Couldn't load hadith"} onRetry={loadFirst} />;
   }
+
+  const chapter = items[0]?.chapter;
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.intermediate1} />
-
-       <View style={styles.headerCard}>
-  <Text style={styles.headerTitle}>
-    ({chapternumber}) Chapter: {chapterenglishname}
-  </Text>
-
-  <Text style={styles.headerArabic}>
-    {chapterarabicname}
-  </Text>
-</View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        
-        {hadithsdetaildata.map((item, index) => (
-          <HadithCard
-            key={index}
-            hadith={item}
-            index={index}
-            favouriteshadith={favouriteshadith}
-          />
-        ))}
-
-        <View style={{ height: 20 }} />
-      </ScrollView>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <FlatList
+        data={items}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={{ gap: Spacing.lg, paddingBottom: insets.bottom + Spacing.xl }}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.6}
+        initialNumToRender={4}
+        ListHeaderComponent={
+          chapter ? (
+            <View style={styles.header}>
+              <Text style={styles.headerLabel}>Chapter {chapter.chapterNumber}</Text>
+              <Text style={styles.headerTitle}>{chapter.chapterEnglish}</Text>
+              {chapter.chapterArabic ? <Text style={styles.headerArabic}>{chapter.chapterArabic}</Text> : null}
+            </View>
+          ) : null
+        }
+        ListFooterComponent={loadingMore ? <ActivityIndicator color={Colors.textPrimary} style={{ marginVertical: Spacing.lg }} /> : null}
+        renderItem={({ item, index }) => <HadithCard hadith={item} index={index} favouriteshadith={favouriteshadith} />}
+      />
     </View>
   );
 };
 
 export default HadithsDetail;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerCard: {
-    backgroundColor: Colors.secondary1,
-    margin: 16,
-    borderRadius: 12,
-    padding: 16,
-    width:"95%",
-    alignSelf:"center"
-  },
-  headerTitle: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  headerArabic: {
-    color: Colors.white,
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
-    fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
-  },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    header: {
+      marginHorizontal: Spacing.lg,
+      marginTop: Spacing.lg,
+      padding: Spacing.lg,
+      borderRadius: Radius.lg,
+      backgroundColor: Colors.name === 'white' ? Colors.surface : Colors.surfaceAlt,
+      borderWidth: 1,
+      borderColor: Colors.gold,
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+    headerLabel: { fontSize: TypeScale.caption, color: Colors.gold, fontFamily: Fonts.bodyBold, letterSpacing: 1, textTransform: 'uppercase' },
+    headerTitle: { fontSize: TypeScale.subtitle + 1, color: Colors.white, fontFamily: Fonts.heading, textAlign: 'center' },
+    headerArabic: { fontSize: 20, lineHeight: 32, color: Colors.white, fontFamily: Fonts.arabic, textAlign: 'center' },
+  });

@@ -1,49 +1,43 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
-import HadithBookCard from "./HadithBookCard";
-import { fetchHadithBooks } from "./hadithApi";
-import { BOOK_IMAGES } from "./HadithbookImages";
-import { BOOK_DESCRIPTION } from "./HadithBookDescription";
-import { Colors } from '../../theme';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, FlatList, StyleSheet, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HadithBookCard from './HadithBookCard';
+import { fetchHadithBooks } from './hadithApi';
+import { BOOK_IMAGES } from './HadithbookImages';
+import { BOOK_DESCRIPTION } from './HadithBookDescription';
+import { useTheme, Spacing } from '../../theme';
+import { ScreenState } from '../../components';
 
 const HadithBooksScreen = () => {
+  const { Colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('loading');
 
-  useEffect(() => {
-    loadBooks();
+  const load = useCallback(async () => {
+    setStatus('loading');
+    try {
+      setBooks(await fetchHadithBooks());
+      setStatus('ready');
+    } catch (error) {
+      setStatus('error');
+    }
   }, []);
 
-  const loadBooks = async () => {
-    try {
-      const data = await fetchHadithBooks();
-      setBooks(data);
-    } catch (error) {
-  console.log('Quran Error Message:', error?.message);
-  console.log('Quran Error String:', String(error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={"#673AB7"} />
-      </View>
-    );
-  }
+  if (status !== 'ready') return <ScreenState status={status} title="Couldn't load hadith books" onRetry={load} />;
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
       <FlatList
         data={books}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.xl }]}
         renderItem={({ item }) => (
           <HadithBookCard
             title={item.bookName}
@@ -60,14 +54,8 @@ const HadithBooksScreen = () => {
 
 export default HadithBooksScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white
-  },
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+const makeStyles = (Colors) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    list: { padding: Spacing.lg, gap: Spacing.md },
+  });

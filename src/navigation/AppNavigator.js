@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme, headerOptions } from "../theme";
 import themedScreen from './themedScreen';
+import { HeaderFavouritesButton } from '../components';
 import {View,TouchableOpacity,Platform} from 'react-native';
 import {WasilNewHeartfilledBTSVG,WasilNewBTTasbihHeartUnFilled,WasilNewBTSettingSvg,WasilNewBTTranslateSvg,HeartfilledSVG,WasilNewTasbihHeartUnFilled,QuranBottomSettingWhiteSVG,WasilNewTranslateWhiteSvg} from '../assets/icons';
 import useStore from '../store'
@@ -114,17 +115,7 @@ import HadithsBooksDashboard from '../containers/Hadith/HadithsBooksDashboard';
 import HadithBooksScreen from '../containers/Hadith/HadithBooksScreen';
 import HadithBooksDetail from '../containers/Hadith/HadithBooksDetail';
 
-import HadithsDetailWhite from '../containers/HadithWhite/HadithsDetail';
-import HadithsFavouritesWhite from '../containers/HadithWhite/HadithsFavourites';
-import HadithsBooksDashboardWhite from '../containers/HadithWhite/HadithsBooksDashboard';
-import HadithBooksScreenWhite from '../containers/HadithWhite/HadithBooksScreen';
-import HadithBooksDetailWhite from '../containers/HadithWhite/HadithBooksDetail';
 
-import HadithsDetailGreen from '../containers/HadithGreen/HadithsDetail';
-import HadithsFavouritesGreen from '../containers/HadithGreen/HadithsFavourites';
-import HadithsBooksDashboardGreen from '../containers/HadithGreen/HadithsBooksDashboard';
-import HadithBooksScreenGreen from '../containers/HadithGreen/HadithBooksScreen';
-import HadithBooksDetailGreen from '../containers/HadithGreen/HadithBooksDetail';
 
 //Dua Section
 import DuasScreen from '../containers//DuaNew/DuasScreen';
@@ -350,10 +341,6 @@ const Themed_TranslatorDetail = themedScreen({ blue: TranslatorDetail, green: Tr
 const Themed_DuaCategoryDetail = themedScreen({ blue: DuaCategoryDetail, green: DuaCategoryDetailGreen, white: DuaCategoryDetailWhite });
 const Themed_DuaDetailNew = themedScreen({ blue: DuaDetailNew, green: DuaDetailNewGreen, white: DuaDetailNewWhite });
 const Themed_DuaNewFavourites = themedScreen({ blue: DuaNewFavourites, green: DuaNewFavouritesGreen, white: DuaNewFavouritesWhite });
-const Themed_HadithsBooksDashboard = themedScreen({ blue: HadithsBooksDashboard, green: HadithsBooksDashboardGreen, white: HadithsBooksDashboardWhite });
-const Themed_HadithBooksScreen = themedScreen({ blue: HadithBooksScreen, green: HadithBooksScreenGreen, white: HadithBooksScreenWhite });
-const Themed_HadithsDetail = themedScreen({ blue: HadithsDetail, green: HadithsDetailGreen, white: HadithsDetailWhite });
-const Themed_HadithsFavourites = themedScreen({ blue: HadithsFavourites, green: HadithsFavouritesGreen, white: HadithsFavouritesWhite });
 const Themed_VideoDashboard = themedScreen({ blue: VideoDashboard, green: VideoDashboardGreen, white: VideoDashboardWhite });
 const Themed_VideosNew = themedScreen({ blue: VideosNew, green: VideosNewGreen, white: VideosNewWhite });
 const Themed_ChannelsDetailNew = themedScreen({ blue: ChannelsDetailNew, green: ChannelsDetailNewGreen, white: ChannelsDetailNewWhite });
@@ -840,94 +827,31 @@ const Stack = createNativeStackNavigator();
           <Stack.Screen name="DuaNewFavourites" component={Themed_DuaNewFavourites} options={({ route }) => ({ title: "Favourite Duas",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
         }})}/>
-          <Stack.Screen name="HadithsBooksDashboard" component={Themed_HadithsBooksDashboard} options={({ route }) => ({ title: "Hadiths",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="HadithsBooksDashboard" component={HadithsBooksDashboard} options={({ navigation }) => ({
+            ...headerOptions(Colors, "Hadiths"),
+            headerRight: () => (
+              <HeaderFavouritesButton
+                filled={favouriteshadith.length > 0}
+                onPress={() => navigation.navigate('HadithsFavourites')}
+                label="Favourite hadiths"
+              />
+            ),
+          })}/>
+          <Stack.Screen name="HadithBooksScreen" component={HadithBooksScreen} options={headerOptions(Colors, "Hadith Books")}/>
+          <Stack.Screen name="HadithBooksDetail" component={HadithBooksDetail} options={({ route, navigation }) => ({
+            ...headerOptions(Colors, route.params.name),
+            headerRight: () => (
+              <HeaderFavouritesButton
+                filled={favouriteshadith.length > 0}
+                onPress={() => navigation.navigate('HadithsFavourites')}
+                label="Favourite hadiths"
+              />
+            ),
+          })}/>
+          <Stack.Screen name="HadithsDetail" component={HadithsDetail} options={({ route }) => ({ title: route.params.name.length >= 25 ? route.params.name.slice(0, 24)+"..." : route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
         }})}/>
-          <Stack.Screen name="HadithBooksScreen" component={Themed_HadithBooksScreen} options={({navigation}) => ({ headerTitle: "Hadiths",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-        }})}/>
-          {theme === "blue" ? (
-        <Stack.Screen name="HadithBooksDetail" component={HadithBooksDetail} options={({ route,navigation }) => ({ title: route.params.name,headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouriteshadith.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('HadithsFavourites');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('HadithsFavourites');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.cardDark
-        }})}/>
-          ):theme === "green" ? (
-        <Stack.Screen name="HadithBooksDetail" component={HadithBooksDetailGreen} options={({ route,navigation }) => ({ title: route.params.name,headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouriteshadith.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('HadithsFavourites');
-      }}>
-        <WasilNewHeartfilledBTSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('HadithsFavourites');
-        }}>
-          <WasilNewBTTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.white ,headerTitleStyle: {color: Colors.white,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.primary
-        }})}/>
-          ):(
-        <Stack.Screen name="HadithBooksDetail" component={HadithBooksDetailWhite} options={({ route,navigation }) => ({ title: route.params.name,headerRight: () => (
-          <View style={{height:50,width:50}}>
-             <View>
-               {favouriteshadith.length > 0 ? (
-      <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-        navigation.navigate('HadithsFavourites');
-      }}>
-        <HeartfilledSVG/>
-        </TouchableOpacity>
-        
-      ) : (
-        <TouchableOpacity style={{height:50,width:50,top:Platform.OS === 'ios' ? 13: 18,left:20}} onPress={() => {
-          navigation.navigate('HadithsFavourites');
-        }}>
-          <WasilNewTasbihHeartUnFilled/>
-          </TouchableOpacity>
-      )}
-    
-              
-  </View>
-          </View>
-        ),animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.black ,headerTitleStyle: {color: Colors.black,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.white
-       }})}/>
-          )}
-          <Stack.Screen name="HadithsDetail" component={Themed_HadithsDetail} options={({ route }) => ({ title: route.params.name.length >= 25 ? route.params.name.slice(0, 24)+"..." : route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-        }})}/>
-          <Stack.Screen name="HadithsFavourites" component={Themed_HadithsFavourites} options={({ route }) => ({ title: "Favourite Hadiths",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-        }})}/>
+          <Stack.Screen name="HadithsFavourites" component={HadithsFavourites} options={headerOptions(Colors, "Favourite Hadiths")}/>
           <Stack.Screen name="Tasbih" component={Tasbih} options={({navigation}) => ({
             ...headerOptions(Colors, "Tasbih"),
             headerRight: () => {

@@ -1,162 +1,119 @@
-import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Platform
-} from 'react-native';
-import { Colors } from '../../theme';
-import useStorehadith from '../../hadithstore';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Share from 'react-native-share';
-import { WasilNewBTTasbihHeartUnFilled, WasilNewHeartfilledBTSVG,WasilNewBTShareSVG } from '../../assets/icons';
+import useStorehadith from '../../hadithstore';
+import { useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH } from '../../theme';
+import { useThemeIcons } from '../../components';
+
+const narratorLine = (narrator = '') => {
+  const n = narrator.trim();
+  if (!n) return null;
+  return n.toLowerCase().startsWith('narrated') ? n : `Narrated ${n}`;
+};
 
 const HadithCard = ({ hadith, index, favouriteshadith }) => {
+  const { Colors } = useTheme();
+  const { HeartFilled, HeartOutline, Share: ShareIcon } = useThemeIcons();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const { addhadith, deletehadith } = useStorehadith();
+  const isFavourited = favouriteshadith.some(({ id }) => id === hadith.id);
+  const number = hadith.hadithNumber || index + 1;
+  const bookName = hadith.book?.bookName || hadith.bookSlug;
 
-  const isFavourited =
-    favouriteshadith.findIndex(({ id }) => id === hadith.id) !== -1;
+  const share = () =>
+    Share.open({
+      message: `Hadith ${number} — ${bookName}\n\n${hadith.hadithEnglish}\n\nWasil Islamic App | www.wasil.io`,
+    }).catch(() => {});
 
   return (
     <View style={styles.card}>
       <View style={styles.topRow}>
-        <Text style={styles.hadithNumber}>
-          Hadith no {index + 1}
-        </Text>
-
-        <TouchableOpacity 
-        style={{left:330,position:"absolute"}}
-        onPress={async () => {
-              let options = {
-                message:"Hadith"+"\n\n"+hadith.hadithEnglish+"\n\n"+"Hadith Book"+"\n\n"+hadith.bookSlug+"\n\n"+"Wasil Islamic App | www.wasil.io"
-              };
-              Share.open(options)
-              .then(r => {
-              console.log(r);
-              })
-              .catch(e => {
-              console.log(e);
-              });}}>
-    <WasilNewBTShareSVG/>
-          
-        </TouchableOpacity>
-        <TouchableOpacity 
-        style={{right:10}}
-          onPress={() =>
-            isFavourited ? deletehadith(hadith) : addhadith(hadith)
-          }
-        >
-          {isFavourited ? <WasilNewHeartfilledBTSVG /> : <WasilNewBTTasbihHeartUnFilled />}
-        </TouchableOpacity>
+        <Text style={styles.number}>Hadith {number}</Text>
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={share} style={styles.action} accessibilityRole="button" accessibilityLabel="Share hadith">
+            <ShareIcon />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => (isFavourited ? deletehadith(hadith) : addhadith(hadith))}
+            style={styles.action}
+            accessibilityRole="button"
+            accessibilityLabel={isFavourited ? 'Remove from favourites' : 'Add to favourites'}>
+            {isFavourited ? <HeartFilled /> : <HeartOutline />}
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {hadith.hadithArabic ? (
-        <Text style={styles.arabicText}>
-          {hadith.hadithArabic}
-        </Text>
-      ) : null}
+      {hadith.hadithArabic ? <Text style={styles.arabic}>{hadith.hadithArabic}</Text> : null}
+      {narratorLine(hadith.englishNarrator) ? <Text style={styles.narrator}>{narratorLine(hadith.englishNarrator)}</Text> : null}
+      <Text style={styles.english}>{hadith.hadithEnglish}</Text>
 
-      <Text style={styles.narrator}>
-  {hadith.englishNarrator?.trim().toLowerCase().startsWith('narrated')
-    ? hadith.englishNarrator
-    : `Narrated ${hadith.englishNarrator}`}
-</Text>
-
-      <Text style={styles.englishText}>
-        {hadith.hadithEnglish}
-      </Text>
-
-      <View style={styles.divider} />
-
-      <Text style={styles.reference}>
-        Reference: {hadith.bookSlug}
-      </Text>
-      <Text style={styles.reference}>
-        Book: {hadith.book?.bookName}
-      </Text>
-      <Text style={styles.reference}>
-        Writer: {hadith.book?.writerName}
-      </Text>
-      <View style={styles.divider1} />
-    
-   
+      <View style={styles.meta}>
+        <Text style={styles.reference}>{bookName}</Text>
+        {hadith.book?.writerName ? <Text style={styles.reference}>{hadith.book.writerName}</Text> : null}
+        {hadith.status ? <Text style={[styles.reference, styles.grade]}>{hadith.status}</Text> : null}
+      </View>
     </View>
   );
 };
 
 export default HadithCard;
 
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 30,
-    borderRadius: 2,
-  },
-  topRow: {
-    height:40,
-    width:"95%",
-    borderRadius:10,
-    borderWidth:0.2,
-    borderColor:Colors.lightgreytasbih,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf:"center",
-    backgroundColor:Colors.secondary1,
-  },
-  hadithNumber: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.white,
-    left:15,
-    top:2,
-    fontFamily:"Poppins-SemiBold"
-  },
-  arabicText: {
-    padding: 16,
-    top:5,
-    fontSize: 20,
-    textAlign: "justify",
-    lineHeight: 34,
-    marginBottom: 10,
-    color: Colors.white,
-    fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
-  },
-  narrator: {
-    paddingLeft: 16,
-    paddingRight:16,
-    fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? "Asul-Bold" : "AsulBold",
-    color:Colors.yellowgoldcolor,
-    marginBottom: 8,
-  },
-  englishText: {
-    top:5,
-    paddingLeft: 16,
-    paddingRight:16,
-    fontSize: 14,
-    fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
-    lineHeight: 22,
-    color: Colors.white,
-  },
-  divider: {
-    width:"92%",
-    alignSelf:"center",
-    height: 1,
-    backgroundColor: '#E6E6E6',
-    marginVertical: 14,
-  },
-  divider1: {
-    width:"92%",
-    alignSelf:"center",
-    height: 1,
-    top:15,
-    backgroundColor: '#E6E6E6',
-  },
-  reference: {
-    paddingLeft:16,
-    fontSize: 12,
-    color:Colors.yellowgoldcolor,
-    fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
-  },
-  
-});
+const makeStyles = (Colors) => {
+  const isLight = Colors.name === 'white';
+  return StyleSheet.create({
+    card: {
+      marginHorizontal: Spacing.lg,
+      borderRadius: Radius.lg,
+      overflow: 'hidden',
+      backgroundColor: isLight ? Colors.white : Colors.surfaceAlt,
+      borderWidth: isLight ? 1 : 0,
+      borderColor: '#E6E1F0',
+    },
+    topRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingLeft: Spacing.lg,
+      backgroundColor: isLight ? Colors.surfaceAlt : Colors.surface,
+    },
+    number: { fontSize: TypeScale.body, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
+    actions: { flexDirection: 'row' },
+    action: { width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' },
+    arabic: {
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.lg,
+      fontSize: 21,
+      lineHeight: 38,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+      color: Colors.textPrimary,
+      fontFamily: Fonts.arabic,
+    },
+    narrator: {
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.md,
+      fontSize: TypeScale.body,
+      color: Colors.gold,
+      fontFamily: Fonts.bodyBold,
+    },
+    english: {
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.xs,
+      fontSize: TypeScale.body + 1,
+      lineHeight: 23,
+      color: Colors.textPrimary,
+      fontFamily: Fonts.body,
+    },
+    meta: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.sm,
+      margin: Spacing.lg,
+      paddingTop: Spacing.md,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: isLight ? '#E6E1F0' : 'rgba(255,255,255,0.2)',
+    },
+    reference: { fontSize: TypeScale.small, color: Colors.textSecondary, fontFamily: Fonts.body },
+    grade: { color: Colors.gold, fontFamily: Fonts.bodySemiBold },
+  });
+};
