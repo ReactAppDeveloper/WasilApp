@@ -135,7 +135,7 @@ import FavoritesScreen from '../containers/Tasbih/FavoritesScreen';
 
 //Videos New Section
 import VideoDashboard from '../containers/VideosNew/VideoDashboard';
-import VideosNew from '../containers/VideosNew/VideosNew';
+import VideosNew from '../containers/VideosNew/VideoDashboard';
 import ChannelsDetailNew from '../containers/VideosNew/ChannelsDetailNew';
 import BySpeakersNew from '../containers/VideosNew/BySpeakersNew';
 import SpeakersDetailNew from '../containers/VideosNew/SpeakersDetailNew';
@@ -143,23 +143,7 @@ import SpeakersVideosPlayingNew from '../containers/VideosNew/SpeakersVideosPlay
 import RecitaionDetailNew from '../containers/VideosNew/RecitaionDetailNew';
 import VideoPlayingNew from '../containers/VideosNew/VideoPlayingNew';
 
-import VideoDashboardWhite from '../containers/VideosNewWhite/VideoDashboard';
-import VideosNewWhite from '../containers/VideosNewWhite/VideosNew';
-import ChannelsDetailNewWhite from '../containers/VideosNewWhite/ChannelsDetailNew';
-import BySpeakersNewWhite from '../containers/VideosNewWhite/BySpeakersNew';
-import SpeakersDetailNewWhite from '../containers/VideosNewWhite/SpeakersDetailNew';
-import SpeakersVideosPlayingNewWhite from '../containers/VideosNewWhite/SpeakersVideosPlayingNew';
-import RecitaionDetailNewWhite from '../containers/VideosNewWhite/RecitaionDetailNew';
-import VideoPlayingNewWhite from '../containers/VideosNewWhite/VideoPlayingNew';
 
-import VideoDashboardGreen from '../containers/VideosNewGreen/VideoDashboard';
-import VideosNewGreen from '../containers/VideosNewGreen/VideosNew';
-import ChannelsDetailNewGreen from '../containers/VideosNewGreen/ChannelsDetailNew';
-import BySpeakersNewGreen from '../containers/VideosNewGreen/BySpeakersNew';
-import SpeakersDetailNewGreen from '../containers/VideosNewGreen/SpeakersDetailNew';
-import SpeakersVideosPlayingNewGreen from '../containers/VideosNewGreen/SpeakersVideosPlayingNew';
-import RecitaionDetailNewGreen from '../containers/VideosNewGreen/RecitaionDetailNew';
-import VideoPlayingNewGreen from '../containers/VideosNewGreen/VideoPlayingNew';
 
 //Qibla Section
 import QiblaCompassNew from '../containers/Qibla/QiblaCompassNew';
@@ -326,14 +310,6 @@ const Themed_TafsirBySurah = themedScreen({ blue: TafsirBySurah, green: TafsirBy
 const Themed_TafsirSettingsScreen = themedScreen({ blue: TafsirSettingsScreen, green: TafsirSettingsScreenGreen, white: TafsirSettingsScreenWhite });
 const Themed_TafsirSettingFont = themedScreen({ blue: TafsirSettingFont, green: TafsirSettingFontGreen, white: TafsirSettingFontWhite });
 const Themed_TranslatorDetail = themedScreen({ blue: TranslatorDetail, green: TranslatorDetailGreen, white: TranslatorDetailWhite });
-const Themed_VideoDashboard = themedScreen({ blue: VideoDashboard, green: VideoDashboardGreen, white: VideoDashboardWhite });
-const Themed_VideosNew = themedScreen({ blue: VideosNew, green: VideosNewGreen, white: VideosNewWhite });
-const Themed_ChannelsDetailNew = themedScreen({ blue: ChannelsDetailNew, green: ChannelsDetailNewGreen, white: ChannelsDetailNewWhite });
-const Themed_BySpeakersNew = themedScreen({ blue: BySpeakersNew, green: BySpeakersNewGreen, white: BySpeakersNewWhite });
-const Themed_SpeakersDetailNew = themedScreen({ blue: SpeakersDetailNew, green: SpeakersDetailNewGreen, white: SpeakersDetailNewWhite });
-const Themed_SpeakersVideosPlayingNew = themedScreen({ blue: SpeakersVideosPlayingNew, green: SpeakersVideosPlayingNewGreen, white: SpeakersVideosPlayingNewWhite });
-const Themed_RecitaionDetailNew = themedScreen({ blue: RecitaionDetailNew, green: RecitaionDetailNewGreen, white: RecitaionDetailNewWhite });
-const Themed_VideoPlayingNew = themedScreen({ blue: VideoPlayingNew, green: VideoPlayingNewGreen, white: VideoPlayingNewWhite });
 const Themed_PrayerMosque = themedScreen({ blue: PrayerMosque, green: PrayerMosqueGreen, white: PrayerMosqueWhite });
 const Themed_PrayerGuide = themedScreen({ blue: PrayerGuide, green: PrayerGuideGreen, white: PrayerGuideWhite });
 const Themed_FajrSunnah = themedScreen({ blue: FajrSunnah, green: FajrSunnahGreen, white: FajrSunnahWhite });
@@ -783,30 +759,20 @@ const Stack = createNativeStackNavigator();
           <Stack.Screen name="TasbihCounterScreen" component={TasbihCounterScreen} options={headerOptions(Colors, "Tasbih")}/>
           <Stack.Screen name="BackgroundPickerScreen" component={BackgroundPickerScreen} options={headerOptions(Colors, "Change Background")}/>
           <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} options={headerOptions(Colors, "Favourite Tasbih")}/>
-          <Stack.Screen name="VideoDashboard" component={Themed_VideoDashboard} options={({ route }) => ({ title: "Videos",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-          backgroundColor: Colors.headerBg
-        }})}/>
-          <Stack.Screen name="VideosNew" component={Themed_VideosNew} options={({ route }) => ({ title:"Videos",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-        }})}/>
-          <Stack.Screen name="ChannelsDetailNew" component={Themed_ChannelsDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="VideoDashboard" component={VideoDashboard} options={headerOptions(Colors, "Videos")}/>
+          <Stack.Screen name="VideosNew" component={VideosNew} options={headerOptions(Colors, "Videos")}/>
+          <Stack.Screen name="ChannelsDetailNew" component={ChannelsDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-          <Stack.Screen name="BySpeakersNew" component={Themed_BySpeakersNew} options={({ route }) => ({ title: "Durs and Podcast",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="BySpeakersNew" component={BySpeakersNew} options={headerOptions(Colors, "Durs and Podcast")}/>
+          <Stack.Screen name="SpeakersDetailNew" component={SpeakersDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-          <Stack.Screen name="SpeakersDetailNew" component={Themed_SpeakersDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="SpeakersVideosPlayingNew" component={SpeakersVideosPlayingNew} options={headerOptions(Colors, "Videos")}/>
+          <Stack.Screen name="RecitaionDetailNew" component={RecitaionDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
-          <Stack.Screen name="SpeakersVideosPlayingNew" component={Themed_SpeakersVideosPlayingNew} options={{animation:'slide_from_right',headerTitle:"Videos",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-        },}}/>
-          <Stack.Screen name="RecitaionDetailNew" component={Themed_RecitaionDetailNew} options={({ route }) => ({ title: route.params.name,animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
-        backgroundColor: Colors.headerBg
-      }})}/>
-          <Stack.Screen name="VideoPlayingNew" component={Themed_VideoPlayingNew} options={{animation:'slide_from_right',headerTitle:"Videos",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
-        backgroundColor: Colors.headerBg
-      },}}/>
+          <Stack.Screen name="VideoPlayingNew" component={VideoPlayingNew} options={headerOptions(Colors, "Videos")}/>
           <Stack.Screen name="QiblaCompassNew" component={QiblaCompassNew} options={headerOptions(Colors, "Qibla")}/>
           <Stack.Screen name="PrayerMosque" component={Themed_PrayerMosque} options={{animation:'slide_from_right',headerTitle:"Find a Mosque",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
