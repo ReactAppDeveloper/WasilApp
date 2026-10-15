@@ -59,7 +59,7 @@ LogBox.ignoreAllLogs();
 
 const { width } = Dimensions.get('window');
 
-const homebackgroundimage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1789638600/home/homelatestbg.png' };
+const homebackgroundimage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1789638600/home/homelatestbg.png' };
 
 const QuranMainDashboard = ({ navigation, route }) => {
   const dispatch = useDispatch();

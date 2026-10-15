@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  FlatList,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -128,11 +128,17 @@ useEffect(() => {
   }
 
   return (
-    <ScrollView
+    <FlatList
       style={styles.container}
-      contentContainerStyle={{paddingBottom: 30}}>
-      {/* Header */}
-
+      contentContainerStyle={{paddingBottom: 30}}
+      data={tafsirList}
+      keyExtractor={(item, index) => String(item.verse_key || index)}
+      // Tafsir entries are long; render a few at a time instead of the whole surah up front.
+      initialNumToRender={3}
+      maxToRenderPerBatch={3}
+      windowSize={5}
+      ListHeaderComponent={
+        <>
       <View style={styles.headerCard}>
         <View style={{flex: 1}}>
           <Text style={styles.surahName}>
@@ -168,9 +174,9 @@ useEffect(() => {
   
 </View>
       </View>
-
-     {tafsirList.map(item => (
-
+        </>
+      }
+      renderItem={({item}) => (
   <View style={styles.tafsirCard}>
     <Text style={styles.verseNumber}>
      {item.verse_key}
@@ -185,8 +191,8 @@ useEffect(() => {
       {item.text.replace(/<[^>]*>/g, '')}
   </Text>
         </View>
-))}
-    </ScrollView>
+      )}
+    />
   );
 };
 

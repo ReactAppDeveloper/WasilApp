@@ -18,6 +18,7 @@ const FajrSunnah = ({ navigation }) => {
     </View>
     <Tab.Navigator
   screenOptions={{
+          lazy: true,
     tabBarStyle: {
       backgroundColor: '#ECECEC',
       marginHorizontal: 16,

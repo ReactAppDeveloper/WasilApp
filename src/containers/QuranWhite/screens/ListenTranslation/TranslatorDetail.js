@@ -515,7 +515,7 @@ export default function TranslatorDetail({ route }) {
                 "translator",
 
               artwork:
-                "https://res.cloudinary.com/daof5pne5/image/upload/v1786029254/notificationbg.png",
+                "https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786029254/notificationbg.png",
             })
           );
 

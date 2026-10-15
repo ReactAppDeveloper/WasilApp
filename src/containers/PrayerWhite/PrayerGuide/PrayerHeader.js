@@ -23,7 +23,7 @@ import Svg, { Circle } from 'react-native-svg';
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const HomeBannerimage = {
-  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1784929652/prayernewbg.png',
+  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1784929652/prayernewbg.png',
 };
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

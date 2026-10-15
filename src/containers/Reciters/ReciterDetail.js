@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Pressable, StatusBar } from 'react-native';
-import TrackPlayer, { useTrackPlayerEvents, Event, State, useProgress } from 'react-native-track-player';
+import TrackPlayer, { useTrackPlayerEvents, Event, State } from 'react-native-track-player';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SURAH_NAMES } from './surahNames';
 import {
@@ -17,16 +17,10 @@ import {
   IslamicStoryPauseAudioSVG,
 } from '../../assets/icons';
 import { useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH } from '../../theme';
-import { ScreenState } from '../../components';
+import { ScreenState, PlaybackProgress } from '../../components';
 import { savePlayerState } from './playerStorage';
 
-const ARTWORK = 'https://res.cloudinary.com/daof5pne5/image/upload/v1786029254/notificationbg.png';
-
-const formatTime = (sec = 0) => {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s < 10 ? '0' : ''}${s}`;
-};
+const ARTWORK = 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786029254/notificationbg.png';
 
 export default function ReciterDetail({ route }) {
   const { reciterId } = route.params;
@@ -42,8 +36,6 @@ export default function ReciterDetail({ route }) {
   const [currentChapter, setCurrentChapter] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [barWidth, setBarWidth] = useState(0);
-  const { position, duration } = useProgress(500);
   const listRef = useRef(null);
   const userScrolling = useRef(false);
 
@@ -167,7 +159,6 @@ export default function ReciterDetail({ route }) {
 
   if (status !== 'ready') return <ScreenState status={status} title="Couldn't load recitations" onRetry={load} />;
 
-  const progress = duration ? Math.min(position / duration, 1) : 0;
   const current = currentChapter ? SURAH_NAMES[currentChapter] : null;
   const PLAYER_HEIGHT = 190;
 
@@ -237,21 +228,7 @@ export default function ReciterDetail({ route }) {
           <Text style={styles.playerTitle} numberOfLines={1}>
             {current.english}
           </Text>
-          <Pressable
-            style={styles.progressHit}
-            onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
-            onPress={(e) => duration && barWidth && TrackPlayer.seekTo((e.nativeEvent.locationX / barWidth) * duration)}
-            accessibilityRole="adjustable"
-            accessibilityLabel="Playback position">
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-            </View>
-            <View style={[styles.progressThumb, { left: Math.max(0, progress * barWidth - 8) }]} />
-          </Pressable>
-          <View style={styles.timeRow}>
-            <Text style={styles.timeText}>{formatTime(position)}</Text>
-            <Text style={styles.timeText}>{formatTime(duration)}</Text>
-          </View>
+          <PlaybackProgress styles={styles} timeStyle={styles.timeText} />
           <View style={styles.controlRow}>
             <Pressable onPress={() => TrackPlayer.skipToPrevious().catch(() => {})} style={styles.control} accessibilityLabel="Previous surah">
               <IslamicStoryPlayPreviousSVG />

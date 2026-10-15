@@ -19,7 +19,7 @@ const TayammumScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image
           source={{
-            uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1720698310/prayertimes/tayyamum.png',
+            uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698310/prayertimes/tayyamum.png',
           }}
           style={styles.image}
           resizeMode="cover"

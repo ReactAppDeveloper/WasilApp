@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable, TouchableOpacity, StatusBar } from 'react-native';
-import TrackPlayer, { useProgress, State, useTrackPlayerEvents, Event } from 'react-native-track-player';
+import TrackPlayer, { State, useTrackPlayerEvents, Event } from 'react-native-track-player';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -18,7 +18,7 @@ import {
   IslamicStoryGPauseAudioSVG,
 } from '../../../assets/icons';
 import { useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH } from '../../../theme';
-import { ScreenState } from '../../../components';
+import { ScreenState, PlaybackProgress } from '../../../components';
 import StoryHero from '../StoryHero';
 import { fetchStory, fetchStoryAudios } from '../storiesApi';
 
@@ -28,13 +28,6 @@ const ICONS = {
   blue: { Prev: IslamicStoryPlayPreviousBTSVG, Rewind: IslamicStoryPlayRewindBTSVG, Forward: IslamicStoryPlayForwardBTSVG, Next: IslamicStoryPlayNextBTSVG, Play: IslamicStoryPlayAudioSVG, Pause: IslamicStoryPauseAudioSVG },
   green: { Prev: IslamicStoryPlayPreviousBTSVG, Rewind: IslamicStoryPlayRewindBTSVG, Forward: IslamicStoryPlayForwardBTSVG, Next: IslamicStoryPlayNextBTSVG, Play: IslamicStoryGPlayAudioSVG, Pause: IslamicStoryGPauseAudioSVG },
   white: { Prev: IslamicStoryPlayPreviousSVG, Rewind: IslamicStoryPlayRewindSVG, Forward: IslamicStoryPlayForwardSVG, Next: IslamicStoryPlayNextSVG, Play: IslamicStoryPlayAudioSVG, Pause: IslamicStoryPauseAudioSVG },
-};
-
-const formatTime = (sec) => {
-  if (!sec || !isFinite(sec)) return '0:00';
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
 const PlayStory = ({ route }) => {
@@ -51,8 +44,6 @@ const PlayStory = ({ route }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [speedIndex, setSpeedIndex] = useState(0);
-  const [barWidth, setBarWidth] = useState(0);
-  const { position, duration } = useProgress(500);
 
   const load = useCallback(async () => {
     setStatus('loading');
@@ -147,7 +138,6 @@ const PlayStory = ({ route }) => {
     return <ScreenState status={status} title={status === 'empty' ? 'Story not found' : "Couldn't load this story"} onRetry={load} />;
   }
 
-  const progress = duration ? Math.min(position / duration, 1) : 0;
   const hasAudio = audios.length > 0;
 
   return (
@@ -163,21 +153,7 @@ const PlayStory = ({ route }) => {
 
         {hasAudio ? (
           <View style={styles.player}>
-            <Pressable
-              style={styles.progressHit}
-              onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
-              onPress={(e) => duration && barWidth && TrackPlayer.seekTo((e.nativeEvent.locationX / barWidth) * duration)}
-              accessibilityRole="adjustable"
-              accessibilityLabel="Playback position">
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-              </View>
-              <View style={[styles.progressThumb, { left: Math.max(0, progress * barWidth - 8) }]} />
-            </Pressable>
-            <View style={styles.timeRow}>
-              <Text style={styles.time}>{formatTime(position)}</Text>
-              <Text style={styles.time}>{formatTime(duration)}</Text>
-            </View>
+            <PlaybackProgress styles={styles} timeStyle={styles.time} />
 
             <View style={styles.controls}>
               <Pressable onPress={() => TrackPlayer.skipToPrevious().catch(() => {})} style={styles.control} accessibilityLabel="Previous part">

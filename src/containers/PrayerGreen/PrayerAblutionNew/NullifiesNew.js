@@ -10,7 +10,7 @@ import {
 import { Colors } from '../../../theme';
 
 const headerImage = {
-  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1720698320/prayertimes/nullifies.png',
+  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698320/prayertimes/nullifies.png',
 };
 
 const nullifiesList = [

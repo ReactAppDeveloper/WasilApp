@@ -25,7 +25,7 @@ import {
 } from '../../assets/icons';
 
 const VIDEO_ID = 'SsXHcObCLJw';
-const CLOUD = 'https://res.cloudinary.com/daof5pne5/image/upload';
+const CLOUD = 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200';
 
 // Per-theme artwork. Everything else comes from theme tokens.
 const ART = {

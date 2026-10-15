@@ -1,24 +1,26 @@
-import axios from 'axios';
+import { cachedGet, DAY } from '../../services/http';
 
 const API_KEY = '$2y$10$qSQzGL8GxgFsxQDqeb7MMe9mzdAfCNf2dOorH6mokC70Unhfli';
 const BASE = 'https://hadithapi.com/api';
 const HIDDEN_BOOK_IDS = [9, 10];
 
 export const fetchHadithBooks = async () => {
-  const { data } = await axios.get(`${BASE}/books`, { params: { apiKey: API_KEY } });
+  const { data } = await cachedGet(`${BASE}/books`, { params: { apiKey: API_KEY } }, { ttl: 7 * DAY });
   return (data?.books || []).filter((book) => !HIDDEN_BOOK_IDS.includes(book.id));
 };
 
 export const fetchChapters = async (bookSlug) => {
-  const { data } = await axios.get(`${BASE}/${bookSlug}/chapters`, { params: { apiKey: API_KEY } });
+  const { data } = await cachedGet(`${BASE}/${bookSlug}/chapters`, { params: { apiKey: API_KEY } }, { ttl: 7 * DAY });
   return data?.chapters || [];
 };
 
 // Returns { items, page, lastPage } for one page of hadiths in a chapter.
 export const fetchHadiths = async (bookSlug, chapterNumber, page = 1) => {
-  const { data } = await axios.get(`${BASE}/hadiths`, {
-    params: { book: bookSlug, chapter: chapterNumber, paginate: 25, page, apiKey: API_KEY },
-  });
+  const { data } = await cachedGet(
+    `${BASE}/hadiths`,
+    { params: { book: bookSlug, chapter: chapterNumber, paginate: 25, page, apiKey: API_KEY } },
+    { ttl: 7 * DAY },
+  );
   const p = data?.hadiths || {};
   return { items: p.data || [], page: p.current_page || page, lastPage: p.last_page || page };
 };

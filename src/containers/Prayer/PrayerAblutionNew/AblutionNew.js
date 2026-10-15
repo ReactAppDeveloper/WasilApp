@@ -3,11 +3,11 @@ import {  StatusBar, StyleSheet,View,TouchableOpacity,ScrollView,Image,LogBox,Te
 import { Colors} from '../../../theme';
 LogBox.ignoreAllLogs();
 
-const wudhubackimage = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1766837805/prayertimes/ITW.png',};
-const wudhubackimage1 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1766840010/prayertimes/WSBSG.png',};
-const wudhubackimage2 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1766840145/prayertimes/WNYW.png',};
-const wudhubackimage3 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1766840144/prayertimes/HTPT.png',};
-const wudhubackimage4 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1766840146/prayertimes/MWSS.png',};
+const wudhubackimage = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766837805/prayertimes/ITW.png',};
+const wudhubackimage1 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766840010/prayertimes/WSBSG.png',};
+const wudhubackimage2 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766840145/prayertimes/WNYW.png',};
+const wudhubackimage3 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766840144/prayertimes/HTPT.png',};
+const wudhubackimage4 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766840146/prayertimes/MWSS.png',};
 const { width } = Dimensions.get('window');
 
 const AblutionNew = ({ navigation }) => { 

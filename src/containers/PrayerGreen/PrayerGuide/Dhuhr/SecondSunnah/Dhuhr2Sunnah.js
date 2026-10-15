@@ -19,6 +19,7 @@ const Dhuhr2Sunnah = ({ navigation }) => {
     </View>
     <Tab.Navigator
   screenOptions={{
+          lazy: true,
     tabBarStyle: {
       backgroundColor:Colors.wasilgreenthemecolorfourth,
       marginHorizontal: 16,

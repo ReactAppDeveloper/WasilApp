@@ -49,6 +49,7 @@ const AsrFirst4Farz = () => {
 
       <Tab.Navigator
         screenOptions={{
+          lazy: true,
           tabBarStyle: {
             backgroundColor: '#ECECEC',
             marginHorizontal: 16,

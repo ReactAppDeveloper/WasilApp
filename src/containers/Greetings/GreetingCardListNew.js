@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, View, Image, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
-import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Spacing, Radius, useScreen } from '../../theme';
 import { ScreenState } from '../../components';
+import { cachedGet, HOUR } from '../../services/http';
 
 const GreetingCardListNew = ({ route, navigation }) => {
   const { cardid, categoryname } = route.params;
@@ -18,7 +18,7 @@ const GreetingCardListNew = ({ route, navigation }) => {
 
   const load = useCallback(async () => {
     try {
-      const response = await axios.get(`https://islamicapp.vercel.app/api/greetings?categoryId=${cardid}`);
+      const response = await cachedGet(`https://islamicapp.vercel.app/api/greetings?categoryId=${cardid}`, undefined, { ttl: 6 * HOUR });
       setCards(Array.isArray(response.data) ? response.data : []);
       setStatus('ready');
     } catch (e) {

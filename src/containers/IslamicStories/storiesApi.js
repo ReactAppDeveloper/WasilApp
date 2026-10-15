@@ -1,7 +1,7 @@
-import axios from 'axios';
+import { cachedGet, HOUR } from '../../services/http';
 
 const BASE = 'https://islamicapp.vercel.app/api';
-const get = async (path, params) => (await axios.get(`${BASE}/${path}`, { params })).data || [];
+const get = async (path, params) => (await cachedGet(`${BASE}/${path}`, { params }, { ttl: 6 * HOUR })).data || [];
 
 export const fetchAllStories = () => get('allislamicstory');
 export const fetchCategories = () => get('islamiccategories');

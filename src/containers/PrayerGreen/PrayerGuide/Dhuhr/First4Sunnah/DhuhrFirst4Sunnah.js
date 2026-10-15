@@ -46,6 +46,7 @@ const DhuhrFirst4Sunnah = () => {
 
       <Tab.Navigator
         screenOptions={{
+          lazy: true,
            tabBarStyle: {
                 backgroundColor:Colors.wasilgreenthemecolorfourth,
                 marginHorizontal: 16,

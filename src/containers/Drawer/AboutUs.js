@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
 import InfoText from './InfoText';
 
-const HERO = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1734071182/aboutusimage.png' };
+const HERO = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1734071182/aboutusimage.png' };
 
 const FEATURES = [
   ['Accurate Prayer Times', 'Stay up-to-date with precise prayer times based on your location.'],

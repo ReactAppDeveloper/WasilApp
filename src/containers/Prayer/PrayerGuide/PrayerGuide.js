@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 
 import moment from 'moment';
-import axios from 'axios';
+import {cachedGet, DAY} from '../../../services/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 
@@ -453,7 +453,7 @@ const PrayerGuide = ({ navigation }) => {
       moment().format('DD-MM-YYYY');
 
     const prayerResponse =
-      await axios.get(
+      await cachedGet(
         `https://api.aladhan.com/v1/timings/${date}`,
         {
           params: {
@@ -462,8 +462,7 @@ const PrayerGuide = ({ navigation }) => {
             school: 1,
           },
           timeout: 15000,
-        }
-      );
+        }, {ttl: DAY});
 
     const prayerData =
       prayerResponse?.data?.data;
@@ -644,7 +643,7 @@ const PrayerGuide = ({ navigation }) => {
 
     try {
       const addressResponse =
-        await axios.get(
+        await cachedGet(
           'https://us1.locationiq.com/v1/reverse',
           {
             params: {
@@ -654,8 +653,7 @@ const PrayerGuide = ({ navigation }) => {
               format: 'json',
             },
             timeout: 10000,
-          }
-        );
+          }, {ttl: 30 * DAY});
 
       const addressValue =
         addressResponse?.data?.address

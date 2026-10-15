@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ImageBackground, Platform } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../../theme';
 import { runAzanSetup } from '../../../services/azan/AzanSetupComponent';
-const HomeBannerImage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1786541707/prayersectionbg.png' };
+const HomeBannerImage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786541707/prayersectionbg.png' };
 
 export default class PrayerTimeSectionNew extends React.PureComponent {
   togglePrayer = async (name, value) => {

@@ -24,7 +24,7 @@ const AnimatedCircle =
   Animated.createAnimatedComponent(Circle);
 
 const HomeBannerimage = {
-  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1786541666/prayerbggreen.png',
+  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786541666/prayerbggreen.png',
 };
 
 const {width: SCREEN_WIDTH} =

@@ -3,6 +3,14 @@ import { AppRegistry, Text, TextInput } from 'react-native';
 import App from './src';
 import { name as appName } from './app.json';
 import TrackPlayer from 'react-native-track-player';
+
+// Release builds: drop debug logging. The app has 200+ console.log calls, several of which
+// serialise whole API responses on the JS thread. Warnings and errors are kept.
+if (!__DEV__) {
+  console.log = () => {};
+  console.info = () => {};
+  console.debug = () => {};
+}
 const TextRender = Text.render;
 Text.render = function (...args) {
   const origin = TextRender.call(this, ...args);

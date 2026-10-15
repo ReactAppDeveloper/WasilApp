@@ -49,6 +49,7 @@ const IshaFirst4Sunnah = () => {
 
       <Tab.Navigator
         screenOptions={{
+          lazy: true,
           tabBarStyle: {
             backgroundColor: '#ECECEC',
             marginHorizontal: 16,

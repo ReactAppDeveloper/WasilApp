@@ -46,6 +46,7 @@ const IshaWitr = () => {
 
       <Tab.Navigator
         screenOptions={{
+          lazy: true,
           tabBarStyle: {
            backgroundColor:Colors.secondary1,
             marginHorizontal: 16,

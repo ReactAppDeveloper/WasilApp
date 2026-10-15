@@ -5,7 +5,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StatusBar,ActivityIndicator,Alert,AppState,BackHandler,Image,ImageBackground,TouchableOpacity,Platform,ScrollView,Text,View,Dimensions,Modal,} from 'react-native';
 import Share from 'react-native-share';
 import {ScaledSheet, verticalScale} from 'react-native-size-matters';
-import TrackPlayer, {useProgress} from 'react-native-track-player';
+import TrackPlayer, {useActiveTrack, useProgress} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAudioUrlByChapter,getAudioUrlByJuz,getChapterIdBySlug,getChapterVerses,getJuzVerses,getPagesLookup,getRangeVerses} from '../../api';
 import AyahViewComponent from '../../components/AyahViewComponent';
@@ -51,6 +51,12 @@ import {
 } from '../../../../assets/icons';
 import {captureRef} from 'react-native-view-shot';
 
+// Owns the playback-progress subscription so only the player bar re-renders each second, not the whole surah page.
+const ProgressBottomView = props => {
+  const {position, duration} = useProgress();
+  return <BottomView {...props} maximumValue={duration} value={position} />;
+};
+
 const SurahDetailPage = ({navigation, route}) => {
   const {ayahIdFromBookmark,ayahKeyFromBookmark,selectedAyahItems,selectedSurahItems,fromPinAyah,fromBookmarkAyah,fromjuz,from,rukuNumber,fromqc,surahNumber,headersurahname,continuePlaying} = route.params;
   const reciters = getStorageItem('reciters');
@@ -89,9 +95,13 @@ const SurahDetailPage = ({navigation, route}) => {
   const [currentPlayingAyah, setCurrentPlayingAyah] = useState({});
   const [currentAyahIndex, setCurrentAyahIndex] = useState(null);
   const [fromPlayIcon, setFromPlayIcon] = useState(false);
-  const [currentOffset, setCurrentOffset] = useState(0);
+  // Auto-scroll offset is never rendered, so it lives in a ref; as state it re-rendered the whole page every frame.
+  const offsetRef = useRef(0);
+  const setCurrentOffset = v => {
+    offsetRef.current = typeof v === 'function' ? v(offsetRef.current) : v;
+  };
   const [itemHeights, setItemHeights] = useState([]);
-  const progress = useProgress();
+  const activeTrack = useActiveTrack();
   const scrollingRef = useRef();
   const animationFrameId = useRef(null);
   const ayahRefs = useRef(null);
@@ -496,7 +506,7 @@ useEffect(() => {
   }
   };
   const ARTWORK_URL =
-  'https://res.cloudinary.com/daof5pne5/image/upload/v1786029254/notificationbg.png';
+  'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786029254/notificationbg.png';
   const loadRukuAudio = async () => {
   try {
     if (!rukuNumber) return;
@@ -1242,7 +1252,7 @@ const onClickPlaySettingNew = async () => {
       }
     };
     fetchCurrentTrackIndex();
-  }, [progress?.position, isPlay, isPlaying]);
+  }, [activeTrack?.id, isPlay, isPlaying]);
   
   useEffect(() => {
   if (
@@ -2034,7 +2044,7 @@ const onClickPlaySettingNew = async () => {
                            
               {isPlay && (
               <View>
-              <BottomView
+              <ProgressBottomView
                 selectedReciter={selectedReciter}
                 playbackSpeed={playbackSpeed}
                 onChangePlaybackSpeed={changePlaybackSpeed}
@@ -2062,9 +2072,7 @@ const onClickPlaySettingNew = async () => {
                 onPressPlayMenu={onClickPlayMenu}
                 onPressPlayBook={onClickPlayBook}
                 minimumValue={0}
-                maximumValue={progress?.duration}
-                value={progress?.position}
-                onSlidingComplete={seekTo}
+                                onSlidingComplete={seekTo}
                 isVisibleSpeedIcon={isSpeedCounting == 0 ? true : false}
                 isPlay={isPlaying}
                 openAyahDetailView={openAyahDetailView}

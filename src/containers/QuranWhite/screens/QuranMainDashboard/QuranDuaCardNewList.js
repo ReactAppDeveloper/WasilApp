@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, Platform, Image, Dimensions } from 'r
 import { Colors } from '../../../../theme';
 
 const { width } = Dimensions.get('window');
-const duabackgroundimage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1770385229/home/duaquranbg.png' };
+const duabackgroundimage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1770385229/home/duaquranbg.png' };
 
 export default class DuaCardNewList extends Component {
   state = {

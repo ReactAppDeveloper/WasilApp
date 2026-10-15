@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {ScaledSheet, verticalScale} from 'react-native-size-matters';
-import TrackPlayer, {useProgress} from 'react-native-track-player';
+import TrackPlayer, {useActiveTrack} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAudioUrlByPage, getPageVerses, getPagesLookup} from '../../api';
 import BottomView from '../../components/BottomView';
@@ -63,7 +63,7 @@ const SurahFullView = ({navigation, route}) => {
   const [indexLayout, setIndexLayout] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
   const [layout, setLayout] = useState(null);
-  const progress = useProgress();
+  const activeTrack = useActiveTrack(); // re-runs the sync effect on track change instead of every second
   const scrollingRef = useRef();
   const ayahRefs = useRef([]);
   const animationFrameId = useRef(null);
@@ -300,7 +300,7 @@ const SurahFullView = ({navigation, route}) => {
     fetchCurrentTrackIndex();
 
     return () => {};
-  }, [progress?.position]);
+  }, [activeTrack?.id]);
 
   const togglePlayAudio = async () => {
     if (isPlaying) {

@@ -13,7 +13,7 @@ import {
   WasilNewContinueReadingIcon, WasilNewContinueListenIcon, WasilNewGreenContReaIcon, WasilNewGreenContLinIcon,
 } from '../../assets/icons';
 
-const CLOUD = 'https://res.cloudinary.com/daof5pne5/image/upload';
+const CLOUD = 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200';
 
 // Quick-access tiles: label, route, and the icon for each theme [blue, green, white].
 const TILES = [

@@ -10,11 +10,11 @@ import {
 import { Colors } from '../../../theme';
 
 const imageOne = {
-  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1720698325/prayertimes/shoeone.png',
+  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698325/prayertimes/shoeone.png',
 };
 
 const imageTwo = {
-  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/v1720698305/prayertimes/shoetwo.png',
+  uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698305/prayertimes/shoetwo.png',
 };
 
 const WearingSockWudhu = () => {

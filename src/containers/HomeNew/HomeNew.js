@@ -3,12 +3,12 @@ import { View, ScrollView, StatusBar, StyleSheet, Platform, BackHandler, Permiss
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import moment from 'moment';
 import { useTheme, Spacing } from '../../theme';
 import { ScreenState } from '../../components';
 import AzanSetupComponent, { runAzanSetup } from '../../services/azan/AzanSetupComponent';
 import { getSavedCoords, refreshLocation } from '../../services/location';
+import { cachedGet, DAY } from '../../services/http';
 import { adjustedHijri } from './prayerTimes';
 import PrayerHeader from './PrayerHeader';
 import ContinueCards from './ContinueCards';
@@ -35,7 +35,9 @@ const requestNotificationPermission = async () => {
 // Address is a nice-to-have: a failed lookup must never block prayer times.
 const lookupAddress = async ({ lat, lon }) => {
   try {
-    const { data } = await axios.get(`https://us1.locationiq.com/v1/reverse?key=${LOCATION_IQ_KEY}&lat=${lat}&lon=${lon}&format=json`);
+    const { data } = await cachedGet(`https://us1.locationiq.com/v1/reverse?key=${LOCATION_IQ_KEY}&lat=${lat}&lon=${lon}&format=json`, undefined, {
+      ttl: 30 * DAY,
+    });
     const a = data?.address || {};
     return a.city || a.state || a.country || '';
   } catch (e) {
@@ -57,12 +59,16 @@ const HomeNew = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [gregorianDate, setGregorianDate] = useState(moment().format('dddd, MMM D, YYYY'));
 
-  const load = useCallback(async (coords) => {
+  const load = useCallback(async (coords, force = false) => {
     const where = coords || (await getSavedCoords());
     const date = moment().format('DD-MM-YYYY');
     try {
       const [{ data }, place, offset] = await Promise.all([
-        axios.get(`https://api.aladhan.com/v1/timings/${date}?latitude=${where.lat}&longitude=${where.lon}&school=1`),
+        // Cached per day and location, so returning to Home is instant and works offline.
+        cachedGet(`https://api.aladhan.com/v1/timings/${date}?latitude=${where.lat}&longitude=${where.lon}&school=1`, undefined, {
+          ttl: DAY,
+          force,
+        }),
         lookupAddress(where),
         AsyncStorage.getItem('HIJRI_OFFSET'),
       ]);
@@ -99,7 +105,7 @@ const HomeNew = ({ navigation }) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await load();
+    await load(null, true);
     setRefreshing(false);
   };
 

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, StatusBar } from 'react-native';
-import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchSVG } from '../../assets/icons';
 import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
 import { ScreenState } from '../../components';
+import { cachedGet, DAY } from '../../services/http';
 
 const DuaCategoryDetail = ({ navigation, route }) => {
   const { duacategoryid, duacategorytitle } = route.params;
@@ -19,7 +19,7 @@ const DuaCategoryDetail = ({ navigation, route }) => {
   const load = useCallback(async () => {
     setStatus('loading');
     try {
-      const response = await axios.get(`https://islamicapp.vercel.app/api/duabycategory?duacategoryId=${duacategoryid}`);
+      const response = await cachedGet(`https://islamicapp.vercel.app/api/duabycategory?duacategoryId=${duacategoryid}`, undefined, { ttl: DAY });
       setDuas(Array.isArray(response.data) ? response.data : []);
       setStatus('ready');
     } catch (e) {

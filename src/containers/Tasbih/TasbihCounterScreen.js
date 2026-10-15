@@ -53,9 +53,9 @@ const BEADS_LIST = [
   WasilNewTasbihBeedsFourthSvg,
 ];
 const MAIN_BG = {
-  blue: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/v1785361063/tasbih/tasbihbgmaint.png" },
-  green: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/v1785361063/tasbih/tasbihbgmaint.png" },
-  white: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/v1768214415/tasbih/tasbihbgmain.png" },
+  blue: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1785361063/tasbih/tasbihbgmaint.png" },
+  green: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1785361063/tasbih/tasbihbgmaint.png" },
+  white: { uri: "https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1768214415/tasbih/tasbihbgmain.png" },
 };
 
 // The rope is a cubic Bézier in a unit box, scaled to the bead area. Beads are placed on the

@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
 import { useTheme, Fonts, TypeScale, Spacing, Radius } from '../../theme';
 import { SectionHeader } from '../../components';
 import reciters from '../Reciters/newreciters';
 import ReciterAvatar from '../Reciters/ReciterAvatar';
 import { fetchApproved } from '../WallOfRemembrance/remembranceApi';
+import { cachedGet, HOUR } from '../../services/http';
 
 const useCardStyles = () => {
   const { Colors } = useTheme();
@@ -44,7 +44,7 @@ const useOptionalList = (loader) => {
 
 export function StoriesRail({ navigation }) {
   const s = useCardStyles();
-  const categories = useOptionalList(async () => (await axios.get('https://islamicapp.vercel.app/api/islamiccategories')).data);
+  const categories = useOptionalList(async () => (await cachedGet('https://islamicapp.vercel.app/api/islamiccategories', undefined, { ttl: 6 * HOUR })).data);
   if (!categories.length) return null;
   return (
     <View>

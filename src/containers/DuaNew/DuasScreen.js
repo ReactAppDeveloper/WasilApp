@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet, StatusBar } from 'react-native';
-import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DuaCategoryCard from './DuaCategoryCard';
 import { useTheme, Spacing } from '../../theme';
 import { ScreenState } from '../../components';
+import { cachedGet, DAY } from '../../services/http';
 
 const DuasScreen = ({ navigation }) => {
   const { Colors } = useTheme();
@@ -16,7 +16,7 @@ const DuasScreen = ({ navigation }) => {
   const load = useCallback(async () => {
     setStatus('loading');
     try {
-      const response = await axios.get('https://islamicapp.vercel.app/api/duacategories');
+      const response = await cachedGet('https://islamicapp.vercel.app/api/duacategories', undefined, { ttl: DAY });
       setCategories(Array.isArray(response.data) ? response.data : []);
       setStatus('ready');
     } catch (e) {

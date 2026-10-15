@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Image, StatusBar, RefreshControl } from 'react-native';
-import axios from 'axios';
 import { SvgUri } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WasilGreetingAdBannerSVG } from '../../assets/icons';
 import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from '../../theme';
 import { ScreenState, SectionHeader } from '../../components';
+import { cachedGet, HOUR } from '../../services/http';
 
 const API = 'https://islamicapp.vercel.app/api';
 const NEW_WINDOW_DAYS = 31;
@@ -33,8 +33,8 @@ export default function GreetingsNew({ navigation }) {
   const load = useCallback(async () => {
     try {
       const [cats, all] = await Promise.all([
-        axios.get(`${API}/categories`),
-        axios.get(`${API}/allgreetings`).catch(() => ({ data: [] })), // the "new" rail is optional
+        cachedGet(`${API}/categories`, undefined, { ttl: 6 * HOUR }),
+        cachedGet(`${API}/allgreetings`, undefined, { ttl: 6 * HOUR }).catch(() => ({ data: [] })), // the "new" rail is optional
       ]);
       setCategories(Array.isArray(cats.data) ? cats.data : []);
       setNewest(pickNewest(Array.isArray(all.data) ? all.data : []));

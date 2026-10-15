@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Animated, StyleSheet, StatusBar } from 'react-native';
-import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DuaCard from './DuaCard';
 import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from '../../theme';
 import { ScreenState } from '../../components';
+import { cachedGet, DAY } from '../../services/http';
 
 const CARD_SPACING = 12;
 
@@ -29,7 +29,7 @@ const DuaDetailNew = ({ route }) => {
   const load = useCallback(async () => {
     setStatus('loading');
     try {
-      const res = await axios.get(`https://islamicapp.vercel.app/api/duaversebycategory?duacategoryId=${duacategoryid}`);
+      const res = await cachedGet(`https://islamicapp.vercel.app/api/duaversebycategory?duacategoryId=${duacategoryid}`, undefined, { ttl: DAY });
       const list = Array.isArray(res.data) ? res.data : [];
       setDuas(list);
       setStatus(list.length ? 'ready' : 'empty');

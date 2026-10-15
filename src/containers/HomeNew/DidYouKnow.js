@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, FlatList, ImageBackground, StyleSheet } from 'react-native';
-import axios from 'axios';
 import { useTheme, Fonts, TypeScale, Spacing, Radius, useScreen } from '../../theme';
 import { SectionHeader } from '../../components';
 import { HOME_ART } from './homeAssets';
+import { cachedGet, DAY } from '../../services/http';
 
 const AUTO_ADVANCE_MS = 5000;
 
@@ -20,8 +20,7 @@ export default function DidYouKnow() {
 
   useEffect(() => {
     let alive = true;
-    axios
-      .get('https://islamicapp.vercel.app/api/didyouknow')
+    cachedGet('https://islamicapp.vercel.app/api/didyouknow', undefined, { ttl: DAY })
       .then(({ data }) => alive && setFacts((Array.isArray(data) ? data : []).filter((f) => f?.content)))
       .catch(() => {});
     return () => {
