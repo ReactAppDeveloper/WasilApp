@@ -1,5 +1,5 @@
 import {FlashList} from '@shopify/flash-list';
-import React, {useEffect} from 'react';
+import React, {useMemo, useEffect} from 'react';
 import {View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
@@ -8,9 +8,11 @@ import EmptyView from '../../components/EmptyView';
 import QuranSaveBox from '../../components/QuranSaveBox';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
-import { Colors } from '../../../../theme';
+import {useTheme} from '../../../../theme';
 
 const JuzList = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const juzList = useSelector(state => state.services.juzList);
   const onPressJuzItem = item => {
     navigation.navigate('SurahDetailPage', {
@@ -78,16 +80,17 @@ const JuzList = ({navigation, route}) => {
 
 export default JuzList;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-      backgroundColor:Colors.intermediate1
+      backgroundColor:Colors.background
   },
   quranSaveBoxView: {
     flexDirection: 'row',
     margin: '8@s',
     paddingLeft: '8@s',
   },
-  ayahsListView: {    backgroundColor:Colors.intermediate1},
+  ayahsListView: {    backgroundColor:Colors.background},
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

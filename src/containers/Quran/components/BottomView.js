@@ -1,11 +1,11 @@
 import Slider from '@react-native-community/slider';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import {reciterImages} from './reciterImages';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 const speedLabel = {
   0: '',
   1: '1',
@@ -39,6 +39,8 @@ const BottomView = ({
   disabled = false,
 }) => {
   const isSpeedCounting = useSelector(state => state.services.isSpeedCounting);
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   const hitSlop = {bottom: 10, top: 10, left: 10, right: 10};
   return (
@@ -129,7 +131,7 @@ const BottomView = ({
                   />
                 </TouchableOpacity>
                 <View>
-                  <Text style={{color: COLORS.yellow}}>
+                  <Text style={{color: Colors.quranAccent}}>
                     {previousPageNumber}
                   </Text>
                 </View>
@@ -139,7 +141,7 @@ const BottomView = ({
                 style={styles.rightSecondView}
                 onPress={onPressNextPage}>
                 <View>
-                  <Text style={{color: COLORS.yellow}}>{nextPageNumber}</Text>
+                  <Text style={{color: Colors.quranAccent}}>{nextPageNumber}</Text>
                 </View>
                 <TouchableOpacity hitSlop={hitSlop} onPress={onPressNextPage}>
                   <Image
@@ -239,9 +241,9 @@ const BottomView = ({
               maximumValue={maximumValue}
               value={value}
               onSlidingComplete={onSlidingComplete}
-              minimumTrackTintColor={Colors.intermediate1}
+              minimumTrackTintColor={Colors.quranAccent}
               maximumTrackTintColor="#D3D3D3"
-              thumbTintColor={Colors.white}
+              thumbTintColor={Colors.name === 'white' ? Colors.primary : '#FFFFFF'}
             />
           ) : null}
         </>
@@ -252,9 +254,10 @@ const BottomView = ({
 
 export default BottomView;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   container: {
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.surfaceAlt,
     width: '100%',
     position: 'absolute',
     bottom: '0.5@s',
@@ -283,7 +286,7 @@ const styles = ScaledSheet.create({
   playNextIconStyle: {height: '26@s', width: '26@s', resizeMode: 'contain'},
   playNextIconStyle1: {height: '26@s', width: '26@s', resizeMode: 'contain',borderRadius:30},
   middlePlayView: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.quranPanel,
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
@@ -336,12 +339,12 @@ const styles = ScaledSheet.create({
   lineView: {
     height: 0.7,
     borderWidth: 0.7,
-    borderColor: COLORS.white,
+    borderColor: Colors.textPrimary,
     marginTop: '3@s',
   },
   speedNumberView: {
     alignSelf: 'center',
-    backgroundColor: COLORS.yellow,
+    backgroundColor: Colors.quranAccent,
     width: '13@s',
     height: '13@s',
     borderRadius: '7@s',
@@ -351,7 +354,7 @@ const styles = ScaledSheet.create({
     bottom: -1,
   },
   speedNumberStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).caption,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).caption,
     lineHeight: 15,
     color: '#FFFFFF',
   },
@@ -365,7 +368,7 @@ const styles = ScaledSheet.create({
 },
 
 playbackSpeedText: {
-    color: Colors.secondary,
+    color: Colors.secondaryText,
     fontSize: 12,
     fontWeight: '600',
 },

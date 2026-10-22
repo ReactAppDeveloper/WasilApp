@@ -3,7 +3,8 @@ import { useTheme, headerOptions } from "../theme";
 import themedScreen from './themedScreen';
 import { HeaderFavouritesButton } from '../components';
 import {View,TouchableOpacity,Platform} from 'react-native';
-import {WasilNewHeartfilledBTSVG,WasilNewBTTasbihHeartUnFilled,WasilNewBTSettingSvg,WasilNewBTTranslateSvg,HeartfilledSVG,WasilNewTasbihHeartUnFilled,QuranBottomSettingWhiteSVG,WasilNewTranslateWhiteSvg} from '../assets/icons';
+import {WasilNewHeartfilledBTSVG,WasilNewBTTasbihHeartUnFilled,HeartfilledSVG,WasilNewTasbihHeartUnFilled} from '../assets/icons';
+import {HeaderTranslateIcon, HeaderSettingsIcon} from '../assets/icons/themed';
 import useStore from '../store'
 import useStorehadith from '../hadithstore';
 import useStoreTasbih from '../tasbihstore';
@@ -25,7 +26,6 @@ import HijriDates from '../containers/Drawer/HijriDates';
 import Onboarding from '../containers/onboarding/Onboarding';
 
 //Quran Section
-import Quran from '../containers/Quran/Quran';
 import QuranMainDashboard from '../containers/Quran/screens/QuranMainDashboard';
 import DashBoard from '../containers/Quran/screens/DashBoard';
 import PageList from '../containers/Quran/screens/PageList';
@@ -47,49 +47,7 @@ import TafsirSettingsScreen from '../containers/Quran/screens/TafsirBySurah/Tafs
 import TafsirSettingFont from '../containers/Quran/screens/TafsirBySurah/TafsirSettingFont';
 import TranslatorDetail from '../containers/Quran/screens/ListenTranslation/TranslatorDetail';
 
-import QuranWhite from '../containers/QuranWhite/Quran';
-import QuranMainDashboardWhite from '../containers/QuranWhite/screens/QuranMainDashboard';
-import DashBoardWhite from '../containers/QuranWhite/screens/DashBoard';
-import PageListWhite from '../containers/QuranWhite/screens/PageList';
-import SurahFullViewWhite from '../containers/QuranWhite/screens/SurahFullView';
-import SettingWhite from '../containers/QuranWhite/screens/Setting';
-import FullViewWhite from '../containers/QuranWhite/screens/Setting/FullView';
-import FavoriteWhite from '../containers/QuranWhite/screens/Favorite';
-import BookmarkWhite from '../containers/QuranWhite/screens/Bookmark';
-import TranslatePageWhite from '../containers/QuranWhite/screens/TranslatePage';
-import SurahDetailPageWhite from '../containers/QuranWhite/screens/SurahDetailPage';
-import AddTafseerWhite from '../containers/QuranWhite/screens/AddTafseer';
-import SurahBySurahWhite from '../containers/QuranWhite/screens/TranslationBySurah/SurahBySurah';
-import TranslationSurahWhite from '../containers/QuranWhite/screens/TranslationBySurah/TranslationSurah';
-import TranslationSettingsScreenWhite from '../containers/QuranWhite/screens/TranslationBySurah/TranslationSettingsScreen';
-import TranslationSettingFontWhite from '../containers/QuranWhite/screens/TranslationBySurah/TranslationSettingFont';
-import TafsirBySurahWhite from '../containers/QuranWhite/screens/TafsirBySurah/TafsirBySurah';
-import TafsirSurahWhite from '../containers/QuranWhite/screens/TafsirBySurah/TafsirSurah';
-import TafsirSettingsScreenWhite from '../containers/QuranWhite/screens/TafsirBySurah/TafsirSettingsScreen';
-import TafsirSettingFontWhite from '../containers/QuranWhite/screens/TafsirBySurah/TafsirSettingFont';
-import TranslatorDetailWhite from '../containers/QuranWhite/screens/ListenTranslation/TranslatorDetail';
 
-import QuranGreen from '../containers/QuranGreen/Quran';
-import QuranMainDashboardGreen from '../containers/QuranGreen/screens/QuranMainDashboard';
-import DashBoardGreen from '../containers/QuranGreen/screens/DashBoard';
-import PageListGreen from '../containers/QuranGreen/screens/PageList';
-import SurahFullViewGreen from '../containers/QuranGreen/screens/SurahFullView';
-import SettingGreen from '../containers/QuranGreen/screens/Setting';
-import FullViewGreen from '../containers/QuranGreen/screens/Setting/FullView';
-import FavoriteGreen from '../containers/QuranGreen/screens/Favorite';
-import BookmarkGreen from '../containers/QuranGreen/screens/Bookmark';
-import TranslatePageGreen from '../containers/QuranGreen/screens/TranslatePage';
-import SurahDetailPageGreen from '../containers/QuranGreen/screens/SurahDetailPage';
-import AddTafseerGreen from '../containers/QuranGreen/screens/AddTafseer';
-import SurahBySurahGreen from '../containers/QuranGreen/screens/TranslationBySurah/SurahBySurah';
-import TranslationSurahGreen from '../containers/QuranGreen/screens/TranslationBySurah/TranslationSurah';
-import TranslationSettingsScreenGreen from '../containers/QuranGreen/screens/TranslationBySurah/TranslationSettingsScreen';
-import TranslationSettingFontGreen from '../containers/QuranGreen/screens/TranslationBySurah/TranslationSettingFont';
-import TafsirBySurahGreen from '../containers/QuranGreen/screens/TafsirBySurah/TafsirBySurah';
-import TafsirSurahGreen from '../containers/QuranGreen/screens/TafsirBySurah/TafsirSurah';
-import TafsirSettingsScreenGreen from '../containers/QuranGreen/screens/TafsirBySurah/TafsirSettingsScreen';
-import TafsirSettingFontGreen from '../containers/QuranGreen/screens/TafsirBySurah/TafsirSettingFont';
-import TranslatorDetailGreen from '../containers/QuranGreen/screens/ListenTranslation/TranslatorDetail';
 
 //Reel Section
 import ReelsComponentNew from '../containers/Reel/ReelsComponentNew';
@@ -252,25 +210,6 @@ import WallDetail from '../containers/WallOfRemembrance/WallDetail';
 import RemembranceForm from '../containers/WallOfRemembrance/RemembranceForm';
 
 // One route per screen; the component follows the active theme.
-const Themed_Quran = themedScreen({ blue: Quran, green: QuranGreen, white: QuranWhite });
-const Themed_QuranMainDashboard = themedScreen({ blue: QuranMainDashboard, green: QuranMainDashboardGreen, white: QuranMainDashboardWhite });
-const Themed_DashBoard = themedScreen({ blue: DashBoard, green: DashBoardGreen, white: DashBoardWhite });
-const Themed_PageList = themedScreen({ blue: PageList, green: PageListGreen, white: PageListWhite });
-const Themed_SurahFullView = themedScreen({ blue: SurahFullView, green: SurahFullViewGreen, white: SurahFullViewWhite });
-const Themed_Setting = themedScreen({ blue: Setting, green: SettingGreen, white: SettingWhite });
-const Themed_FullView = themedScreen({ blue: FullView, green: FullViewGreen, white: FullViewWhite });
-const Themed_Favorite = themedScreen({ blue: Favorite, green: FavoriteGreen, white: FavoriteWhite });
-const Themed_Bookmark = themedScreen({ blue: Bookmark, green: BookmarkGreen, white: BookmarkWhite });
-const Themed_TranslatePage = themedScreen({ blue: TranslatePage, green: TranslatePageGreen, white: TranslatePageWhite });
-const Themed_SurahDetailPage = themedScreen({ blue: SurahDetailPage, green: SurahDetailPageGreen, white: SurahDetailPageWhite });
-const Themed_AddTafseer = themedScreen({ blue: AddTafseer, green: AddTafseerGreen, white: AddTafseerWhite });
-const Themed_SurahBySurah = themedScreen({ blue: SurahBySurah, green: SurahBySurahGreen, white: SurahBySurahWhite });
-const Themed_TranslationSettingsScreen = themedScreen({ blue: TranslationSettingsScreen, green: TranslationSettingsScreenGreen, white: TranslationSettingsScreenWhite });
-const Themed_TranslationSettingFont = themedScreen({ blue: TranslationSettingFont, green: TranslationSettingFontGreen, white: TranslationSettingFontWhite });
-const Themed_TafsirBySurah = themedScreen({ blue: TafsirBySurah, green: TafsirBySurahGreen, white: TafsirBySurahWhite });
-const Themed_TafsirSettingsScreen = themedScreen({ blue: TafsirSettingsScreen, green: TafsirSettingsScreenGreen, white: TafsirSettingsScreenWhite });
-const Themed_TafsirSettingFont = themedScreen({ blue: TafsirSettingFont, green: TafsirSettingFontGreen, white: TafsirSettingFontWhite });
-const Themed_TranslatorDetail = themedScreen({ blue: TranslatorDetail, green: TranslatorDetailGreen, white: TranslatorDetailWhite });
 const Themed_PrayerMosque = themedScreen({ blue: PrayerMosque, green: PrayerMosqueGreen, white: PrayerMosqueWhite });
 const Themed_PrayerGuide = themedScreen({ blue: PrayerGuide, green: PrayerGuideGreen, white: PrayerGuideWhite });
 const Themed_FajrSunnah = themedScreen({ blue: FajrSunnah, green: FajrSunnahGreen, white: FajrSunnahWhite });
@@ -305,7 +244,30 @@ const Stack = createNativeStackNavigator();
     const {favourites} = useStore();
     const {favouriteshadith} = useStorehadith();
     const {favouritestasbih} = useStoreTasbih();
-    
+
+    // Translation / Tafsir reader header: language picker + font settings on the right.
+    const quranReaderHeader = (title, languageRoute, fontRoute) => ({navigation}) => ({
+      ...headerOptions(Colors, title),
+      headerRight: () => (
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(languageRoute)}
+            style={{minWidth: 44, minHeight: 44, justifyContent: 'center', alignItems: 'center'}}
+            accessibilityRole="button"
+            accessibilityLabel={`${title} language`}>
+            <HeaderTranslateIcon />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(fontRoute)}
+            style={{minWidth: 44, minHeight: 44, justifyContent: 'center', alignItems: 'center'}}
+            accessibilityRole="button"
+            accessibilityLabel={`${title} text settings`}>
+            <HeaderSettingsIcon />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+
     return (
        <Stack.Navigator initialRouteName={onboarded ? "GuestNew" : 'Onboarding'}screenOptions={{
           headerBackTitleVisible: false,
@@ -323,324 +285,35 @@ const Stack = createNativeStackNavigator();
           <Stack.Screen name="Privacypolicy" component={Privacypolicy} options={headerOptions(Colors, "Privacy Policy")}/> 
           <Stack.Screen name="FounderMsg" component={FounderMsg} options={headerOptions(Colors, "Founder Message")}/>
           <Stack.Screen name="HijriDates" component={HijriDates} options={headerOptions(Colors, "Hijri Dates Adjustment")}/>
-          <Stack.Screen name="Quran" component={Themed_Quran} options={{headerShown: false,animation:"slide_from_right"}}/>
 
-          <Stack.Screen name="QuranMainDashboard" component={Themed_QuranMainDashboard} options={({ route }) => ({ title: "Quran",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="QuranMainDashboard" component={QuranMainDashboard} options={({ route }) => ({ title: "Quran",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
          }})}/>
-          <Stack.Screen name="DashBoard" component={Themed_DashBoard} options={({ route }) => ({ title: "Quran",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="DashBoard" component={DashBoard} options={({ route }) => ({ title: "Quran",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
          }})}/>
-          <Stack.Screen name="PageList" component={Themed_PageList} options={{headerShown: false,animation:"slide_from_right"}}/>
-          <Stack.Screen name="SurahFullView" component={Themed_SurahFullView} options={{headerShown: false,animation:"slide_from_right"}}/>
-          <Stack.Screen name="Setting" component={Themed_Setting} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="FullView" component={Themed_FullView} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="Favorite" component={Themed_Favorite} options={{headerShown: false}}/>
-          <Stack.Screen name="Bookmark" component={Themed_Bookmark} options={{headerShown: false}}/>
-          <Stack.Screen name="TranslatePage" component={Themed_TranslatePage} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="SurahDetailPage" component={Themed_SurahDetailPage} options={{headerShown: false}}/>
-          <Stack.Screen name="AddTafseer" component={Themed_AddTafseer} options={{headerShown: false}}/>
-          <Stack.Screen name="SurahBySurah" component={Themed_SurahBySurah} options={{animation:'slide_from_right',headerTitle:"Translation By Surah",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+          <Stack.Screen name="PageList" component={PageList} options={{headerShown: false,animation:"slide_from_right"}}/>
+          <Stack.Screen name="SurahFullView" component={SurahFullView} options={{headerShown: false,animation:"slide_from_right"}}/>
+          <Stack.Screen name="Setting" component={Setting} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="FullView" component={FullView} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="Favorite" component={Favorite} options={{headerShown: false}}/>
+          <Stack.Screen name="Bookmark" component={Bookmark} options={{headerShown: false}}/>
+          <Stack.Screen name="TranslatePage" component={TranslatePage} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="SurahDetailPage" component={SurahDetailPage} options={{headerShown: false}}/>
+          <Stack.Screen name="AddTafseer" component={AddTafseer} options={{headerShown: false}}/>
+          <Stack.Screen name="SurahBySurah" component={SurahBySurah} options={{animation:'slide_from_right',headerTitle:"Translation By Surah",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
          },}}/>
-          {theme === "blue" ? (
-       <Stack.Screen name="TranslationSurah"
-  component={TranslationSurah}
-  options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Translation',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.white,
-    headerTitleStyle: {
-      color: Colors.white,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.cardDark,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewBTTranslateSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <WasilNewBTSettingSvg />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          ):theme === "green" ? (
-       <Stack.Screen name="TranslationSurah"
-  component={TranslationSurahGreen}
-  options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Translation',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.white,
-    headerTitleStyle: {
-      color: Colors.white,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.primary,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewBTTranslateSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <WasilNewBTSettingSvg />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          ):(
-         <Stack.Screen name="TranslationSurah" component={TranslationSurahWhite}  options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Translation',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.black,
-    headerTitleStyle: {
-      color: Colors.black,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.white,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewTranslateWhiteSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TranslationSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <QuranBottomSettingWhiteSVG />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          )}
-          <Stack.Screen name="TranslationSettingsScreen" component={Themed_TranslationSettingsScreen} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="TranslationSettingFont" component={Themed_TranslationSettingFont} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="TafsirBySurah" component={Themed_TafsirBySurah} options={{animation:'slide_from_right',headerTitle:"Tafsir By Surah",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+          <Stack.Screen name="TranslationSurah" component={TranslationSurah} options={quranReaderHeader('Translation', 'TranslationSettingsScreen', 'TranslationSettingFont')}/>
+          <Stack.Screen name="TranslationSettingsScreen" component={TranslationSettingsScreen} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="TranslationSettingFont" component={TranslationSettingFont} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="TafsirBySurah" component={TafsirBySurah} options={{animation:'slide_from_right',headerTitle:"Tafsir By Surah",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
            backgroundColor: Colors.headerBg
         },}}/>
-          {theme === "blue" ? (
-        <Stack.Screen name="TafsirSurah" component={TafsirSurah}  
-        options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Tafsir',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.white,
-    headerTitleStyle: {
-      color: Colors.white,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.cardDark,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewBTTranslateSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <WasilNewBTSettingSvg />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          ):theme === "green" ? (
-        <Stack.Screen name="TafsirSurah" component={TafsirSurahGreen}  
-        options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Tafsir',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.white,
-    headerTitleStyle: {
-      color: Colors.white,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.primary,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewBTTranslateSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <WasilNewBTSettingSvg />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          ):(
-           <Stack.Screen name="TafsirSurah" component={TafsirSurahWhite}    options={({navigation}) => ({
-    animation: 'slide_from_right',
-    headerTitle: 'Tafsir',
-    headerTitleAlign: 'center',
-    headerTintColor: Colors.black,
-    headerTitleStyle: {
-      color: Colors.black,
-      fontSize: 18,
-      fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    },
-    headerStyle: {
-      backgroundColor: Colors.white,
-    },
-
-    headerRight: () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingRight: 6,
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingsScreen')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 4,
-            marginRight: 2,
-          }}>
-          <WasilNewTranslateWhiteSvg />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('TafsirSettingFont')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-           
-          }}>
-          <QuranBottomSettingWhiteSVG />
-        </TouchableOpacity>
-      </View>
-    ),
-        })}/>
-          )}
-          <Stack.Screen name="TafsirSettingsScreen" component={Themed_TafsirSettingsScreen} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-          <Stack.Screen name="TafsirSettingFont" component={Themed_TafsirSettingFont} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
-           <Stack.Screen name="TranslatorDetail" component={Themed_TranslatorDetail} options={({ route }) => ({ title: "Listen Translation",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
+          <Stack.Screen name="TafsirSurah" component={TafsirSurah} options={quranReaderHeader('Tafsir', 'TafsirSettingsScreen', 'TafsirSettingFont')}/>
+          <Stack.Screen name="TafsirSettingsScreen" component={TafsirSettingsScreen} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+          <Stack.Screen name="TafsirSettingFont" component={TafsirSettingFont} options={{ presentation: 'modal', headerShown: false,animation: 'slide_from_bottom',}}/>
+           <Stack.Screen name="TranslatorDetail" component={TranslatorDetail} options={({ route }) => ({ title: "Listen Translation",animation:'slide_from_right',headerTitleAlign:"center",headerTintColor: Colors.headerText ,headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'},headerStyle: {
         backgroundColor: Colors.headerBg
       }})}/>
 

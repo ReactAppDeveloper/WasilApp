@@ -1,13 +1,11 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
-import {COLORS, FONTS, FONTSTYLE} from '../theme';
-import {WasilNewEmptyViewBookBTSvg} from '../../../assets/icons';
+import {EmptyBookmarksArt} from '../../../assets/icons/themed';
 const EmptyViewBook = () => {
   return (
     <View style={styles.noDataViewStyle}>
-   
-      <WasilNewEmptyViewBookBTSvg/>
+      <EmptyBookmarksArt/>
     </View>
   );
 };

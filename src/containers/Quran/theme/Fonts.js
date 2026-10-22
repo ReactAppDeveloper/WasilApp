@@ -1,7 +1,6 @@
 import {Platform} from 'react-native';
-import {COLORS} from './Colors';
 import {SIZES} from './Sizes';
-import { Colors } from '../../../theme';
+import BlueTheme from '../../../theme/blue';
 
 export const FONTS = {
   poppinsLight: 'Poppins-Light',
@@ -48,95 +47,27 @@ export const FONTS = {
       urdu: 'urdu',
 };
 
-export const FONTSTYLE = (font, dynamicFontSize) => ({
-  bigTitle: {
-    fontFamily: font,
-    fontSize: SIZES.bigTitle,
-    lineHeight: 28,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  title: {
-    fontFamily: font,
-    fontSize: SIZES.title,
-    lineHeight: 26,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  headerText: {
-    fontFamily: font,
-    fontSize: SIZES.headerText,
-    lineHeight: 20,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  smallTitle: {
-    fontFamily: font,
-    fontSize: SIZES.smallTitle,
-    lineHeight: 18,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  inputs: {
-    fontFamily: font,
-    fontSize: SIZES.inputs,
-    lineHeight: 16,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  inputBody: {
-    fontFamily: font,
-    fontSize: SIZES.inputBody,
-    lineHeight: 15,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  body: {
-    fontFamily: font,
-    fontSize: SIZES.body,
-    lineHeight: 14,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  bodynew: {
-    fontFamily: font,
-    fontSize: SIZES.body,
-    lineHeight: 14,
-    paddingTop:2,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  
-  caption: {
-    fontFamily: font,
-    fontSize: SIZES.caption,
-    lineHeight: 13,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  smallText: {
-    fontFamily: font,
-    fontSize: SIZES.smallText,
-    lineHeight: 12,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-  smallInputText: {
-    fontFamily: font,
-    fontSize: SIZES.smallInputText,
-    lineHeight: 10,
-    color: COLORS.wasilnewthemecolorsecondBlue,
-  },
-
-  arabicText: {
-    fontFamily: font,
-    fontSize: dynamicFontSize,
-    color: COLORS.white,
-  },
-  arabicText1: {
-    fontFamily: font,
-    fontSize: dynamicFontSize,
-    color: Colors.primary,
-  },
-   ayahlistnumber: {
-    fontFamily: font,
-    fontSize: dynamicFontSize,
-    color: '#FFFFFF',
-  },
-   headerTextNew: {
-    fontFamily: font,
-    fontSize: SIZES.headerText,
-    lineHeight: 20,
-    color: '#FFFFFF',
-  },
-});
+// Text presets for the Quran screens. Pass the active theme's Colors (from useTheme) so text
+// follows Blue / Green / White; without it the Blue palette is used.
+export const FONTSTYLE = (font, dynamicFontSize, C = BlueTheme) => {
+  const text = C.quranDeep;
+  return {
+    bigTitle: {fontFamily: font, fontSize: SIZES.bigTitle, lineHeight: 28, color: text},
+    title: {fontFamily: font, fontSize: SIZES.title, lineHeight: 26, color: text},
+    headerText: {fontFamily: font, fontSize: SIZES.headerText, lineHeight: 20, color: text},
+    smallTitle: {fontFamily: font, fontSize: SIZES.smallTitle, lineHeight: 18, color: text},
+    inputs: {fontFamily: font, fontSize: SIZES.inputs, lineHeight: 16, color: text},
+    inputBody: {fontFamily: font, fontSize: SIZES.inputBody, lineHeight: 15, color: text},
+    body: {fontFamily: font, fontSize: SIZES.body, lineHeight: 14, color: text},
+    bodynew: {fontFamily: font, fontSize: SIZES.body, lineHeight: 14, paddingTop: 2, color: text},
+    caption: {fontFamily: font, fontSize: SIZES.caption, lineHeight: 13, color: text},
+    smallText: {fontFamily: font, fontSize: SIZES.smallText, lineHeight: 12, color: text},
+    smallInputText: {fontFamily: font, fontSize: SIZES.smallInputText, lineHeight: 10, color: text},
+    // Arabic on the screen background: white on Blue/Green, near-black on White.
+    arabicText: {fontFamily: font, fontSize: dynamicFontSize, color: C.textPrimary},
+    // Arabic on light cards.
+    arabicText1: {fontFamily: font, fontSize: dynamicFontSize, color: C.name === 'white' ? C.textPrimary : C.primary},
+    ayahlistnumber: {fontFamily: font, fontSize: dynamicFontSize, color: '#FFFFFF'},
+    headerTextNew: {fontFamily: font, fontSize: SIZES.headerText, lineHeight: 20, color: '#FFFFFF'},
+  };
+};

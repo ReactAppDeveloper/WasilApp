@@ -4,6 +4,7 @@ import {TextInput} from 'react-native-paper';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE} from '../theme';
 import Button from './Button';
+import {useTheme} from '../../../theme';
 
 const SearchModalComponent = ({
   title,
@@ -14,6 +15,7 @@ const SearchModalComponent = ({
   onClickSearch = () => {},
   onClickReturn = () => {},
 }) => {
+  const {Colors} = useTheme();
   return (
     <Modal
       visible={visible}
@@ -35,7 +37,7 @@ const SearchModalComponent = ({
               mode="outlined"
               onChangeText={onChangeText}
               outlineColor={COLORS.paleGray}
-              activeOutlineColor={COLORS.wasilnewthemecolorsecondBlue}
+              activeOutlineColor={Colors.quranDeep}
               style={{backgroundColor: '#FFFFFF'}}
             />
           </View>
@@ -47,7 +49,7 @@ const SearchModalComponent = ({
                   onClickSearch();
                 }}
                 textColor={'#FFFFFF'}
-                style={[styles.buttonStyle, {backgroundColor: COLORS.yellow}]}
+                style={[styles.buttonStyle, {backgroundColor: Colors.quranAccent}]}
                 labelStyle={styles.searchButtonLabelStyle}
               />
             </View>
@@ -61,7 +63,7 @@ const SearchModalComponent = ({
                 textColor={'#FFFFFF'}
                 style={[
                   styles.buttonStyle,
-                  {backgroundColor: COLORS.wasilnewthemecolorsecondBlue},
+                  {backgroundColor: Colors.quranDeep},
                 ]}
                 labelStyle={styles.searchButtonLabelStyle}
               />

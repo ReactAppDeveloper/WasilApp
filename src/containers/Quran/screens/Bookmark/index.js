@@ -1,5 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import Share from 'react-native-share';
 import {ScaledSheet} from 'react-native-size-matters';
@@ -10,9 +10,11 @@ import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
 import Header from '../../components/Header';
-import { Colors } from '../../../../theme';
+import {useTheme} from '../../../../theme';
 
 const Bookmark = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   
   const [isBookmark, setBookmark] = useState([]);
   const [isPlay, setIsPlay] = useState('');
@@ -132,10 +134,11 @@ const Bookmark = ({navigation, route}) => {
 
 export default Bookmark;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

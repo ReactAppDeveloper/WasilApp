@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useMemo, useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -10,16 +10,15 @@ import {
 import {FlashList} from '@shopify/flash-list';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
-import {Colors} from '../../../../theme';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../../theme';
-import {
-  DuaListNumberBTSVGG,
-  DuaForwardSVG,
-  SearchSVG,
-} from '../../../../assets/icons';
+import {DuaForwardSVG, SearchSVG} from '../../../../assets/icons';
+import {DuaNumberIcon} from '../../../../assets/icons/themed';
+import {useTheme} from '../../../../theme';
 import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
 
 const SurahBySurah = ({navigation}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [surahs, setSurahs] = useState([]);
   const [visibleSurahs, setVisibleSurahs] = useState([]);
   const [search, setSearch] = useState('');
@@ -97,7 +96,7 @@ const SurahBySurah = ({navigation}) => {
               style={{
                 left: Platform.OS === 'ios' ? 16 : 16,
               }}>
-              <DuaListNumberBTSVGG />
+              <DuaNumberIcon />
             </View>
 
             <Text
@@ -106,7 +105,7 @@ const SurahBySurah = ({navigation}) => {
                 textAlign: 'center',
                 fontWeight: '500',
                  left: Platform.OS === 'ios' ? 4 : 4,
-                color: Colors.white,
+                color: Colors.quranNumber,
                 fontSize: 18,
                 fontFamily:
                   Platform.OS === 'ios'
@@ -151,7 +150,7 @@ const SurahBySurah = ({navigation}) => {
           <TextInput
             style={styles.searchInput1}
             placeholder="Search Surah"
-            placeholderTextColor={Colors.white}
+            placeholderTextColor={Colors.textSecondary}
             value={search}
             onChangeText={searchFilterFunction}
           />
@@ -161,7 +160,7 @@ const SurahBySurah = ({navigation}) => {
       {loading ? (
         <ActivityIndicator
           size="large"
-          color={Colors.wasilnewthemecolor}
+          color={Colors.textSecondary}
           style={{marginTop: 40}}
         />
       ) : noMatch ? (
@@ -186,19 +185,20 @@ const SurahBySurah = ({navigation}) => {
 
 export default SurahBySurah;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
 
   searchContainer1: {
     flexDirection: 'row',
     width: '95%',
     height: 50,
-    borderColor: Colors.bordercolor1,
-    backgroundColor: Colors.intermediate1,
-    borderWidth: 0.8,
+    borderColor: Colors.quranBorder,
+    backgroundColor: Colors.background,
+    borderWidth: 1,
     borderRadius: 12,
     alignSelf: 'center',
     marginTop: 20,
@@ -208,7 +208,7 @@ const styles = ScaledSheet.create({
     paddingLeft: 1,
     top: Platform.OS === 'ios' ? 16 : 1,
     fontSize: 13,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'NunitoSans-SemiBold',
   },
 
@@ -216,7 +216,7 @@ const styles = ScaledSheet.create({
     marginTop: 40,
     fontSize: 16,
     alignSelf: 'center',
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Regular',
   },
 
@@ -224,9 +224,7 @@ const styles = ScaledSheet.create({
      flexDirection: 'row',
      width: '95%',
      height: 70,
-     borderWidth:1,
-     marginTop:10,
-     borderColor: COLORS.lightSlateGray,
+     borderColor: Colors.quranBorder,
      borderWidth: 1,
      marginTop: 10,
      borderRadius: 10,
@@ -257,7 +255,7 @@ const styles = ScaledSheet.create({
   },
 
   cardText: {
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontSize: 16,
     top: Platform.OS === 'ios' ? 2 : 0,
     left:Platform.OS === 'ios' ? 5 : 7,
@@ -265,7 +263,7 @@ const styles = ScaledSheet.create({
     textTransform: 'capitalize',
   },
   cardText1: {
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontSize: 12,
     top: Platform.OS === 'ios' ? 2 : 0,
     left:Platform.OS === 'ios' ? 5 : 7,
@@ -275,7 +273,7 @@ const styles = ScaledSheet.create({
 
   arabic: {
     fontSize: Platform.OS === 'ios' ? 35 : 35,
-    color: Colors.white,
+    color: Colors.quranArabic,
     top:2,
     textAlign: 'center',
     fontFamily: "sura_names",

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   TouchableOpacity,
   ScrollView,
@@ -18,9 +18,11 @@ import {
   setTafseerAuthor,
   setTafseerLanguage,
 } from '../../redux/reduxToolkit/store/servicesSlice';
-import {Colors} from '../../../../theme';
+import {useTheme} from '../../../../theme';
 
 const TafsirSettingsScreen = ({navigation}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const dispatch = useDispatch();
 
   const tafseerLanguage = useSelector(
@@ -154,10 +156,11 @@ const TafsirSettingsScreen = ({navigation}) => {
 
 export default TafsirSettingsScreen;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
 
   container: {
@@ -169,7 +172,7 @@ const styles = ScaledSheet.create({
     fontFamily:Platform.OS === 'ios' ? "Asul-Regular" : "AsulRegular",
     fontSize: '16@s',
     fontWeight: '600',
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginBottom: '12@s',
   },
 
@@ -184,13 +187,13 @@ const styles = ScaledSheet.create({
   },
 
   selectedListItem: {
-    backgroundColor: Colors.black,
-    borderColor: Colors.black,
+    backgroundColor: Colors.name === 'white' ? Colors.primary : Colors.black,
+    borderColor: Colors.name === 'white' ? Colors.primary : Colors.black,
   },
 
   listItemText: {
     fontSize: '12@s',
-    color: Colors.secondary,
+    color: Colors.secondaryText,
     fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
     fontWeight: '500',
   },
@@ -221,7 +224,7 @@ const styles = ScaledSheet.create({
   },
 
   noDataTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
+    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputBody,
   },
 
   gridContainer: {
@@ -244,14 +247,14 @@ gridItem: {
 },
 
 selectedGridItem: {
-  backgroundColor: Colors.primary,
-  borderColor: Colors.primary,
+  backgroundColor: Colors.quranDeep,
+  borderColor: Colors.quranDeep,
       fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
 },
 
 gridItemText: {
   fontSize: '12@s',
-  color: Colors.secondary,
+  color: Colors.secondaryText,
   textAlign: 'center',
   fontWeight: '500',
       fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",

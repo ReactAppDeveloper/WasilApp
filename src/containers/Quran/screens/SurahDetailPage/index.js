@@ -1,7 +1,7 @@
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 import {isEmpty} from 'lodash';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useMemo, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator,Alert,AppState,BackHandler,Image,ImageBackground,TouchableOpacity,InteractionManager,Platform,ScrollView,Text,View,Dimensions,Modal} from 'react-native';
 import Share from 'react-native-share';
 import {ScaledSheet, verticalScale} from 'react-native-size-matters';
@@ -43,13 +43,15 @@ import {
 } from '../../utils/validator';
 import {getVerseAndChapterNumbersFromKey} from '../../utils/verse';
 import {generateVerseKeysBetweenTwoVerseKeys,parseVerseRange,} from '../../utils/verseKeys';
-import { Colors } from '../../../../theme';
 import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
 const { height} = Dimensions.get('window');
+// Slugs that open Ayat al-Kursi (2:255) directly.
+const AYAH_KURSI_SLUGS = ['ayatul-kursi', 'ayat-ul-kursi', 'ayat-al-kursi', 'ayatul-kursy', 'ayat-al-kursy', 'ayah-al-kursi', 'kursi'];
 import {
- WasilNewBTMakkahSvg,WasilNewBTMadinaSvg
-} from '../../../../assets/icons';
+ MakkahIcon, MadinaIcon
+} from '../../../../assets/icons/themed';
 import {captureRef} from 'react-native-view-shot';
+import {useTheme} from '../../../../theme';
 
 // Owns the playback-progress subscription so only the player bar re-renders each second, not the whole surah page.
 const ProgressBottomView = props => {
@@ -58,6 +60,8 @@ const ProgressBottomView = props => {
 };
 
 const SurahDetailPage = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const {ayahIdFromBookmark,ayahKeyFromBookmark,selectedAyahItems,selectedSurahItems,fromPinAyah,fromBookmarkAyah,fromjuz,from,rukuNumber,fromqc,surahNumber,headersurahname,continuePlaying} = route.params;
   const reciters = getStorageItem('reciters');
   const selectedReciter = getStorageItem('reciters');
@@ -259,14 +263,7 @@ useEffect(() => {
 
     setStorageItem('lastReadSurah', lastReadSurah);
   }
-
-  console.log(
-    'last read surah:',
-    surahDetail?.id,
-    typeof surahDetail?.id,
-    surahDetail,
-  );
-}, [surahDetail]);
+}, [surahDetail, selectedAyah]);
 
   const handleLayout = event => {
     const {x, y, width, height} = event?.nativeEvent?.layout;
@@ -966,7 +963,7 @@ const onClickPlaySettingNew = async () => {
       selectedAyahItems: saveCurrentAyah?.AyahItem,
       selectedSurahItems: saveCurrentAyah?.SurahItem,
       fromBookmarkAyah: true,
-      ayahKeyFromBookmark: item?.BookmarkAyahItem?.verseKey,
+      ayahKeyFromBookmark: saveCurrentAyah?.AyahItem?.verseKey,
       ayahIdFromBookmark: saveCurrentAyah?.AyahItem?.id,
     });
   };
@@ -1094,7 +1091,7 @@ const onClickPlaySettingNew = async () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      TrackPlayer.setupPlayer().then(() => {});
+      TrackPlayer.setupPlayer().catch(() => {});
       getAudioUrlData(reciters?.reciter_id, false);
     }, []),
   );
@@ -1166,11 +1163,13 @@ const onClickPlaySettingNew = async () => {
         );
       }
     } catch (err) {
+      let errorStatus;
+      let errorMessage = 'Something went wrong. Please try again.';
       if (err instanceof Error) {
         try {
           const errorData = JSON.parse(err.message.replace('API error: ', ''));
           errorStatus = errorData?.status;
-          errorMessage = errorData?.error;
+          errorMessage = errorData?.error || errorMessage;
         } catch (error) {
         } }
         Alert.alert(
@@ -1479,11 +1478,11 @@ const onClickPlaySettingNew = async () => {
   const versesItemRenderItem = ({item, index}) => {
     const checkIsPin = item?.id == isGetPinAyah?.AyahItem?.id;
     const lightYellowBackground = checkIsPin ? COLORS.SlateYellow : COLORS.gray;
-    const pinColor = checkIsPin ? COLORS.yellow : COLORS.thirdGray;
+    const pinColor = checkIsPin ? Colors.quranAccent : COLORS.thirdGray;
     const skyBlueBackground =
-      index + 1 == currentAyahIndex ? Colors.primary: Colors.intermediate1;
+      index + 1 == currentAyahIndex ? Colors.ayahActiveBg : Colors.ayahBg;
     const skyBlueTextColor =
-      index + 1 == currentAyahIndex ? COLORS.white : COLORS.white;
+      index + 1 == currentAyahIndex ? Colors.ayahActiveText : Colors.ayahText;
     return (
       <View
         key={item?.id}
@@ -1493,8 +1492,7 @@ const onClickPlaySettingNew = async () => {
           marginRight:10,
           borderRadius:10,
           borderWidth:1,
-          borderColor:Colors.intermediate1,
-          
+          borderColor: Colors.ayahBorder,
         }}>
         <AyahViewComponent
           ayahItem={item}
@@ -1561,11 +1559,11 @@ const onClickPlaySettingNew = async () => {
    const isActive = index + 1 === currentAyahIndex;
    const checkIsPin = item?.id == isGetPinAyah?.AyahItem?.id;
    const lightYellowBackground = checkIsPin ? COLORS.SlateYellow : COLORS.gray;
-   const pinColor = checkIsPin ? COLORS.yellow : COLORS.thirdGray;
+   const pinColor = checkIsPin ? Colors.quranAccent : COLORS.thirdGray;
     const skyBlueBackground =
-      index + 1 == currentAyahIndex ? Colors.primary: Colors.intermediate1;
+      index + 1 == currentAyahIndex ? Colors.ayahActiveBg : Colors.ayahBg;
     const skyBlueTextColor =
-      index + 1 == currentAyahIndex ? COLORS.white : COLORS.white;
+      index + 1 == currentAyahIndex ? Colors.ayahActiveText : Colors.ayahText;
    
   return (
     <View
@@ -1580,7 +1578,7 @@ const onClickPlaySettingNew = async () => {
          {isTransliteration && (
         <Text
            style={[
-              { ...FONTSTYLE(FONTS.poppinsLight, translationFontSize)
+              { ...FONTSTYLE(FONTS.poppinsLight, translationFontSize, Colors)
                 .arabicText,
                         },
                         styles.transliteration,
@@ -1598,7 +1596,7 @@ const onClickPlaySettingNew = async () => {
                        <View key={item?.id}>
                            <Text
                             style={[
-              { ...FONTSTYLE(FONTS.poppinsLight, translationFontSize)
+              { ...FONTSTYLE(FONTS.poppinsLight, translationFontSize, Colors)
                 .arabicText,
                         },
                         styles.translation,
@@ -1621,12 +1619,9 @@ const onClickPlaySettingNew = async () => {
           style={[
             styles.arabicText,
             {
-              ...FONTSTYLE(
-                Platform.OS === 'android'
+              ...FONTSTYLE(Platform.OS === 'android'
                   ? isArabicFont?.key
-                  : FONTS[isArabicFont?.key],
-                arabicFontSize
-              ).arabicText,
+                  : FONTS[isArabicFont?.key], arabicFontSize, Colors).arabicText,
             },
           ]}
         >
@@ -1801,7 +1796,7 @@ const onClickPlaySettingNew = async () => {
       
       {showLoader ? (
         <View style={styles?.loaderViewStyle}>
-          <ActivityIndicator size="large" color={COLORS.wasilnewthemecolorsecondBlue} />
+          <ActivityIndicator size="large" color={Colors.textPrimary} />
         </View>
       ) : (
         <>
@@ -1843,7 +1838,7 @@ const onClickPlaySettingNew = async () => {
             styles.rightTitleText,
             {
 
-              color:Colors.white,
+              color: Colors.textPrimary,
                             fontSize:35,
                             fontFamily: "sura_names",
                             textAlign:"center",
@@ -1857,11 +1852,11 @@ const onClickPlaySettingNew = async () => {
 
       <View style={styles.rigntImageView}>
         {surahDetail.revelationPlace === 'makkah' && (
-          <WasilNewBTMakkahSvg/>
+          <MakkahIcon/>
         )}
 
         {surahDetail.revelationPlace === 'madinah' && (
-          <WasilNewBTMadinaSvg/>
+          <MadinaIcon/>
         )}
       </View>
     </View>
@@ -1948,7 +1943,7 @@ const onClickPlaySettingNew = async () => {
             styles.rightTitleText,
             {
 
-              color:Colors.white,
+              color: Colors.textPrimary,
                             fontSize:35,
                             fontFamily: "sura_names",
                             textAlign:"center",
@@ -1961,11 +1956,11 @@ const onClickPlaySettingNew = async () => {
 
       <View style={styles.rigntImageView}>
         {surahDetail.revelationPlace === 'makkah' && (
-         <WasilNewBTMakkahSvg/>
+         <MakkahIcon/>
         )}
 
         {surahDetail.revelationPlace === 'madinah' && (
-         <WasilNewBTMadinaSvg/>
+         <MadinaIcon/>
         )}
       </View>
     </View>
@@ -2012,35 +2007,29 @@ const onClickPlaySettingNew = async () => {
             <Text
               key={index}
               style={{
-                ...FONTSTYLE(
-                  Platform.OS === "android"
+                ...FONTSTYLE(Platform.OS === "android"
                     ? isArabicFont?.key
-                    : FONTS[isArabicFont?.key],
-                  arabicFontSize
-                ).arabicText,
+                    : FONTS[isArabicFont?.key], arabicFontSize, Colors).arabicText,
                 color:
                   currentAyahIndex === index + 1
-                    ? COLORS?.lightSlateYellow
-                    : COLORS?.white,
+                    ? Colors.ayahPlayingText
+                    : Colors.textPrimary,
               }}>
               {item?.textUthmani} 
             </Text>
             <Text
               style={[
                 {
-                  ...FONTSTYLE(
-                    FONTS.trochutBold,
-                    arabicFontSize *
+                  ...FONTSTYLE(FONTS.trochutBold, arabicFontSize *
                       (item?.id < 100
                         ? 0.8
                         : item?.id < 1000
                         ? 0.8
-                        : 0.8)
-                  ).arabicText,
+                        : 0.8), Colors).arabicText,
                   color:
                     currentAyahIndex === index + 1
-                      ? COLORS?.lightSlateYellow
-                      : COLORS?.white,
+                      ? Colors.ayahPlayingText
+                      : Colors.textPrimary,
                   position: "absolute",
                 },
                 styles.numberTextStyle,
@@ -2345,16 +2334,17 @@ const onClickPlaySettingNew = async () => {
     </View>
   );
   };
-  const styles = ScaledSheet.create({
+  const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor:Colors.intermediate1
+    backgroundColor: Colors.background,
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     height: '45@s',
-    backgroundColor:Colors.primary
+    backgroundColor: Colors.quranTopBar,
   },
   topMainView: {
     width: '95%',
@@ -2363,23 +2353,23 @@ const onClickPlaySettingNew = async () => {
     borderRadius:10,
     borderWidth:1,
     top:10,
-    borderColor:Colors.primary,
+    borderColor: Colors.topCardBorder,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: '10@s',
     paddingHorizontal: '15@s',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.quranTopBar,
   },
   topviewStyle: {top:3},
   leftTextView: {width: '30%', marginRight: '3@s'},
   titleText: {
-    ...FONTSTYLE(FONTS.poppinsMedium).inputs,
-    color: Colors.white,
+    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputs,
+    color: Colors.onTopCard,
   },
   subText: {
-    ...FONTSTYLE(FONTS.poppinsRegular).smallText,
-    color: COLORS.white,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).smallText,
+    color: Colors.onTopCardSub,
     top:3,
     textTransform:"capitalize"
   },
@@ -2397,7 +2387,7 @@ const onClickPlaySettingNew = async () => {
   rigntImageView: {marginLeft: '2@s',},
   rightTitleText: {
     textAlign: 'right',
-    color: COLORS.white,
+    color: Colors.textPrimary,
   },
   backgroundImageStyle: {
     resizeMode: 'contain',
@@ -2410,7 +2400,7 @@ const onClickPlaySettingNew = async () => {
   ayahMainView: {
     margin: '15@s',
     borderRadius: 20,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.quranReader,
     paddingHorizontal: '10@s',
     alignItems: 'center',
     paddingTop: '2@s',  
@@ -2445,7 +2435,8 @@ const onClickPlaySettingNew = async () => {
   margin: 10,
   borderRadius: 10,
   borderWidth: 1,
-  borderColor: Colors.primary,
+  borderColor: Colors.ayahCardBorder,
+  backgroundColor: Colors.ayahBg,
 },
 
 leftColumn: {
@@ -2464,13 +2455,13 @@ rightColumn: {
 translation: {
   top:5,
   padding:10,
-  color: COLORS.white,
+  color: Colors.textPrimary,
 },
 
 transliteration: {
   top:5,
   padding:10,
-  color: COLORS.white,
+  color: Colors.textPrimary,
 },
 
 
@@ -2507,7 +2498,7 @@ shareSheetHandle: {
 shareSheetTitle: {
   fontSize: 22,
   fontWeight: '700',
-  color: Colors.intermediate,
+  color: Colors.quranDeep,
   marginBottom: 10,
 },
 
@@ -2523,7 +2514,7 @@ shareOptionIcon: {
   width: 48,
   height: 48,
   borderRadius: 24,
-  backgroundColor: Colors.secondary1,
+  backgroundColor: Colors.accent,
   justifyContent: 'center',
   alignItems: 'center',
   marginRight: 15,
@@ -2532,7 +2523,7 @@ shareOptionIcon: {
 shareOptionIconText: {
   fontSize: 21,
   fontWeight: '700',
-  color: Colors.white,
+  color: '#FFFFFF',
 },
 
 shareOptionContent: {
@@ -2563,7 +2554,7 @@ shareCancelButton: {
 shareCancelText: {
   fontSize: 16,
   fontWeight: '600',
-  color: Colors.intermediate,
+  color: Colors.quranDeep,
 },
 
 
@@ -2581,7 +2572,7 @@ shareImageModal: {
 shareImageCard: {
   width: 360,
   minHeight: 520,
-  backgroundColor: Colors.intermediate1,
+  backgroundColor: Colors.background,
   borderRadius: 22,
   paddingHorizontal: 25,
   paddingVertical: 30,
@@ -2593,7 +2584,7 @@ shareImageBrand: {
   fontSize: 15,
   fontWeight: '700',
   letterSpacing: 2,
-  color: Colors.white,
+  color: Colors.heading,
   marginBottom: 12,
 },
 
@@ -2601,14 +2592,14 @@ shareImageSurah: {
   textAlign: 'center',
   fontSize: 26,
   fontWeight: '700',
-  color: Colors.white,
+  color: Colors.heading,
 },
 
 shareImageSurahArabic: {
   
   textAlign: 'center',
   fontSize: 25,
-  color: Colors.white,
+  color: Colors.textPrimary,
   fontFamily: 'sura_names',
   marginTop: 5,
 },
@@ -2616,14 +2607,14 @@ shareImageSurahArabic: {
 shareImageReference: {
   textAlign: 'center',
   fontSize: 14,
-  color: Colors.white,
+  color: Colors.textSecondary,
   marginTop: 5,
   marginBottom: 25,
 },
 
 shareImageArabic: {
   textAlign: 'center',
-  color: Colors.white,
+  color: Colors.textPrimary,
   lineHeight: 25,
   fontSize: 22,
   fontFamily:Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran'
@@ -2631,33 +2622,33 @@ shareImageArabic: {
 
 shareImageDivider: {
   height: 1,
-  backgroundColor: Colors.white,
+  backgroundColor: Colors.quranBorder,
   marginVertical: 18,
 },
 
 shareImageLabel: {
   fontSize: 13,
   fontWeight: '600',
-  color: Colors.white,
+  color: Colors.heading,
   marginBottom: 5,
 },
 
 shareImageTransliteration: {
   fontSize: 16,
   lineHeight: 27,
-  color: Colors.white,
+  color: Colors.textSecondary,
 },
 
 shareImageTranslation: {
   fontSize: 17,
   lineHeight: 28,
-  color: Colors.white,
+  color: Colors.textPrimary,
 },
 
 shareImageFooter: {
   textAlign: 'center',
   fontSize: 13,
-  color: Colors.white,
+  color: Colors.heading,
   marginTop: 30,
 },
 shareImageCaptureContainer: {

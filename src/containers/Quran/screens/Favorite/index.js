@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import AyahsList from '../../components/AyahsList';
@@ -8,9 +8,11 @@ import {getStorageItem, setStorageItem} from '../../mmkvStorage/storeData';
 import {COLORS} from '../../theme';
 import {SIZES} from '../../theme/Sizes';
 import Header from '../../components/Header';
+import {useTheme} from '../../../../theme';
 import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
-import { Colors } from '../../../../theme';
 const Favorite = ({navigation}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [favorites, setFavorites] = useState([]);
  
 
@@ -54,7 +56,7 @@ const renderItem = ({item, index}) => {
   return (
     <View style={styles.safeAreaView}>
       <Header
-        title="Favourite"
+        title="Favourites"
         onPressLeftIcon={() => {
           navigation?.goBack();
         }}
@@ -78,13 +80,14 @@ const renderItem = ({item, index}) => {
 
 export default Favorite;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
   ayahsListView: {
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

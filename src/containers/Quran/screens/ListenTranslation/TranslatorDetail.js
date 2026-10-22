@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {useMemo,  useEffect, useState, useRef } from "react";
 
 import {
   View,
@@ -24,24 +24,27 @@ import TrackPlayer, {
 import { SURAH_NAMES } from "../../../Reciters/surahNames";
 
 import {
-  WasilNewRecitersBTPlayIcon,
-  WasilNewRecitersBTPauseIcon,
   SearchSVG,
   IslamicStoryPlayPreviousSVG,
   IslamicStoryPlayNextSVG,
   IslamicStoryPlayRewindSVG,
   IslamicStoryPlayForwardSVG,
-  IslamicStoryPlayBTAudioSVG,
-  IslamicStoryPauseBTAudioSVG,
-  DuaListNumberBTSVGG,
 } from "../../../../assets/icons";
-
-import { Colors } from "../../../../theme";
+import {
+  ReciterPlayIcon,
+  ReciterPauseIcon,
+  StoryPlayIcon,
+  StoryPauseIcon,
+  DuaNumberIcon,
+} from "../../../../assets/icons/themed";
 
 import { savePlayerState } from "./playerStorageB";
+import {useTheme} from '../../../../theme';
 
 
 export default function TranslatorDetail({ route }) {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   // ============================================================
   // 1. INITIAL RECITER
@@ -1205,14 +1208,14 @@ export default function TranslatorDetail({ route }) {
             "center",
 
           backgroundColor:
-            Colors.intermediate1,
+            Colors.background,
         }}
       >
 
         <ActivityIndicator
           size="large"
           color={
-            Colors.white
+            Colors.quranArabic
           }
         />
 
@@ -1472,7 +1475,7 @@ export default function TranslatorDetail({ route }) {
           }
 
           placeholderTextColor={
-            Colors.white
+            Colors.textPrimary
           }
         />
 
@@ -1500,7 +1503,7 @@ export default function TranslatorDetail({ route }) {
           <ActivityIndicator
             size="large"
             color={
-              Colors.white
+              Colors.quranArabic
             }
           />
 
@@ -1637,7 +1640,7 @@ export default function TranslatorDetail({ route }) {
                     }}
                   >
 
-                    <DuaListNumberBTSVGG />
+                    <DuaNumberIcon />
 
                   </View>
 
@@ -1663,7 +1666,7 @@ export default function TranslatorDetail({ route }) {
                         "500",
 
                       color:
-                        Colors.white,
+                        Colors.quranNumber,
 
                       fontSize:
                         18,
@@ -1772,11 +1775,11 @@ export default function TranslatorDetail({ route }) {
                   {isCurrent &&
                   isPlaying ? (
 
-                    <WasilNewRecitersBTPauseIcon />
+                    <ReciterPauseIcon />
 
                   ) : (
 
-                    <WasilNewRecitersBTPlayIcon />
+                    <ReciterPlayIcon />
 
                   )}
 
@@ -1995,11 +1998,11 @@ export default function TranslatorDetail({ route }) {
 
                 ) : isPlaying ? (
 
-                  <IslamicStoryPauseBTAudioSVG />
+                  <StoryPauseIcon />
 
                 ) : (
 
-                  <IslamicStoryPlayBTAudioSVG />
+                  <StoryPlayIcon />
 
                 )}
 
@@ -2045,12 +2048,13 @@ export default function TranslatorDetail({ route }) {
 // BLUE THEME — KEPT FROM YOUR ORIGINAL CODE
 // ============================================================
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
 
   container: {
     flex: 1,
     backgroundColor:
-      Colors.intermediate1,
+      Colors.background,
   },
 
 
@@ -2078,7 +2082,7 @@ const styles = StyleSheet.create({
       1,
 
     borderColor:
-      Colors.bordercolor1,
+      Colors.quranBorder,
 
     borderRadius:
       10,
@@ -2090,7 +2094,7 @@ const styles = StyleSheet.create({
       14,
 
     backgroundColor:
-      Colors.intermediate1,
+      Colors.background,
   },
 
 
@@ -2099,7 +2103,7 @@ const styles = StyleSheet.create({
       9,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       Platform.OS === "ios"
@@ -2116,7 +2120,7 @@ const styles = StyleSheet.create({
       14,
 
     color:
-      Colors.white,
+      Colors.onTopCard,
 
     fontFamily:
       "Poppins-Medium",
@@ -2128,7 +2132,7 @@ const styles = StyleSheet.create({
       14,
 
     color:
-      Colors.white,
+      Colors.quranArabic,
   },
 
 
@@ -2158,7 +2162,7 @@ const styles = StyleSheet.create({
       "70%",
 
     backgroundColor:
-      Colors.intermediate1,
+      Colors.background,
 
     borderRadius:
       14,
@@ -2173,7 +2177,7 @@ const styles = StyleSheet.create({
       18,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       "Poppins-Medium",
@@ -2206,13 +2210,13 @@ const styles = StyleSheet.create({
       1,
 
     borderColor:
-      Colors.bordercolor1,
+      Colors.quranBorder,
   },
 
 
   selectedLanguageItem: {
     backgroundColor:
-      Colors.secondary1,
+      Colors.accent,
   },
 
 
@@ -2221,7 +2225,7 @@ const styles = StyleSheet.create({
       14,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       "Poppins-Medium",
@@ -2233,7 +2237,7 @@ const styles = StyleSheet.create({
       10,
 
     color:
-      Colors.white,
+      Colors.textSecondary,
 
     marginTop:
       2,
@@ -2279,7 +2283,7 @@ const styles = StyleSheet.create({
       1,
 
     borderColor:
-      Colors.bordercolor1,
+      Colors.quranBorder,
 
     borderRadius:
       10,
@@ -2317,7 +2321,7 @@ const styles = StyleSheet.create({
         : 10,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       "Poppins-Medium",
@@ -2354,7 +2358,7 @@ const styles = StyleSheet.create({
       10,
 
     borderColor:
-      Colors.bordercolor1,
+      Colors.quranBorder,
   },
 
 
@@ -2384,7 +2388,7 @@ const styles = StyleSheet.create({
       12,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       Platform.OS ===
@@ -2402,7 +2406,7 @@ const styles = StyleSheet.create({
       9,
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       Platform.OS ===
@@ -2420,7 +2424,7 @@ const styles = StyleSheet.create({
       30,
 
     color:
-      Colors.white,
+      Colors.quranArabic,
 
     textAlign:
       "right",
@@ -2432,7 +2436,7 @@ const styles = StyleSheet.create({
 
   activeRow: {
     backgroundColor:
-      Colors.secondary1,
+      Colors.accent,
   },
 
 
@@ -2465,7 +2469,7 @@ const styles = StyleSheet.create({
       12,
 
     backgroundColor:
-      Colors.wasilnewthemecolorsecond,
+      Colors.quranLabel,
 
     borderRadius:
       8,
@@ -2550,7 +2554,7 @@ const styles = StyleSheet.create({
       4,
 
     backgroundColor:
-      Colors.wasilnewthemecolorsecond,
+      Colors.quranLabel,
 
     borderRadius:
       2,
@@ -2571,7 +2575,7 @@ const styles = StyleSheet.create({
       8,
 
     backgroundColor:
-      Colors.wasilnewthemecolorsecond,
+      Colors.quranLabel,
 
     top:
       -6,
@@ -2595,7 +2599,7 @@ const styles = StyleSheet.create({
       12,
 
     color:
-      "#666",
+      Colors.textSecondary,
   },
 
 
@@ -2625,13 +2629,13 @@ const styles = StyleSheet.create({
       1,
 
     borderColor:
-      Colors.wasilnewthemecolorthird,
+      '#8254DC',
 
     alignSelf:
       "center",
 
     backgroundColor:
-      Colors.wasilnewthemecolorthird,
+      '#8254DC',
   },
 
 
@@ -2671,7 +2675,7 @@ const styles = StyleSheet.create({
       "center",
 
     color:
-      Colors.white,
+      Colors.textPrimary,
 
     fontFamily:
       "Poppins-Light",

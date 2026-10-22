@@ -1,7 +1,7 @@
 import {useFocusEffect} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 import {isEmpty} from 'lodash';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useMemo, useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useDispatch, useSelector} from 'react-redux';
@@ -13,9 +13,11 @@ import {setSelectedSurahItem} from '../../redux/reduxToolkit/store/servicesSlice
 import {COLORS, IMAGES} from '../../theme';
 import { SURAH_NAMES } from '../../../Reciters/surahNames'; 
 import {SIZES} from '../../theme/Sizes';
-import { Colors } from '../../../../theme';
+import {useTheme} from '../../../../theme';
 
 const SurahList = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const chapterDetail = useSelector(state => state.services.chapterDetail);
   const [favorites, setFavorites] = useState([]);
   const [isPinAyah, setIsPinAyah] = useState([]);
@@ -146,10 +148,11 @@ const SurahList = ({navigation, route}) => {
 };
 
 export default SurahList;
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor:Colors.intermediate1,
+    backgroundColor:Colors.background,
   },
   quranSaveBoxView: {
     flexDirection: 'row',
@@ -157,7 +160,7 @@ const styles = ScaledSheet.create({
     paddingLeft: '8@s',
   },
   ayahsListView: {
-    backgroundColor:Colors.intermediate1,
+    backgroundColor:Colors.background,
   },
   emptyViewStyle: {marginTop: SIZES.height / 3},
 });

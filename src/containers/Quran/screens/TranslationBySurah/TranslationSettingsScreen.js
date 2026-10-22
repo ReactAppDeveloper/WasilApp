@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 
 import {
   View,
   FlatList,
-  Text
+  Text,
+  Platform,
 } from 'react-native';
 
 import {groupBy, isEmpty} from 'lodash';
@@ -28,9 +29,11 @@ import {
 } from '../../redux/reduxToolkit/store/servicesSlice';
 import Header from '../../components/Header';
 import {COLORS, IMAGES} from '../../theme';
-import { Colors } from '../../../../theme';
+import {useTheme} from '../../../../theme';
 
 const TranslationSettingsScreen = ({navigation}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   const translationList = useSelector(
     state => state.services.translationList,
@@ -134,7 +137,7 @@ const TranslationSettingsScreen = ({navigation}) => {
           styles.horizontalViewCustomeStyle,
           {
             borderColor: isSelected
-              ? COLORS.yellow
+              ? Colors.quranAccent
               : COLORS.lightSlateGray,
           },
         ]}
@@ -220,7 +223,8 @@ const TranslationSettingsScreen = ({navigation}) => {
 
 export default TranslationSettingsScreen;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
 
   container: {
     flex: 1,
@@ -245,7 +249,7 @@ const styles = ScaledSheet.create({
     padding: '15@s',
   },
    prayerEnglishText: {
-          color: Colors.primary,
+          color: Colors.quranDeep,
           fontSize: 15,
           fontWeight: '700',
           fontFamily:
@@ -257,7 +261,7 @@ const styles = ScaledSheet.create({
         },
          prayerEnglishText1: {
           top:5,
-          color: Colors.primary,
+          color: Colors.quranDeep,
           fontSize: 15,
           fontWeight: '700',
           fontFamily:

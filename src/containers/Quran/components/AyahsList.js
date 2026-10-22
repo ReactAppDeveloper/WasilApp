@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   ImageBackground,
   Platform,
@@ -11,10 +11,8 @@ import {useSelector} from 'react-redux';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import FavoriteView from './FavoriteView';
 import VerticalText from './VerticalText';
-import {
-  DuaListNumberBTSVGG,
-} from '../../../assets/icons';
-import { Colors } from '../../../theme';
+import {DuaNumberIcon} from '../../../assets/icons/themed';
+import {useTheme} from '../../../theme';
 export const LineView = () => {
   return (
     <View style={{height: 1.4, backgroundColor: COLORS.wasilnewthemecolorsecondGray}}></View>
@@ -38,6 +36,8 @@ const AyashList = ({
   isFavorite = false,
   item,
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const isArabicFont = useSelector(state => state.services.isArabicFont);
   return (
     <>
@@ -48,9 +48,9 @@ const AyashList = ({
          <View style={{flex: 0.8,}}>
             <View style={{ height: Platform.OS === 'ios' ? 30 : 30}}></View>
             <View style={{ left: Platform.OS === 'ios' ? 16 : 16}}>
-             <DuaListNumberBTSVGG />
+             <DuaNumberIcon />
              </View>
-            <Text style={{ left: Platform.OS === 'ios' ? 3 : 4,bottom: Platform.OS === 'ios' ? 33 : 33, textAlign: "center", fontWeight: "500", color: Colors.white, fontSize: 18, fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway' }}>{numberCounting}</Text>
+            <Text style={{ left: Platform.OS === 'ios' ? 3 : 4,bottom: Platform.OS === 'ios' ? 33 : 33, textAlign: "center", fontWeight: "500", color: Colors.quranNumber, fontSize: 18, fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway' }}>{numberCounting}</Text>
             </View>
         <View style={styles.middleTextView}>
           <VerticalText
@@ -68,11 +68,9 @@ const AyashList = ({
               subText={rightSubText}
               titleTextStyle={[
                 {
-                  ...FONTSTYLE(
-                    Platform.OS === 'android'
+                  ...FONTSTYLE(Platform.OS === 'android'
                       ? isArabicFont?.key
-                      : FONTS[isArabicFont?.key],
-                  ).headerText,
+                      : FONTS[isArabicFont?.key], undefined, Colors).headerText,
                   lineHeight: Platform.OS === 'android' ? 40 : 0,
                 },
                 styles.rightTitleTextStyle,
@@ -95,7 +93,8 @@ const AyashList = ({
 };
 
 export default AyashList;
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   mainView: {
    flexDirection: 'row',
    alignItems: 'center',
@@ -103,9 +102,9 @@ const styles = ScaledSheet.create({
    height: 70,
    alignSelf:"center",
    borderRadius:12,
-   borderWidth:0.2,
+   borderWidth:1,
    marginTop:10,
-   borderColor: COLORS.lightSlateGray,
+   borderColor: Colors.quranBorder,
   },
   backgroundImageStyle: {
     height: '45@s',
@@ -118,7 +117,7 @@ const styles = ScaledSheet.create({
     height: '100%',
   },
   idStyle: {
-    ...FONTSTYLE(FONTS.poppinsSemiBold).body,
+    ...FONTSTYLE(FONTS.poppinsSemiBold, undefined, Colors).body,
   },
   middleTextView: {flex: 1,left: Platform.OS === 'ios' ? 8 : 8},
   leftTitleTextStyle: {
@@ -127,13 +126,13 @@ const styles = ScaledSheet.create({
    fontSize:16,
    right:4,
    top:Platform.OS === 'ios' ? 2 : 0,
-   color:Colors.white
+   color:Colors.textPrimary
   },
   leftSubTextStyle: {
    fontFamily: Platform.OS === 'ios' ? 'Asul-Regular' : 'AsulRegular',
    fontSize:12,
    right:4,
-   color:Colors.white
+   color:Colors.textPrimary
   },
   rightViewStyle: {width: '55%'},
   rightTitleTextStyle: {
@@ -141,11 +140,11 @@ const styles = ScaledSheet.create({
      textAlign: 'center',
      fontFamily: "sura_names",
      fontSize:35,
-     color:Colors.white
+     color:Colors.quranArabic
   },
   rightSubTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).caption,
-    color: COLORS.white,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).caption,
+    color: Colors.textPrimary,
     textAlign: 'center',
   },
 });

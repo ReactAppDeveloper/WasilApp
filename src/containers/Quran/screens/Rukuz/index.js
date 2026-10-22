@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,8 +12,10 @@ import {COLORS} from '../../theme';
 import AyahsListRuku from '../../components/AyahsListRuku';
 import surahData from "../../data/chapters/ar.json"
 import QuranSaveBox from '../../components/QuranSaveBox';
-import { Colors } from '../../../../theme';
+import {useTheme} from '../../../../theme';
 const Rukuz = ({navigation}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [rukus, setRukus] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +66,7 @@ const Rukuz = ({navigation}) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.wasilnewthemecolorsecond} />
+        <ActivityIndicator size="large" color={Colors.textPrimary} />
       </View>
     );
   }
@@ -91,10 +93,11 @@ const Rukuz = ({navigation}) => {
 };
 
 export default Rukuz;
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
    safeAreaView: {
     flex: 1,
-    backgroundColor:Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
 
   loader: {

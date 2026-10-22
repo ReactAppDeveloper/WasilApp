@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Image, TextInput, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
+import {useTheme} from '../../../theme';
 
 const Searchbar = ({
   leftIcon = IMAGES.searchIcon,
@@ -16,6 +17,8 @@ const Searchbar = ({
   onChangeText = () => {},
   searchText,
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={[styles?.container, containerViewStyle]}>
       <View style={styles.mainView}>
@@ -59,7 +62,8 @@ const Searchbar = ({
 };
 
 export default Searchbar;
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   container: {
     borderRadius: '50@s',
     justifyContent: 'center',
@@ -79,7 +83,6 @@ const styles = ScaledSheet.create({
   },
   rightIconView: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
     marginLeft: '8@s',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -100,7 +103,7 @@ const styles = ScaledSheet.create({
     backgroundColor: COLORS.navyBlur,
     width: '100%',
     height: '35@vs',
-    ...FONTSTYLE(FONTS.sfProRegular).inputs,
+    ...FONTSTYLE(FONTS.sfProRegular, undefined, Colors).inputs,
     color: '#FFFFFF',
   },
 });

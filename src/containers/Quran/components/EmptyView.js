@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
-import {COLORS, FONTS, FONTSTYLE} from '../theme';
+import {FONTS, FONTSTYLE} from '../theme';
+import {useTheme} from '../../../theme';
 
 const EmptyView = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.noDataViewStyle}>
       <Text style={styles.noDataTextStyle}>No Data Found</Text>
@@ -13,14 +16,15 @@ const EmptyView = () => {
 
 export default EmptyView;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   noDataViewStyle: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   noDataTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
-    color: COLORS.wasilnewthemecolorsecondBlue,
+    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputBody,
+    color: Colors.textPrimary,
   },
 });

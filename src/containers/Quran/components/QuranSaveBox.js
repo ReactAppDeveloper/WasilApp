@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, {useMemo} from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { ScaledSheet } from 'react-native-size-matters';
 import { getStorageItem } from '../mmkvStorage/storeData';
@@ -10,7 +10,7 @@ import {
   QuranNewBookmarkIcon,
   QuranNewFavouriteIcon
 } from "../../../assets/icons";
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const QuranSaveBox = ({
   Icon = '',
@@ -18,6 +18,8 @@ const QuranSaveBox = ({
   subText = '',
   onPress = () => { },
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const navigation = useNavigation();
 
   const pinAyah = getStorageItem('pin');
@@ -51,15 +53,6 @@ const QuranSaveBox = ({
       return <Image style={styles.iconStyle} source={Icon} />;
   }
 };
-  const IconSource =
-    titleText === 'Pin Ayah'
-      ? <QuranNewPinIcon/>
-      : titleText === 'Bookmarks'
-        ? <QuranNewBookmarkIcon/>
-        : titleText === 'Favourite'
-          ? <QuranNewFavouriteIcon/>
-          : Icon;
-
   const InPressTouchable = () => {
     titleText === 'Pin Ayah'
       ? pinAyah?.AyahItem?.verseKey &&
@@ -108,15 +101,16 @@ const QuranSaveBox = ({
 
 export default QuranSaveBox;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   mainView: {
     flex: 1,
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.surfaceAlt,
     flexDirection: 'row',
     justifyContent: 'center',
-    borderWidth: 0.2,
+    borderWidth: 1,
     borderRadius: '10@s',
-    borderColor: COLORS?.lightSlateGray,
+    borderColor: Colors.quranBorder,
     paddingHorizontal: '5@s',
     paddingVertical: '8@s',
     marginRight: '8@s',
@@ -131,11 +125,11 @@ const styles = ScaledSheet.create({
   },
   textView: { maxWidth: 100 },
   titleTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).body,
-    color: COLORS.white,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).body,
+    color: Colors.textPrimary,
   },
   subTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).smallText,
-    color: COLORS.white,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).smallText,
+    color: Colors.name === 'white' ? Colors.quranAccent : Colors.textPrimary,
   },
 });

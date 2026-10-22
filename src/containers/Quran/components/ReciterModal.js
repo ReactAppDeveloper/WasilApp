@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Modal, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {getStorageItem, setStorageItem} from '../mmkvStorage/storeData';
 import {COLORS, FONTS, FONTSTYLE} from '../theme';
 import ReciterList from './ReciterList';
+import {useTheme} from '../../../theme';
 
 const ReciterModal = ({
   visible = false,
@@ -11,6 +12,8 @@ const ReciterModal = ({
   clickOnReciter = () => {},
   data,
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const reciters = getStorageItem('reciters');
   const [selectReciter, setSelectReciter] = useState(reciters);
   const onClickReciter = item => {
@@ -55,7 +58,8 @@ const ReciterModal = ({
   );
 };
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -83,7 +87,7 @@ const styles = ScaledSheet.create({
   },
 
   lableTitleText: {
-    ...FONTSTYLE(FONTS.poppinsRegular).headerText,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).headerText,
     color: COLORS.slateBlack,
     textAlign: 'center',
   },

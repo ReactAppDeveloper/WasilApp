@@ -14,8 +14,10 @@ import {
   setTranslationList,
 } from '../../redux/reduxToolkit/store/servicesSlice';
 import {COLORS, IMAGES} from '../../theme';
+import {useTheme} from '../../../../theme';
 
 const Translations = ({navigation}) => {
+  const {Colors} = useTheme();
   //
   const translationList = useSelector(state => state.services.translationList);
   const translationLanguage = useSelector(
@@ -94,7 +96,7 @@ const Translations = ({navigation}) => {
 
   const renderItem = ({item}) => {
     const isSelected = selectedItems === item?.id;
-    const borderColor = isSelected ? COLORS.yellow : COLORS.lightSlateGray;
+    const borderColor = isSelected ? Colors.quranAccent : COLORS.lightSlateGray;
     return (
       <View>
         <HorizontalView

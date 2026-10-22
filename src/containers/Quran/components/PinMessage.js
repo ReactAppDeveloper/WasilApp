@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Image, Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
+import {useTheme} from '../../../theme';
 
 const PinMessage = ({pinText, pinItem}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const surahNumber = pinItem?.chapterId;
   const ayahNumber = pinItem?.verseNumber;
 
@@ -36,9 +39,10 @@ const PinMessage = ({pinText, pinItem}) => {
 
 export default PinMessage;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   mainView: {
-    backgroundColor: COLORS.yellow,
+    backgroundColor: Colors.quranAccent,
     width: '90%',
     position: 'absolute',
     bottom: '25@s',
@@ -63,7 +67,7 @@ const styles = ScaledSheet.create({
   secondTextView: {marginTop: '4@s'},
   textView: {justifyContent: 'center'},
   textstyle: {
-    ...FONTSTYLE(FONTS.poppinsMedium).smallTitle,
+    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).smallTitle,
     color: '#FFFFFF',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useMemo,  useState, useEffect } from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -15,23 +15,21 @@ import {
   Alert,
   ImageBackground,
 } from 'react-native';
-import axios from 'axios';
+import {cachedGet, HOUR} from '../../../../services/http';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTafsirs } from '../../api';
-import { Colors } from '../../../../theme';
 
+import {WasilNewDailyWSvg, WasilNewDailyBWSvg} from '../../../../assets/icons';
 import {
-  WasilNewQuranReadBSvg,
-  WasilNewQuranListenBSvg,
-  WasilNewReadTranslationBSvg,
-  WasilNewReadTafsirBSvg,
-  WasilNewQuranReadSvgBBox,
-  WasilNewQuranListenSvgBBox,
-  WasilNewTransBSvg,
-  WasilNewTafsirBSvg,
-  WasilNewDailyWSvg,
-  WasilNewDailyBWSvg
-} from '../../../../assets/icons';
+  QuranReadIcon,
+  QuranListenIcon,
+  ReadTranslationIcon,
+  ReadTafsirIcon,
+  QuranReadCardArt,
+  QuranListenCardArt,
+  TranslationCardArt,
+  TafsirCardArt,
+} from '../../../../assets/icons/themed';
 
 import {
   setArabic,
@@ -53,18 +51,23 @@ import { setRecitersDataList } from '../../redux/reduxToolkit/store/recitersData
 import { getStorageItem, setStorageItem } from '../../mmkvStorage/storeData';
 import localeLanguage from '../../helper/localLanguage';
 import recitersData from '../../utils/reciters.json';
+import {useTheme} from '../../../../theme';
 
 LogBox.ignoreAllLogs();
 
 const { width } = Dimensions.get('window');
 
-const homebackgroundimage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1790068220/home/homelatestbgone.png' };
+const AYAH_CARD_BG = {
+  blue: { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1790068220/home/homelatestbgone.png' },
+  green: { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1790082663/home/homelatestbgtwo.png' },
+  white: { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1789638600/home/homelatestbg.png' },
+};
 
 const QuranMainDashboard = ({ navigation, route }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const dispatch = useDispatch();
   const [ayahData, setAyahData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [allPagesList, setAllPagesList] = useState([]);
   const selectedTafseerLanguage = useSelector(
     state => state.services.tafseerLanguage,
@@ -89,28 +92,28 @@ const QuranMainDashboard = ({ navigation, route }) => {
       id: '1',
       label: 'Read',
       subtitle: 'Holy Quran',
-      icon: <WasilNewQuranReadBSvg />,
+      icon: <QuranReadIcon />,
       route: 'DashBoard',
     },
     {
       id: '2',
       label: 'Listen',
       subtitle: 'Holy Quran',
-      icon: <WasilNewQuranListenBSvg  />,
+      icon: <QuranListenIcon />,
       route: 'RecitersList',
     },
     {
       id: '3',
       label: 'Translated',
       subtitle: 'Holy Quran',
-      icon: <WasilNewReadTranslationBSvg />,
+      icon: <ReadTranslationIcon />,
       route: 'SurahBySurah',
     },
     {
       id: '4',
       label: 'Tafsir',
       subtitle: 'Holy Quran',
-      icon: <WasilNewReadTafsirBSvg />,
+      icon: <ReadTafsirIcon />,
       route: 'TafsirBySurah',
     },
   ];
@@ -120,14 +123,14 @@ const QuranMainDashboard = ({ navigation, route }) => {
       id: '1',
       title: 'Quran Karim',
       description: 'Read and reflect with the divine words.',
-      icon: <WasilNewQuranReadSvgBBox />,
+      icon: <QuranReadCardArt />,
       route: 'DashBoard',
     },
     {
       id: '2',
       title: 'Listen Quran',
       description: 'Beautiful recitations by renowned Reciters.',
-      icon: <WasilNewQuranListenSvgBBox />,
+      icon: <QuranListenCardArt />,
       route: 'RecitersList',
     },
   ];
@@ -137,7 +140,7 @@ const QuranMainDashboard = ({ navigation, route }) => {
       id: '1',
       title: 'Listen Translation',
       description: 'Understand the meaning of The Quran',
-      icon: <WasilNewTransBSvg />,
+      icon: <TranslationCardArt />,
       route: 'TranslatorDetail',
       comingSoon: false,
     },
@@ -145,7 +148,7 @@ const QuranMainDashboard = ({ navigation, route }) => {
       id: '2',
       title: 'Listen Tafsir',
       description: 'Explore the deeper wisdom of The Quran',
-      icon: <WasilNewTafsirBSvg />,
+      icon: <TafsirCardArt />,
       route: 'TafsirBySurah',
       comingSoon: false,
     },
@@ -250,18 +253,20 @@ const QuranMainDashboard = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-
+    // Ayah of the day is a nice-to-have: the dashboard renders immediately (the card has a
+    // built-in fallback) instead of blocking the whole Quran section on this request.
     const fetchData = async () => {
       try {
-        const response = await axios.get(
+        const response = await cachedGet(
           'https://islamicapp.vercel.app/api/ayahoftheday',
+          undefined,
+          {ttl: 6 * HOUR},
         );
-        setAyahData(response.data[0]);
+        if (response.data?.[0]) {
+          setAyahData(response.data[0]);
+        }
       } catch (e) {
-        setError(e);
-      } finally {
-        setIsLoading(false);
+        // keep the fallback ayah
       }
     };
 
@@ -283,33 +288,15 @@ const QuranMainDashboard = ({ navigation, route }) => {
     return () => backHandler.remove();
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator
-          size="large"
-          color={Colors.wasilnewthemecolorsecond}
-        />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.loader}>
-        <Text>Error fetching data</Text>
-      </View>
-    );
-  }
   return (
     <View style={styles.container}>
-     <StatusBar backgroundColor={Colors.white} />
+     <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.background} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
 
-        <ImageBackground style={styles.ayahCard} resizeMode="contain" source={homebackgroundimage}>
+        <ImageBackground style={styles.ayahCard} resizeMode="contain" source={AYAH_CARD_BG[Colors.name] || AYAH_CARD_BG.blue}>
           <View style={styles.ayahContent}>
 
             <View style={styles.ayahBadge}>
@@ -468,11 +455,11 @@ const QuranMainDashboard = ({ navigation, route }) => {
 
 export default QuranMainDashboard;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1
-    
+    backgroundColor: Colors.background,
   },
   loader: {
     flex: 1,
@@ -487,7 +474,7 @@ const styles = StyleSheet.create({
   },
 
   ayahCard: {
-    backgroundColor: '#EDE4FF',
+    backgroundColor: Colors.quranCard, // shown until the artwork loads
     borderRadius: 10,
     overflow: 'hidden',
     minHeight: 200,
@@ -503,14 +490,14 @@ const styles = StyleSheet.create({
   },
   ayahBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.badgeBg,
     paddingHorizontal: 12,
     left:40,
     paddingVertical: 5,
     borderRadius: 20,
   },
   ayahBadgeText: {
-    color: Colors.intermediate,
+    color: Colors.badgeText,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
@@ -518,7 +505,7 @@ const styles = StyleSheet.create({
 
   arabicAyah: {
     fontSize: 20,
-    color: Colors.white,
+    color: Colors.quranArabic,
     textAlign: 'center',
     marginTop: 10,
     width: '60%',
@@ -530,14 +517,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     width: '65%',
     textAlign: 'center',
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginTop: 4,
     fontFamily: Platform.OS === 'ios' ? 'Nunito Sans 7pt' : 'NunitoSansRegular',
   },
 
   surahRef: {
     fontSize: 8,
-    color: Colors.white,
+    color: Colors.textSecondary,
     marginTop: 4,
     width: '65%',
     textAlign: 'center',
@@ -546,7 +533,7 @@ const styles = StyleSheet.create({
   sectionTitle1: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.white,
+    color: Colors.sectionTitle,
     marginTop: 20,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
   },
@@ -554,12 +541,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.white,
+    color: Colors.sectionTitle,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
   },
   sectionSubtitle: {
     fontSize: 13,
-    color: Colors.secondary1,
+    color: Colors.textSecondary,
     marginBottom: 14,
     fontFamily: Platform.OS === 'ios' ? 'Nunito Sans 7pt' : 'NunitoSansRegular',
   },
@@ -572,11 +559,11 @@ const styles = StyleSheet.create({
   },
   quickAction: {
     width: (width - 48) / 4,
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.quranCard,
     borderRadius: 16,
     paddingVertical: 14,
     alignItems: 'center',
-    shadowColor: Colors.intermediate1,
+    shadowColor: Colors.quranAccent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -589,22 +576,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
+    backgroundColor: Colors.iconWell,
   },
   quickTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.white
+    color: Colors.textPrimary,
   },
   quickSubtitle: {
     fontSize: 10,
-    color: '#9CA3AF',
+    color: Colors.textSecondary,
     marginTop: 2,
   },
 
   // ===== EXPLORE CARDS =====
   exploreCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.quranCard,
     borderRadius: 16,
     marginBottom: 12,
     padding: 12,
@@ -628,27 +616,21 @@ const styles = StyleSheet.create({
   exploreTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.white,
+    color: Colors.sectionTitle,
     marginBottom: 3,
   },
   exploreDesc: {
     fontSize: 12,
-    color: Colors.white,
+    color: Colors.textSecondary,
     lineHeight: 17,
   },
   exploreArrow: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: Colors.secondary1,
+    backgroundColor: Colors.arrowBg,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  arrowText: {
-    color: '#FFF',
-    fontSize: 22,
-    fontWeight: '600',
-    marginTop: -2,
   },
 
   // ===== LEARN CARDS =====
@@ -689,7 +671,7 @@ learnContent: {
   learnTitle: {
   fontSize: 12,
   fontWeight: '700',
-  color: Colors.white,
+  color: Colors.textPrimary,
   marginTop: 80,
 },
 
@@ -697,7 +679,7 @@ learnDesc: {
   width:"70%",
   top:5,
   fontSize: 10,
-  color: Colors.white,
+  color: Colors.textSecondary,
   flex: 1,
 },
 
@@ -707,7 +689,7 @@ learnArrow: {
   height: 34,
   bottom:22,
   borderRadius: 18,
-  backgroundColor: Colors.secondary1,
+  backgroundColor: Colors.arrowBg,
   justifyContent: 'center',
   alignItems: 'center',
 },
@@ -722,7 +704,7 @@ arrowText: {
 sectionTitleDaily: {
   fontSize: 18,
   fontWeight: '700',
-  color: Colors.white,
+  color: Colors.sectionTitle,
   bottom: 23,
   marginBottom: 14,
   fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',

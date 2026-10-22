@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Platform, Text, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
-import {COLORS, FONTS, FONTSTYLE} from '../theme';
+import {FONTS, FONTSTYLE} from '../theme';
 import VerticalText from './VerticalText';
-import {DuaListNumberBTSVGG} from '../../../assets/icons';
-import {Colors} from '../../../theme';
+import {DuaNumberIcon} from '../../../assets/icons/themed';
+import {useTheme} from '../../../theme';
 
 const AyahsListRuku = ({
   numberCounting = '',
@@ -22,6 +22,8 @@ const AyahsListRuku = ({
   isFavorite = false,
 }) => {
   const isArabicFont = useSelector(state => state.services.isArabicFont);
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   return (
     <TouchableOpacity
@@ -32,7 +34,7 @@ const AyahsListRuku = ({
       <View style={{flex: 0.5}}>
        <View style={{ height: Platform.OS === 'ios' ? 30 : 30}}></View>
        <View style={{ left: Platform.OS === 'ios' ? 16 : 16,bottom:15}}>
-          <DuaListNumberBTSVGG />
+          <DuaNumberIcon />
         </View>
         <Text style={styles.numberText}>
           {numberCounting}
@@ -56,7 +58,7 @@ const AyahsListRuku = ({
                   : FONTS[isArabicFont?.key],
               ).headerText,
               fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
-              color:Colors.white,
+              color: Colors.quranArabic,
               lineHeight:25
             },
           ]}>
@@ -69,7 +71,8 @@ const AyahsListRuku = ({
 
 export default AyahsListRuku;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   mainView: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,9 +80,9 @@ const styles = ScaledSheet.create({
     height: 70,
     alignSelf: 'center',
     borderRadius: 12,
-    borderWidth: 0.2,
+    borderWidth: 1,
     marginTop: 10,
-    borderColor: COLORS.lightSlateGray,
+    borderColor: Colors.quranBorder,
   },
 
   middleTextView: {
@@ -92,14 +95,14 @@ const styles = ScaledSheet.create({
     left: 0,
     right: 5,
     textAlign: 'center',
-    color: Colors.white,
+    color: Colors.quranNumber,
     fontSize: 18,
     fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'
   },
 
   title: {
     fontSize: 16,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily:
       Platform.OS === 'ios'
         ? 'Asul-Regular'
@@ -109,7 +112,7 @@ const styles = ScaledSheet.create({
     marginTop: 3,
     fontSize: 12,
     textTransform:"capitalize",
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily:
       Platform.OS === 'ios'
         ? 'Asul-Regular'
@@ -125,7 +128,7 @@ const styles = ScaledSheet.create({
   arabicTitle: {
     textAlign: 'right',
     fontSize: 28,
-    color: Colors.white,
+    color: Colors.quranArabic,
     fontFamily:
       Platform.OS === 'ios'
         ? 'Al Qalam Quran Majeed Web'

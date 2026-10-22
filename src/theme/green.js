@@ -36,5 +36,36 @@ export default {
     cardText: "#FFFFFF",
     inkAccent: "#01401C",         // accent text on light artwork (cloud cards etc.)
     gold: "#CA9648",
+    quranAccent: "#396345",       // Quran module: highlights, selected rows, play buttons
+    quranDeep: "#013617",         // Quran module: default text on light cards, deep panels
+    quranArabic: "#CA9648",       // Quran module: Arabic titles in lists
+    quranNumber: "#688870",       // Quran module: ayah / surah numbers in badges
+    quranBorder: "#396345",  // Quran module: list row outlines
+    quranPanel: "#013617",        // Quran module: pill behind player controls
+    quranReader: "#00240D",       // Quran module: reading surface behind ayahs
+    quranLabel: "#688870",        // Quran module: labels on white setting cards
+    segmentTrack: "#00240D",     // segmented controls: track
+    segmentBorder: "#396345",
+    segmentActive: "#01401C",    // selected segment (text on it is white)
+    segmentText: "#FFFFFF",      // unselected segment text
+    // Dashboard cards (Quran / Prayer)
+    sectionTitle: "#CA9648",
+    quranCard: "#013617",
+    badgeBg: "#CA9648",
+    badgeText: "#FFFFFF",
+    arrowBg: "#00240D",
+    iconWell: "transparent",
+    // Quran reader (SurahDetailPage)
+    quranTopBar: "#013617",
+    topCardBorder: "#396345",
+    onTopCard: "#FFFFFF",
+    onTopCardSub: "#FFFFFF",
+    ayahActiveBg: "#396345",
+    ayahBg: "#013617",
+    ayahActiveText: "#FFFFFF",
+    ayahText: "#FFFFFF",
+    ayahBorder: "#00240D",
+    ayahPlayingText: "#FFF1CA",
+    ayahCardBorder: "#396345",
     overlay: "rgba(0,0,0,0.55)",
 };

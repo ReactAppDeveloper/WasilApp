@@ -3,6 +3,7 @@ import {Modal, Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE} from '../theme';
 import Button from './Button';
+import {useTheme} from '../../../theme';
 
 const ModalComponent = ({
   title,
@@ -13,6 +14,7 @@ const ModalComponent = ({
   onClickClose = () => {},
   onClickConfirm = () => {},
 }) => {
+  const {Colors} = useTheme();
   return (
     <Modal
       visible={visible}
@@ -36,7 +38,7 @@ const ModalComponent = ({
                   onClickClose();
                 }}
                 textColor={'#FFFFFF'}
-                style={[styles.buttonStyle, {backgroundColor: COLORS.yellow}]}
+                style={[styles.buttonStyle, {backgroundColor: Colors.quranAccent}]}
                 labelStyle={styles.pinButtonlabelStyle}
               />
             </View>
@@ -50,7 +52,7 @@ const ModalComponent = ({
                 textColor={'#FFFFFF'}
                 style={[
                   styles.buttonStyle,
-                  {backgroundColor: COLORS.wasilnewthemecolorsecondBlue},
+                  {backgroundColor: Colors.quranDeep},
                 ]}
                 labelStyle={styles.pinButtonlabelStyle}
               />

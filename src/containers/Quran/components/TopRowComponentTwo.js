@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import BookmarkPageImage from './BookmarkPageImage';
+import {useTheme} from '../../../theme';
 
 const TopRowComponentTwo = ({
   isLeftPinIcon = false,
@@ -24,6 +25,8 @@ const TopRowComponentTwo = ({
   fromBookmark = false,
   additionalText 
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <>
       <View style={[styles.topView, topViewCustomeStyle]} key={item?.id}>
@@ -80,7 +83,8 @@ const TopRowComponentTwo = ({
 
 export default TopRowComponentTwo;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   topView: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -94,11 +98,11 @@ const styles = ScaledSheet.create({
     flexDirection: 'row',
   },
   idStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).inputs,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputs,
     textAlign: 'center',
   },
   idStyle1: {
-    ...FONTSTYLE(FONTS.poppinsRegular).inputs,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputs,
     textAlign: 'center',
     top:3
   },

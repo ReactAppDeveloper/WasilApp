@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import {reciterImages} from './reciterImages';
+import {useTheme} from '../../../theme';
 const ReciterList = ({
   onPress = () => {},
   subText = '',
@@ -10,8 +11,10 @@ const ReciterList = ({
   item = '',
   imageUrl = '',
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const borderColor =
-    item?.id == isSelected?.id ? COLORS.yellow : COLORS.paleGray;
+    item?.id == isSelected?.id ? Colors.quranAccent : COLORS.paleGray;
 
   return (
     <TouchableOpacity
@@ -41,7 +44,8 @@ const ReciterList = ({
 };
 
 export default ReciterList;
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   mainView: {
     borderWidth: 1,
     borderRadius: 5,
@@ -59,7 +63,7 @@ const styles = ScaledSheet.create({
     height: '22@s',
     width: '22@s',
     resizeMode: 'contain',
-    tintColor: COLORS.yellow,
+    tintColor: Colors.quranAccent,
     alignSelf: 'flex-end',
   },
   reciterImgStyle: {
@@ -80,7 +84,7 @@ const styles = ScaledSheet.create({
   },
   textStyle: {
     textAlign: 'center',
-    ...FONTSTYLE(FONTS.poppinsLight).body,
+    ...FONTSTYLE(FONTS.poppinsLight, undefined, Colors).body,
     color: COLORS.wasilnewthemecolorsecondGray,
   },
 });

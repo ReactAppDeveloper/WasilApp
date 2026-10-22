@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../theme';
 import BookmarkPageImage from './BookmarkPageImage';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const TopRowComponent = ({
   isLeftPinIcon = false,
@@ -25,6 +25,8 @@ const TopRowComponent = ({
   fromBookmark = false,
   additionalText 
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <>
       <View style={[styles.topView, topViewCustomeStyle]} key={item?.id}>
@@ -37,7 +39,7 @@ const TopRowComponent = ({
             </View>
           ) : null}
           <View style={styles.numberCountView}>
-                      <Text style={{...FONTSTYLE(FONTS.poppinsRegular).inputs,
+                      <Text style={{...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputs,
                         textAlign: 'center'}}>{item?.verseKey}</Text>
                     </View>
           {isLeftPinIcon && (
@@ -82,7 +84,8 @@ const TopRowComponent = ({
 
 export default TopRowComponent;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   topView: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -99,11 +102,11 @@ const styles = ScaledSheet.create({
     flexDirection: 'row',
   },
   idStyle: {
-    ...FONTSTYLE(FONTS.poppinsRegular).inputs,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputs,
     textAlign: 'center',
   },
   idStyle1: {
-    ...FONTSTYLE(FONTS.poppinsRegular).inputs,
+    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputs,
     textAlign: 'center',
     top:3
   },

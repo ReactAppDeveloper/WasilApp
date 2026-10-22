@@ -1,16 +1,18 @@
-import React from 'react';
-import {Text, View} from 'react-native';
+import React, {useMemo} from 'react';
+import {Platform, Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import {getStorageItem} from '../mmkvStorage/storeData';
 import {COLORS, FONTS, FONTSTYLE} from '../theme';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const AyahViewComponent = ({
   detailTextCustomeStyle,
   detailContainerCustomeStyle,
   ayahItem,
 }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const isArabic = getStorageItem('isArabic');
   const isTranslation = getStorageItem('isTranslation');
   const isTransliteration = getStorageItem('isTransliteration');
@@ -30,12 +32,9 @@ const AyahViewComponent = ({
     style={[
       styles.detailText,
       {
-        ...FONTSTYLE(
-          Platform.OS === 'android'
+        ...FONTSTYLE(Platform.OS === 'android'
             ? isArabicFont?.key
-            : FONTS[isArabicFont?.key],
-          arabicFontSize,
-        ).arabicText,
+            : FONTS[isArabicFont?.key], arabicFontSize, Colors).arabicText,
       },
       detailTextCustomeStyle,
     ]}>
@@ -50,10 +49,7 @@ const AyahViewComponent = ({
       style={[
       styles.detailText,
       {
-        ...FONTSTYLE(
-          FONTS.trochutBold,
-          arabicFontSize*0.8,
-        ).arabicText,
+        ...FONTSTYLE(FONTS.trochutBold, arabicFontSize*0.8, Colors).arabicText,
       },
       detailTextCustomeStyle,
     ]}>
@@ -67,7 +63,7 @@ const AyahViewComponent = ({
             <Text
               style={[
                 {
-                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSize)
+                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSize, Colors)
                     .arabicText,
                   marginTop: 15,
                 },
@@ -90,7 +86,7 @@ const AyahViewComponent = ({
                   <Text
                   style={[
                     {
-                      ...FONTSTYLE(FONTS.poppinsLight, translationFontSize)
+                      ...FONTSTYLE(FONTS.poppinsLight, translationFontSize, Colors)
                         .arabicText,
                     },
                     styles.caption,
@@ -113,11 +109,13 @@ const AyahViewComponent = ({
 
 export default AyahViewComponent;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   detailContainer: {
     padding: '15@s',
     borderBottomWidth: 1,
-    backgroundColor: Colors.primary,
+    borderColor: Colors.quranBorder,
+    backgroundColor: Colors.quranReader,
   },
   detailText: {
     alignSelf: 'flex-end',
@@ -125,7 +123,7 @@ const styles = ScaledSheet.create({
     textAlign: 'right',
   },
   caption: {
-    color: COLORS.white,
+    color: Colors.textPrimary,
   },
   line: {
     height: 1,

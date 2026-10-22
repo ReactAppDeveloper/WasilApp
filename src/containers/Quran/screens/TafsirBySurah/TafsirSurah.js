@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import RenderHTML from 'react-native-render-html';
 import {useDispatch,useSelector} from 'react-redux';
-import { Colors } from '../../../../theme';
 import {getTafsirs} from '../../api';
 import {
   setTafseerAuthor,
@@ -18,10 +17,11 @@ import {
 } from '../../redux/reduxToolkit/store/servicesSlice';
 
 import {setStorageItem} from '../../mmkvStorage/storeData';
-import {
-  WasilTranslationWorldBTSvg
-} from '../../../../assets/icons';
+import {TranslationWorldIcon} from '../../../../assets/icons/themed';
+import {useTheme} from '../../../../theme';
 const TafsirSurah = ({route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const {surah} = route.params;
   const {width} = useWindowDimensions();
  
@@ -122,7 +122,7 @@ useEffect(() => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
+        <ActivityIndicator size="large" color={Colors.heading} />
       </View>
     );
   }
@@ -163,7 +163,7 @@ useEffect(() => {
     {tafseerAuthor?.name || resource?.name || 'Tafsir'}
   </Text>
 <View style={styles.languageRow}>
-            <WasilTranslationWorldBTSvg />
+            <TranslationWorldIcon />
             <Text style={styles.language}>
     {tafseerLanguage?.name ||
       tafseerLanguage?.language ||
@@ -198,10 +198,11 @@ useEffect(() => {
 
 export default TafsirSurah;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-     backgroundColor: Colors.intermediate1,
+     backgroundColor: Colors.background,
     padding: 15,
   },
 
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.intermediate1
+    backgroundColor: Colors.background
   },
 
   headerCard: {
@@ -217,26 +218,26 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 18,
     borderWidth: 1,
-    borderColor: Colors.secondary1,
+    borderColor: Colors.accent,
     borderRadius: 15,
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.surfaceAlt,
     marginBottom: 15,
   },
 
   surahName: {
     fontSize: 18,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    color: Colors.white,
+    color: Colors.textPrimary,
   },
 
   meaning: {
     fontSize: 12,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
   },
 
   info: {
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontSize: 12,
     textTransform:"capitalize",
     fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular"
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
   translatorName: {
     fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
     fontSize: 15,
-    color: Colors.white,
+    color: Colors.textPrimary,
     textAlign: 'right',
   },
  languageRow: {
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
   language: {
     fontSize: 14,
     textTransform:"capitalize",
-    color: Colors.white,
+    color: Colors.textPrimary,
     alignSelf:"center",
     marginTop: 1,
     left:3
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
 
   tafsirCard: {
     borderWidth: 1,
-    borderColor: Colors.secondary1,
+    borderColor: Colors.accent,
     borderRadius: 12,
     padding: 15,
     marginBottom: 15, 
@@ -275,18 +276,18 @@ const styles = StyleSheet.create({
   alignSelf: 'flex-start',
   paddingHorizontal: 10,
   paddingVertical: 5,
-  backgroundColor: Colors.intermediate1,
+  backgroundColor: Colors.background,
   borderRadius: 10,
   borderWidth: 1,
   borderColor: '#D8C8FF',
   fontSize: 16,
   fontWeight: '700',
   textAlign: 'center',
-  color: Colors.white,
+  color: Colors.heading,
   marginBottom: 12,
 },
   translation: {
-   color: Colors.white,
+   color: Colors.textPrimary,
    lineHeight: 28,
    fontFamily: Platform.OS === 'ios' ? 'Asul-Regular' : 'AsulRegular',
   },

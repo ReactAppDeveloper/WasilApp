@@ -1,11 +1,7 @@
 import React from 'react';
-import {Image, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
-import {IMAGES} from '../theme';
-import {
-WasilNewFavouriteUnFillBTSvg,
-WasilNewFavouriteFillBTSvg
-} from '../../../assets/icons';
+import {FavouriteFillIcon, FavouriteUnFillIcon} from '../../../assets/icons/themed';
 
 const FavoriteView = ({
   favoriteIconCustomStyle,
@@ -19,11 +15,11 @@ const FavoriteView = ({
       onPress={onPressFavoriteIcon}
       activeOpacity={0.7}>
       {isFavorite ? (
-  <WasilNewFavouriteFillBTSvg
+  <FavouriteFillIcon
     style={[styles.favoriteIconStyle, favoriteIconCustomStyle]}
   />
 ) : (
-  <WasilNewFavouriteUnFillBTSvg
+  <FavouriteUnFillIcon
     style={[styles.favoriteIconStyle, favoriteIconCustomStyle]}
   />
 )}

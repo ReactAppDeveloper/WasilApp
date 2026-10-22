@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, {useMemo,  useEffect, useState,useRef } from 'react';
 import {
   Animated,
   TouchableOpacity,
@@ -41,10 +41,12 @@ import { juzDataList } from '../../data/juzDataList';
 import localeLanguage from '../../helper/localLanguage';
 import { getStorageItem, setStorageItem } from '../../mmkvStorage/storeData';
 import { setRecitersDataList } from '../../redux/reduxToolkit/store/recitersDataList';
-import recitersData from '../../utils/reciters.json'
-import { Colors } from '../../../../theme';
+import recitersData from '../../utils/reciters.json';
+import {useTheme} from '../../../../theme';
 
 const DashBoard = ({ navigation, route }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const selectedTafseerLanguage = useSelector(
     state => state.services.tafseerLanguage,
   );
@@ -337,10 +339,11 @@ const renderTabBar = props => {
 
 export default DashBoard;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   container: {
     flex: 1,
-    backgroundColor:Colors.intermediate1
+    backgroundColor:Colors.background
   },
   tabBarContent: {
   paddingHorizontal: 30,
@@ -366,7 +369,7 @@ const styles = ScaledSheet.create({
   },
 
   tabWrapper: {
-  backgroundColor: Colors.intermediate1,
+  backgroundColor: Colors.background,
   paddingHorizontal: 16,
   paddingVertical: 12,
 },
@@ -387,23 +390,23 @@ leftIndicator: {
   left:5,
   height: 32,
   borderRadius: 10,
-  backgroundColor: Colors.secondary1,
+  backgroundColor: Colors.accent,
 },
 
 headerText: {
   marginLeft: 15,
   fontSize: 14,
   fontWeight: '700',
-  color: Colors.white,
+  color: Colors.textPrimary,
 },
 
 segmentContainer: {
-  backgroundColor:Colors.secondary1,
+  backgroundColor: Colors.segmentTrack,
   flexDirection: 'row',
   width: 230, 
   height: 42,
   borderWidth: 2,
-  borderColor: Colors.secondary1,
+  borderColor: Colors.segmentBorder,
   borderRadius: 10,
   overflow: 'hidden',
 },
@@ -415,12 +418,12 @@ segmentButton: {
 },
 
 segmentButtonActive: {
-  backgroundColor: Colors.primary,
+  backgroundColor: Colors.segmentActive,
 },
 
 segmentText: {
   fontSize: 15,
-  color: Colors.black,
+  color: Colors.segmentText,
   fontFamily: Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",
 },
 

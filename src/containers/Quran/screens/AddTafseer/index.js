@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {ActivityIndicator, Alert, ScrollView, Text, View} from 'react-native';
 import {ScaledSheet} from 'react-native-size-matters';
 import Header from '../../components/Header';
@@ -15,8 +15,11 @@ import {
   setTafseerAuthor,
   setTafseerLanguage,
 } from '../../redux/reduxToolkit/store/servicesSlice';
+import {useTheme} from '../../../../theme';
 
 const AddTafseer = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const dispatch = useDispatch();
   const tafseerLanguage = useSelector(state => state.services.tafseerLanguage);
   const tafseerAuthor = useSelector(state => state.services.tafseerAuthor);
@@ -119,7 +122,7 @@ const AddTafseer = ({navigation, route}) => {
 
       {showLoader ? (
         <View style={styles?.loaderViewStyle}>
-          <ActivityIndicator size="large" color={COLORS.wasilnewthemecolorsecondBlue} />
+          <ActivityIndicator size="large" color={Colors.quranDeep} />
         </View>
       ) : (
         <>
@@ -136,37 +139,37 @@ const AddTafseer = ({navigation, route}) => {
                     fontFamily: FONTS.poppinsRegular,
                     fontSize: 26,
                     lineHeight: 26,
-                    color: COLORS.blue,
+                    color: Colors.quranAccent,
                   },
                   h2: {
                     fontFamily: FONTS.poppinsMedium,
                     fontSize: 16,
                     lineHeight: 18,
-                    color: COLORS.wasilnewthemecolorsecondBlue,
+                    color: Colors.quranDeep,
                     top:5
                   },
                   h3: {
                     fontFamily: FONTS.poppinsMedium,
                     fontSize: 14,
                     lineHeight: 16,
-                    color: COLORS.wasilnewthemecolorsecondBlue,
+                    color: Colors.quranDeep,
                    
                   },
                   h4: {
-                    ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
+                    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputBody,
                     color: COLORS.black,
                   },
                   h5: {
-                    ...FONTSTYLE(FONTS.poppinsRegular).inputBody,
+                    ...FONTSTYLE(FONTS.poppinsRegular, undefined, Colors).inputBody,
                     color: COLORS.black,
                   },
                   h6: {
-                    ...FONTSTYLE(FONTS.poppinsMedium).body,
+                    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).body,
                     color: COLORS.black,
                   },
                   p: {
                     marginTop: 12,
-                    ...FONTSTYLE(FONTS.poppinsMedium).inputs,
+                    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputs,
                     lineHeight: 22,
                     color: COLORS.black,
                   },
@@ -215,7 +218,8 @@ const AddTafseer = ({navigation, route}) => {
 
 export default AddTafseer;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   container: {
     padding: '10@s',
   },
@@ -255,6 +259,6 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
   },
   noDataTextStyle: {
-    ...FONTSTYLE(FONTS.poppinsMedium).inputBody,
+    ...FONTSTYLE(FONTS.poppinsMedium, undefined, Colors).inputBody,
   },
 });

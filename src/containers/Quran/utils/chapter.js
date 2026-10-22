@@ -57,12 +57,12 @@ const SUPPORTED_CHAPTER_LOCALES = [
 
 export const getAllChaptersData = (lang = DEFAULT_LANGUAGE) => {
   if (SUPPORTED_CHAPTER_LOCALES.includes(lang)) {
-    return new Promise(res => {
+    return new Promise((res, reject) => {
       const data = chapterData[lang];
       res(data);
     });
   }
-  return new Promise(res => {
+  return new Promise((res, reject) => {
     const data = chapterData['en'];
     res(data);
   });
@@ -72,7 +72,7 @@ export const getChapterData = (chapters, id) =>
   chapters[formatStringNumber(id)];
 
 export const getChapterIdsForPage = async pageId => {
-  return new Promise(res => {
+  return new Promise((res, reject) => {
     import(`../data/page-to-chapter-mappings.json`)
       .then(data => {
         res(data?.default[pageId]);
@@ -84,7 +84,7 @@ export const getChapterIdsForPage = async pageId => {
 };
 
 export const getChapterIdsForJuz = juzId => {
-  return new Promise(res => {
+  return new Promise((res, reject) => {
     import(`../data/juz-to-chapter-mappings.json`)
       .then(data => {
         res(data?.default[juzId]);
@@ -96,7 +96,7 @@ export const getChapterIdsForJuz = juzId => {
 };
 
 export const getAllJuzMappings = () => {
-  return new Promise(res => {
+  return new Promise((res, reject) => {
     import('../data/juz-to-chapter-verse-mappings.json')
       .then(data => {
         res(data.default);

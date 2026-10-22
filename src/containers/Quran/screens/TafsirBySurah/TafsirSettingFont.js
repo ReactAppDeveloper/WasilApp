@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import {useIsFocused} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   ScrollView,
   Text,
@@ -13,8 +13,11 @@ import HorizontalView from '../../components/HorizontalView';
 import {setStorageItem} from '../../mmkvStorage/storeData';
 import {setTranslationFontSize,} from '../../redux/reduxToolkit/store/servicesSlice';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../../theme';
+import {useTheme} from '../../../../theme';
 
 const TafsirSettingFont = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
 
   const translationFontSize = useSelector(
     state => state.services.translationFontSize,
@@ -65,9 +68,9 @@ const TafsirSettingFont = ({navigation, route}) => {
             onValueChange={sliderValue => {
               onChangeTranslationFontSize(sliderValue);
             }}
-            minimumTrackTintColor={COLORS.yellow}
+            minimumTrackTintColor={Colors.quranAccent}
             maximumTrackTintColor={COLORS.secondGray}
-            thumbTintColor={COLORS.yellow}
+            thumbTintColor={Colors.quranAccent}
           />
           <View style={styles.detailContainer}>
             <View style={styles.lineView} />
@@ -75,7 +78,7 @@ const TafsirSettingFont = ({navigation, route}) => {
               style={[
                 styles.caption,
                 {
-                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue)
+                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue, Colors)
                     .arabicText1,
                 },
               ]}>
@@ -93,7 +96,8 @@ const TafsirSettingFont = ({navigation, route}) => {
 
 export default TafsirSettingFont;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
   },
@@ -102,10 +106,6 @@ const styles = ScaledSheet.create({
     paddingVertical: '8@s',
     paddingHorizontal: '15@s',
     marginBottom: '8@s',
-  },
-  line: {
-    height: 1.2,
-    backgroundColor: COLORS.secondGray,
   },
   lineView: {
     height: 1,
@@ -162,7 +162,6 @@ const styles = ScaledSheet.create({
   },
   detailContainer: {
     padding: '10@s',
-    borderColor: COLORS.lightSlateGray,
     marginBottom: '8@s',
     borderWidth: 1.2,
     borderColor: COLORS.paleGray,
@@ -220,7 +219,7 @@ layoutCard: {
 
 layoutCardActive: {
  height:100,
- borderColor: COLORS.wasilnewthemecolorsecondBlue,
+ borderColor: Colors.quranDeep,
  borderRadius: 10,
  borderWidth: 1,
 },
@@ -240,7 +239,7 @@ layoutLabel: {
 },
 
 layoutLabelActive: {
-  color: COLORS.wasilnewthemecolorsecondBlue,
+  color: Colors.quranDeep,
   fontWeight: '600',
 },
 
@@ -254,7 +253,7 @@ themeCard: {
 
 themeActive: {
   borderWidth: 2,
-  borderColor: COLORS.wasilnewthemecolorsecondBlue,
+  borderColor: Colors.quranDeep,
 },
 
 themeArabic: {
@@ -274,7 +273,7 @@ tickContainer: {
   width: '18@s',
   height: '18@s',
   borderRadius: 9,
-  backgroundColor: COLORS.wasilnewthemecolorsecondBlue,
+  backgroundColor: Colors.quranDeep,
   alignItems: 'center',
   justifyContent: 'center',
 

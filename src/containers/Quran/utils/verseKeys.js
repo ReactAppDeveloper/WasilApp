@@ -1,5 +1,3 @@
-/* eslint-disable react-func/max-lines-per-function */
-/* eslint-disable import/prefer-default-export */
 import range from 'lodash/range';
 
 import {getChapterData} from './chapter';

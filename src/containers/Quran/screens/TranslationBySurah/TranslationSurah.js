@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,11 @@ import {
   Platform,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import {Colors} from '../../../../theme'
-import {
-  WasilTranslationWorldBTSvg
-} from '../../../../assets/icons';
+import {TranslationWorldIcon} from '../../../../assets/icons/themed';
+import {useTheme} from '../../../../theme';
 const TranslationSurah = ({route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const {surah} = route.params;
   const [translationText, setTranslationText] = useState('');
   const translationFontSize = useSelector(state => state.services.translationFontSize,);
@@ -64,7 +64,7 @@ const TranslationSurah = ({route}) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
+        <ActivityIndicator size="large" color={Colors.heading} />
       </View>
     );
   }
@@ -96,7 +96,7 @@ const TranslationSurah = ({route}) => {
     : translator?.name}
 </Text>
         <View style={styles.languageRow}>
-    <WasilTranslationWorldBTSvg />
+    <TranslationWorldIcon />
     <Text style={styles.language}>
       {translator?.language_name}
     </Text>
@@ -120,10 +120,11 @@ const TranslationSurah = ({route}) => {
 
 export default TranslationSurah;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
     padding: 15,
   },
 
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.intermediate1,
+    backgroundColor: Colors.background,
   },
 
   headerCard: {
@@ -139,27 +140,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 18,
     borderWidth: 1,
-    borderColor: Colors.secondary1,
+    borderColor: Colors.accent,
     borderRadius: 15,
-    backgroundColor: Colors.intermediate,
+    backgroundColor: Colors.surfaceAlt,
   },
 
   surahName: {
     fontSize: 18,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
   },
 
   meaning: {
     fontSize: 12,
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginTop: 2,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
   },
 
   info: {
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontSize: 12,
     textTransform:"capitalize"
   },
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold',
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.white,
+    color: Colors.textPrimary,
     textAlign: 'right',
     
   },
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
   language: {
     fontSize: 14,
     textTransform:"capitalize",
-    color: Colors.white,
+    color: Colors.textPrimary,
     alignSelf:"center",
     marginTop: 1,
     left:3
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderWidth: 1,
     borderRadius: 15,
-    borderColor: Colors.secondary1,
+    borderColor: Colors.accent,
   },
   verseNumber: {
     fontWeight: '700',
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   },
 
   translation: {
-    color: Colors.white,
+    color: Colors.textPrimary,
     lineHeight: 25,
     fontFamily: Platform.OS === 'ios' ? 'Asul-Regular' : 'AsulRegular',
   },

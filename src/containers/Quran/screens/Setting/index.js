@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import {useIsFocused} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useEffect, useState} from 'react';
 import {
   BackHandler,
   Image,
@@ -19,7 +19,6 @@ import HorizontalView from '../../components/HorizontalView';
 import RegularText from '../../components/RegularText';
 import RNSwitch from '../../components/RNSwitch';
 import {setStorageItem} from '../../mmkvStorage/storeData';
-import { Colors } from '../../../../theme';
 import {DuaForwardSVG} from '../../../../assets/icons';
 import {
   setArabic,
@@ -32,8 +31,11 @@ import {
   setPageTheme,
 } from '../../redux/reduxToolkit/store/servicesSlice';
 import {COLORS, FONTS, FONTSTYLE, IMAGES} from '../../theme';
+import {useTheme} from '../../../../theme';
 
 const Setting = ({navigation, route}) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const {isFromPage,isFromQuranComp,selectedPageItem,fromjuz,from,rukuNumber,fromqc,surahNumber,headersurahname,selectedSurahItems,} = route?.params;
   const isArabicFont = useSelector(state => state.services.isArabicFont);
   const selectedSurahItem = useSelector(
@@ -240,7 +242,7 @@ const Setting = ({navigation, route}) => {
           
            <View style={styles.advImageContainer}>
            <View style={{backgroundColor:'#FFFFFF',flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Arabic</Text>
+              <Text style={{fontWeight:"500",color:Colors.quranLabel,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Arabic</Text>
            </View>
            <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
@@ -260,7 +262,7 @@ const Setting = ({navigation, route}) => {
            </View>
            <View style={styles.advImageContainer}>
            <View style={{backgroundColor:'#FFFFFF',flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Translation</Text>
+              <Text style={{fontWeight:"500",color:Colors.quranLabel,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Translation</Text>
            </View>
            <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
@@ -280,7 +282,7 @@ const Setting = ({navigation, route}) => {
            </View>
            <View style={styles.advImageContainer}>
            <View style={{backgroundColor:'#FFFFFF',flex:2}}>
-              <Text style={{fontWeight:"500",color:Colors.wasilnewthemecolorsecond,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Transliteration</Text>
+              <Text style={{fontWeight:"500",color:Colors.quranLabel,fontSize:15,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Transliteration</Text>
            </View>
            <View style={{backgroundColor:'#FFFFFF',flex:0.5,alignItems:"center",justifyContent:"center",bottom:2,left:10}}>
            <RNSwitch
@@ -345,21 +347,18 @@ const Setting = ({navigation, route}) => {
             onValueChange={sliderValue => {
               onChangeArabicFontSize(sliderValue);
             }}
-            minimumTrackTintColor={COLORS.yellow}
+            minimumTrackTintColor={Colors.quranAccent}
             maximumTrackTintColor={COLORS.secondGray}
-            thumbTintColor={COLORS.yellow}
+            thumbTintColor={Colors.quranAccent}
           />
           <View style={styles.fontSizeView}>
             <Text
               style={[
                 styles.textStyle,
                 {
-                  ...FONTSTYLE(
-                    Platform.OS === 'android'
+                  ...FONTSTYLE(Platform.OS === 'android'
                       ? selectFont?.key
-                      : FONTS[selectFont?.key],
-                    arabicFontSizeValue,
-                  ).arabicText1,
+                      : FONTS[selectFont?.key], arabicFontSizeValue, Colors).arabicText1,
                   lineHeight:
                     Platform.OS === 'android' ? arabicFontSizeValue * 1.9 : 0,
                 },
@@ -384,16 +383,16 @@ const Setting = ({navigation, route}) => {
             onValueChange={sliderValue => {
               onChangeTranslationFontSize(sliderValue);
             }}
-            minimumTrackTintColor={COLORS.yellow}
+            minimumTrackTintColor={Colors.quranAccent}
             maximumTrackTintColor={COLORS.secondGray}
-            thumbTintColor={COLORS.yellow}
+            thumbTintColor={Colors.quranAccent}
           />
           <View style={styles.detailContainer}>
             <Text
               style={[
                 styles.caption,
                 {
-                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue)
+                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue, Colors)
                     .arabicText1,
                 },
               ]}>
@@ -404,7 +403,7 @@ const Setting = ({navigation, route}) => {
               style={[
                 styles.caption,
                 {
-                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue)
+                  ...FONTSTYLE(FONTS.poppinsLight, translationFontSizeValue, Colors)
                     .arabicText1,
                 },
               ]}>
@@ -422,7 +421,8 @@ const Setting = ({navigation, route}) => {
 
 export default Setting;
 
-const styles = ScaledSheet.create({
+const makeStyles = Colors =>
+  ScaledSheet.create({
   safeAreaView: {
     flex: 1,
   },
@@ -431,10 +431,6 @@ const styles = ScaledSheet.create({
     paddingVertical: '8@s',
     paddingHorizontal: '15@s',
     marginBottom: '8@s',
-  },
-  line: {
-    height: 1.2,
-    backgroundColor: COLORS.secondGray,
   },
   lineView: {
     height: 1,
@@ -491,7 +487,6 @@ const styles = ScaledSheet.create({
   },
   detailContainer: {
     padding: '10@s',
-    borderColor: COLORS.lightSlateGray,
     marginBottom: '8@s',
     borderWidth: 1.2,
     borderColor: COLORS.paleGray,
@@ -528,7 +523,7 @@ const styles = ScaledSheet.create({
   sectionTitle: {
   fontSize: '16@s',
   fontWeight: '600',
-  color: COLORS.wasilnewthemecolorsecondBlue,
+  color: Colors.quranDeep,
   marginBottom: '10@s',
 },
 
@@ -549,7 +544,7 @@ layoutCard: {
 
 layoutCardActive: {
  height:100,
- borderColor: COLORS.wasilnewthemecolorsecondBlue,
+ borderColor: Colors.quranDeep,
  borderRadius: 10,
  borderWidth: 1,
 },
@@ -569,7 +564,7 @@ layoutLabel: {
 },
 
 layoutLabelActive: {
-  color: COLORS.wasilnewthemecolorsecondBlue,
+  color: Colors.quranDeep,
   fontWeight: '600',
 },
 
@@ -583,7 +578,7 @@ themeCard: {
 
 themeActive: {
   borderWidth: 2,
-  borderColor: COLORS.wasilnewthemecolorsecondBlue,
+  borderColor: Colors.quranDeep,
 },
 
 themeArabic: {
@@ -603,7 +598,7 @@ tickContainer: {
   width: '18@s',
   height: '18@s',
   borderRadius: 9,
-  backgroundColor: COLORS.wasilnewthemecolorsecondBlue,
+  backgroundColor: Colors.quranDeep,
   alignItems: 'center',
   justifyContent: 'center',
 

@@ -37,9 +37,10 @@ import {
   REVALIDATION_PERIOD_ON_ERROR_SECONDS,
 } from '../../utils/staticPageGeneration';
 import {isValidPageId} from '../../utils/validator';
+import {useTheme} from '../../../../theme';
 const { height} = Dimensions.get('window');
-import { Colors } from '../../../../theme';
 const SurahFullView = ({navigation, route}) => {
+  const {Colors} = useTheme();
   const {selectedPageItem} = route.params;
   const totalPages = 604;
   const isArabicFont = useSelector(state => state.services.isArabicFont);
@@ -94,18 +95,19 @@ const SurahFullView = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    TrackPlayer.setupPlayer().then(() => {});
+    // The player is set up once at app start; this only guards against it not being ready yet.
+    TrackPlayer.setupPlayer().catch(() => {});
 
-    TrackPlayer.addEventListener('playback-queue-ended', async () => {
-      console.log('Track ended', surahDetail?.id);
+    const queueEnded = TrackPlayer.addEventListener('playback-queue-ended', () => {
       setIsPlaying(false);
     });
     const unsubscribe = navigation.addListener('blur', async () => {
       await TrackPlayer.stop();
       setIsPlaying(false);
     });
-    return async () => {
-      await TrackPlayer.reset();
+    return () => {
+      queueEnded.remove();
+      TrackPlayer.reset().catch(() => {});
       handleStopAutoScrolling();
       unsubscribe();
     };
@@ -163,11 +165,13 @@ const SurahFullView = ({navigation, route}) => {
         );
       }
     } catch (err) {
+      let errorStatus;
+      let errorMessage = 'Something went wrong. Please try again.';
       if (err instanceof Error) {
         try {
           const errorData = JSON.parse(err.message.replace('API error: ', ''));
           errorStatus = errorData?.status;
-          errorMessage = errorData?.error;
+          errorMessage = errorData?.error || errorMessage;
         } catch (error) {
           console.error('Error==>', error);
         }
@@ -472,7 +476,7 @@ const SurahFullView = ({navigation, route}) => {
         style={styles.backgroundImageStyle}>
         {showLoader ? (
           <View style={styles?.loaderViewStyle}>
-            <ActivityIndicator size="large" color={COLORS.wasilnewthemecolorsecondBlue} />
+            <ActivityIndicator size="large" color={Colors.quranDeep} />
           </View>
         ) : (
           <View
@@ -496,12 +500,9 @@ const SurahFullView = ({navigation, route}) => {
                 <Text
                   style={[
                     {
-                      ...FONTSTYLE(
-                        Platform.OS === 'android'
+                      ...FONTSTYLE(Platform.OS === 'android'
                           ? isArabicFont?.key
-                          : FONTS[isArabicFont?.key],
-                        arabicFontSize,
-                      ).bigTitle,
+                          : FONTS[isArabicFont?.key], arabicFontSize, Colors).bigTitle,
                       lineHeight: Platform.OS === 'android' ? 40 : 0,
                     },
                     styles.ayahTitleText,
@@ -526,38 +527,32 @@ const SurahFullView = ({navigation, route}) => {
               <Text key={index} allowFontScaling={false} selectable={true}>
                  <Text
                             style={{
-                              ...FONTSTYLE(
-                                Platform.OS === 'android'
+                              ...FONTSTYLE(Platform.OS === 'android'
                                   ? isArabicFont?.key
-                                  : FONTS[isArabicFont?.key],
-                                arabicFontSize,
-                              ).arabicText,
+                                  : FONTS[isArabicFont?.key], arabicFontSize, Colors).arabicText,
                               lineHeight:
                                 Platform.OS === 'android'
                                   ? arabicFontSize * 1.9
                                   : 0,
                               color:
                                 currentPlayingAyah?.verseKey == item?.verseKey
-                                  ? COLORS.yellow
+                                  ? Colors.quranAccent
                                   : COLORS.wasilnewthemecolorsecondGray,
                             }}>
                             {item?.textUthmani}
                           </Text>
                 <Text style={[
                                   {
-                                    ...FONTSTYLE(
-                                      FONTS.trochutBold,
-                                      arabicFontSize *
+                                    ...FONTSTYLE(FONTS.trochutBold, arabicFontSize *
                                         (item?.id < 100
                                           ? 0.5
                                           : item?.id < 1000
                                           ? 0.4
-                                          : 0.3),
-                                    ).arabicText,
+                                          : 0.3), Colors).arabicText,
                                     color:
                                       currentPlayingAyah?.verseKey ==
                                       item?.verseKey
-                                        ? COLORS.yellow
+                                        ? Colors.quranAccent
                                         : COLORS.wasilnewthemecolorsecondGray,
                                     position: 'absolute',
                                   },
