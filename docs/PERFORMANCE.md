@@ -13,12 +13,19 @@
 | 7 | Player screens (Reciters, Story player) re-rendered the whole screen 2×/s for the progress bar. | Lag while audio plays. | **Fixed** — shared `components/PlaybackProgress` owns the subscription. |
 | 8 | 240 `console.log` calls, some printing whole API responses. | JS-thread time in release builds. | **Fixed** — `console.log/info/debug` are no-ops when `!__DEV__` (`index.js`). |
 
-## Still to do (needs the Quran/Prayer merge or a device)
+## Follow-up (done)
 
-- `Quran*/screens/ListenTranslation/TranslatorDetail.js` (2,500 lines) re-renders 4×/s from `useProgress(250)`; progress drives word highlighting, so it needs a careful split during the Quran merge.
-- Prayer and Quran still ship three copies (Blue/Green/White) — ~165k + 55k lines. Merging them (as done for the other modules) cuts bundle size and memory further.
-- Images returned by the APIs (story covers, greeting cards) should be served resized by the backend (or Cloudinary transforms added server-side).
-- The app overrides `Text.render`/`TextInput.render` in `index.js` to disable font scaling; this clones every Text element on every render. Prefer setting `allowFontScaling={false}` only where layouts break.
+- Quran and Prayer merged into single theme-aware modules (Green/White copies removed: ~235k lines, plus duplicated images).
+- Prayer guide: 48 rakat screens (~2.85 MB of JSX per theme) are now data (`PrayerGuide/rakatData.js`, 20 shared steps) rendered by `RakatSteps`.
+- `TranslatorDetail`: progress bar uses the shared `PlaybackProgress`, so the 2,500-line screen no longer re-renders 4×/s; player state is saved on track/play changes and every 10 s instead of serialising the whole queue to storage 4×/s.
+- ESLint (`@react-native` config) reports **0 errors** across `src/` (it found 64 undefined variables, 7 undefined components and 42 duplicate keys, all fixed).
+- 50 unreferenced image files (35 MB) removed from the repo.
+
+## Still open
+
+- Images returned by the APIs (story covers, greeting cards) should be served resized by the backend.
+- `index.js` overrides `Text.render`/`TextInput.render` to disable font scaling; prefer `allowFontScaling={false}` only where layouts break (also better for accessibility).
+- API keys (LocationIQ, hadithapi.com) are in client code; restrict them by app/bundle id or proxy them.
 
 ## How to measure
 

@@ -18,10 +18,10 @@ import TrackPlayer, {
   useTrackPlayerEvents,
   Event,
   State,
-  useProgress,
 } from "react-native-track-player";
 
 import { SURAH_NAMES } from "../../../Reciters/surahNames";
+import { PlaybackProgress } from "../../../../components";
 
 import {
   SearchSVG,
@@ -45,6 +45,16 @@ import {useTheme} from '../../../../theme';
 export default function TranslatorDetail({ route }) {
   const {Colors} = useTheme();
   const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const progressStyles = useMemo(
+    () => ({
+      progressHit: {paddingVertical: 8},
+      progressTrack: styles.progressBarBackground,
+      progressFill: styles.progressFill,
+      progressThumb: [styles.progressThumb, {top: 2}],
+      timeRow: styles.timeRow,
+    }),
+    [styles],
+  );
 
   // ============================================================
   // 1. INITIAL RECITER
@@ -111,21 +121,8 @@ export default function TranslatorDetail({ route }) {
   const shouldAutoScroll =
     useRef(false);
 
-  const progressAnim =
-    useRef(new Animated.Value(0)).current;
-
-  const progressBarWidth =
-    useRef(0);
 
 
-  // ============================================================
-  // 4. TRACK PROGRESS
-  // ============================================================
-
-  const {
-    position,
-    duration,
-  } = useProgress(250);
 
 
   // ============================================================
@@ -607,54 +604,22 @@ export default function TranslatorDetail({ route }) {
 
 
   // ============================================================
-  // 10. PROGRESS ANIMATION
+  // 10. SAVE PLAYER STATE
+  // Saved when the surah or play state changes, and every 10s while playing
+  // (it serialises the whole queue, so not on every progress tick).
   // ============================================================
 
   useEffect(() => {
-
-    if (!duration) {
-      return;
+    if (currentIndex === null) {
+      return undefined;
     }
-
-
-    Animated.timing(
-      progressAnim,
-      {
-        toValue:
-          position / duration,
-
-        duration:
-          200,
-
-        useNativeDriver:
-          false,
-      }
-    ).start();
-
-  }, [
-    position,
-    duration,
-  ]);
-
-
-  // ============================================================
-  // 11. SAVE PLAYER STATE
-  // ============================================================
-
-  useEffect(() => {
-
-    if (
-      currentIndex !== null
-    ) {
-
-      savePlayerState();
+    savePlayerState();
+    if (!isPlaying) {
+      return undefined;
     }
-
-  }, [
-    currentIndex,
-    isPlaying,
-    position,
-  ]);
+    const id = setInterval(savePlayerState, 10000);
+    return () => clearInterval(id);
+  }, [currentIndex, isPlaying]);
 
 
   // ============================================================
@@ -1097,46 +1062,6 @@ export default function TranslatorDetail({ route }) {
           error
         );
       }
-    };
-
-
-  // ============================================================
-  // 20. PROGRESS BAR
-  // ============================================================
-
-  const onProgressLayout =
-    e => {
-
-      progressBarWidth.current =
-        e.nativeEvent.layout.width;
-    };
-
-
-  const onProgressPress =
-    async e => {
-
-      if (!duration) {
-        return;
-      }
-
-
-      const x =
-        e.nativeEvent.locationX;
-
-
-      const percentage =
-        x /
-        progressBarWidth.current;
-
-
-      const seekTime =
-        percentage *
-        duration;
-
-
-      await TrackPlayer.seekTo(
-        seekTime
-      );
     };
 
 
@@ -1804,134 +1729,9 @@ export default function TranslatorDetail({ route }) {
           }
         >
 
-          {/* ================================================ */}
-          {/* PROGRESS */}
-          {/* ================================================ */}
-
-          <View
-            style={{
-              width:
-                "100%",
-
-              marginTop:
-                30,
-
-              paddingHorizontal:
-                24,
-            }}
-          >
-
-            <Pressable
-              onPress={
-                onProgressPress
-              }
-
-              onLayout={
-                onProgressLayout
-              }
-            >
-
-              <View
-                style={
-                  styles.progressBarBackground
-                }
-              >
-
-                <Animated.View
-                  style={[
-                    styles.progressFill,
-
-                    {
-                      width:
-                        progressAnim.interpolate({
-                          inputRange:
-                            [
-                              0,
-                              1,
-                            ],
-
-                          outputRange:
-                            [
-                              "0%",
-                              "100%",
-                            ],
-                        }),
-                    },
-                  ]}
-                />
-
-
-                <Animated.View
-                  style={[
-                    styles.progressThumb,
-
-                    {
-                      left:
-                        progressAnim.interpolate({
-                          inputRange:
-                            [
-                              0,
-                              1,
-                            ],
-
-                          outputRange:
-                            [
-                              0,
-
-                              Math.max(
-                                0,
-
-                                progressBarWidth.current -
-                                  16
-                              ),
-                            ],
-                        }),
-                    },
-                  ]}
-                />
-
-              </View>
-
-            </Pressable>
-
-
-            {/* ============================================== */}
-            {/* TIME */}
-            {/* ============================================== */}
-
-            <View
-              style={
-                styles.timeRow
-              }
-            >
-
-              <Text
-                style={
-                  styles.timeText
-                }
-              >
-                {
-                  formatTime(
-                    position
-                  )
-                }
-              </Text>
-
-
-              <Text
-                style={
-                  styles.timeText
-                }
-              >
-                {
-                  formatTime(
-                    duration
-                  )
-                }
-              </Text>
-
-            </View>
-
+          {/* PROGRESS: owns its own progress subscription so the rest of the screen doesn't re-render while playing */}
+          <View style={{width: "100%", marginTop: 30, paddingHorizontal: 24}}>
+            <PlaybackProgress styles={progressStyles} timeStyle={styles.timeText} interval={250} />
           </View>
 
 

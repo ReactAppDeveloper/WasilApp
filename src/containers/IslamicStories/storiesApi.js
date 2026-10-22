@@ -1,7 +1,11 @@
 import { cachedGet, HOUR } from '../../services/http';
 
 const BASE = 'https://islamicapp.vercel.app/api';
-const get = async (path, params) => (await cachedGet(`${BASE}/${path}`, { params }, { ttl: 6 * HOUR })).data || [];
+// Lists from this API must be arrays; anything else (error object, HTML page) becomes an empty list.
+const get = async (path, params) => {
+  const { data } = await cachedGet(`${BASE}/${path}`, { params }, { ttl: 6 * HOUR });
+  return Array.isArray(data) ? data : [];
+};
 
 export const fetchAllStories = () => get('allislamicstory');
 export const fetchCategories = () => get('islamiccategories');

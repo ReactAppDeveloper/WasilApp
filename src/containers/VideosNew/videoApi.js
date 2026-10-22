@@ -2,11 +2,17 @@ import { cachedGet, HOUR } from '../../services/http';
 
 const BASE = 'https://islamicapp.vercel.app/api';
 
-export const fetchChannels = async () => (await cachedGet(`${BASE}/videochannels`, undefined, { ttl: 6 * HOUR })).data || [];
-export const fetchSpeakers = async () => (await cachedGet(`${BASE}/speakers`, undefined, { ttl: 6 * HOUR })).data || [];
+// Lists from this API must be arrays; anything else becomes an empty list.
+const list = async (url, config) => {
+  const { data } = await cachedGet(url, config, { ttl: 6 * HOUR });
+  return Array.isArray(data) ? data : [];
+};
+
+export const fetchChannels = () => list(`${BASE}/videochannels`);
+export const fetchSpeakers = () => list(`${BASE}/speakers`);
 export const fetchByChannel = async (channel) =>
-  (await cachedGet(`${BASE}/videobychannel`, { params: { videochannelname: channel } }, { ttl: 6 * HOUR })).data || [];
-export const fetchBySpeaker = async (speakerId) => (await cachedGet(`${BASE}/videos`, { params: { speakerId } }, { ttl: 6 * HOUR })).data || [];
+  list(`${BASE}/videobychannel`, { params: { videochannelname: channel } });
+export const fetchBySpeaker = (speakerId) => list(`${BASE}/videos`, { params: { speakerId } });
 
 // Last path segment of a YouTube share/embed link.
 export const youtubeId = (link = '') => link.split('?')[0].split('/').filter(Boolean).pop() || '';
