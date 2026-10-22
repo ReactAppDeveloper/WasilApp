@@ -26,9 +26,13 @@ import {
   IslamicStoryPlayPreviousSVG,
   IslamicStoryPlayBTAudioSVG,
   IslamicStoryPauseBTAudioSVG,
+  IslamicStoryPlayAudioSVG,
+  IslamicStoryPauseAudioSVG,
 } from "../../assets/icons";
 
-import { Colors } from "../../theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme, Fonts, TypeScale, MIN_TOUCH } from "../../theme";
+import ReciterAvatar from "./ReciterAvatar";
 
 import reciters from "../../containers/Reciters/newreciters";
 
