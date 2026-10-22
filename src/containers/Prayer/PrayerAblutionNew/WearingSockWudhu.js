@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Text,
   Image,
 } from 'react-native';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const imageOne = {
   uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698325/prayertimes/shoeone.png',
@@ -18,9 +18,11 @@ const imageTwo = {
 };
 
 const WearingSockWudhu = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.intermediate1}/>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg}/>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Top Image */}
@@ -95,10 +97,11 @@ const WearingSockWudhu = () => {
 
 export default WearingSockWudhu;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1
+    backgroundColor: Colors.background
   },
 
   headerImage: {
@@ -120,14 +123,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: 'center',
     fontFamily: 'Poppins-Bold',
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginBottom: 16,
   },
 
   paragraph: {
     fontSize: 14,
     lineHeight: 22,
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginBottom: 12,
     fontFamily: 'Poppins-Regular',
   },
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginTop: 20,
     marginBottom: 10,
   },
@@ -145,14 +148,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 12,
     borderBottomWidth: 0.8,
-    borderBottomColor: Colors.secondary1,
+    borderBottomColor: Colors.stepCardBorder,
   },
 
   bullet: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.secondary1,
+    backgroundColor: Colors.accent,
     marginTop: 6,
     marginRight: 12,
   },
@@ -161,7 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     lineHeight: 22,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Regular',
   },
 });

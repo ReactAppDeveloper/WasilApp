@@ -1,406 +1,190 @@
-import React,{ useState, useEffect ,useRef} from 'react';
-import {  StatusBar, StyleSheet,View ,Text,LogBox, ScrollView,TouchableOpacity,Dimensions,Platform,BackHandler,Animated} from 'react-native';
-import { Colors} from '../../../theme';
-import {ImageStepOneSVG,ImageStepTwoSVG,ImageStepThreeSVG,ImageStepFourSVG,ImageStepFiveSVG,ImageStepSixSVG,ImageStepSevenSVG,ImageStepEightSVG,EclipseSVG,PrayerNamazPlayBTSVG,ClosePlayDrawerSVG} from '../../../assets/icons';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {View, Text, ScrollView, TouchableOpacity, StatusBar, StyleSheet, Animated} from 'react-native';
 import Modal from 'react-native-modal';
 import YoutubePlayer from 'react-native-youtube-iframe';
-const { width,height} = Dimensions.get('window');
-LogBox.ignoreAllLogs();
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme, Fonts, TypeScale, Spacing, Radius, MIN_TOUCH} from '../../../theme';
+import {
+  ImageStepOneSVG,
+  ImageStepTwoSVG,
+  ImageStepThreeSVG,
+  ImageStepFourSVG,
+  ImageStepFiveSVG,
+  ImageStepSixSVG,
+  ImageStepSevenSVG,
+  ImageStepEightSVG,
+} from '../../../assets/icons';
+import {VideoPlayIcon} from '../../../assets/icons/themed';
+import {GuideStep, makeStyles as makeStepStyles} from '../PrayerGuide/RakatSteps';
 
+const VIDEO_ID = '2xS70Zn-jRk';
+const REPEAT = {text: 'Repeat this process three times.'};
 
-const AblutionWaduStepNew = ({ navigation }) => { 
+const WUDU_STEPS = [
+  {
+    title: 'Make your intention to perform wudhu',
+    image: ImageStepOneSVG,
+    blocks: [
+      {text: 'Begin wudhu by saying:'},
+      {arabic: 'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ'},
+      {transliteration: 'Bismillahir Rahmanir Raheem.'},
+    ],
+  },
+  {
+    title: 'Wash both hands up to the wrists',
+    image: ImageStepTwoSVG,
+    blocks: [
+      {
+        text: 'Begin by cleaning your hands thoroughly, starting from the fingertips and moving towards the wrists, ensuring they are free from any dirt. Start with your right hand, washing it from the fingertips to the wrist three times. Ensure that water reaches every part of the hand. Then, repeat the same process with your left hand.',
+      },
+    ],
+  },
+  {
+    title: 'Rinse your mouth',
+    image: ImageStepThreeSVG,
+    blocks: [
+      {text: 'Take some water into your right hand and rinse your mouth three times. Do this thoroughly to clean your mouth properly.'},
+      REPEAT,
+    ],
+  },
+  {
+    title: 'Rinse your nose',
+    image: ImageStepFourSVG,
+    blocks: [
+      {
+        text: 'Using your right hand, take some water and sniff it into your nose. This involves inhaling the water gently into your nostrils and then expelling it out. Be cautious not to inhale too much water to avoid discomfort.',
+      },
+      REPEAT,
+    ],
+  },
+  {
+    title: 'Wash your face from the hairline to the chin',
+    image: ImageStepFiveSVG,
+    blocks: [
+      {
+        text: 'Wash your entire face thoroughly, from the hairline to the chin, ensuring every part is cleansed. Cover from ear to ear and from the forehead to the chin. If you have a beard, ensure to run wet hands through it while washing your face.',
+      },
+      REPEAT,
+    ],
+  },
+  {
+    title: 'Wash both arms up to the elbows',
+    image: ImageStepSixSVG,
+    blocks: [
+      {
+        text: 'Begin by washing your right arm from the fingertips up to the elbow. Ensure thorough coverage, leaving no part dry. Then, repeat the same process for your left arm.',
+      },
+      REPEAT,
+    ],
+  },
+  {
+    title: 'Wipe your head and ears with wet hands',
+    image: ImageStepSevenSVG,
+    blocks: [
+      {
+        text: 'Wipe your head with wet hands, moving gently from your forehead to the back of your head, then from the back to the forehead. Afterward, gently wipe both the inside and outside of your ears with wet fingers.',
+      },
+    ],
+  },
+  {
+    title: 'Wash both feet',
+    image: ImageStepEightSVG,
+    blocks: [
+      {
+        text: 'Start by washing your right foot, beginning from the toes and working up to and including the ankle. Ensure that water reaches every part of the right foot, including between the toes and the back of the ankle. Then, repeat the same process for your left foot.',
+      },
+    ],
+  },
+  {
+    title: 'Recite the Shahadah',
+    image: ImageStepOneSVG,
+    blocks: [
+      {arabic: 'أَشْهَدُ أَنْ لا إِلَـٰهَ إِلاَّ اللَّهُ وَحْدَهُ لا شَرِيكَ لَـهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ'},
+      {transliteration: "Ashhadu alla ilaha illallah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu."},
+    ],
+  },
+];
+
+// Step-by-step wudhu guide with a floating button that plays the how-to video.
+export default function AblutionWaduStepNew() {
+  const {Colors} = useTheme();
+  const insets = useSafeAreaInsets();
+  const stepStyles = useMemo(() => makeStepStyles(Colors), [Colors]);
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const [collapsed, setCollapsed] = useState({});
+  const [videoOpen, setVideoOpen] = useState(false);
   const scale = useRef(new Animated.Value(1)).current;
-  const [showmemodal,setshowmemodal] = useState(false);
-  const lastvideolink = '2xS70Zn-jRk';
-  const _toggleModal = () => {
-     setshowmemodal(true)
-  };
-  const closetoggleModal = () => {
-    setshowmemodal(false)
- };
+
   useEffect(() => {
-    if (!BackHandler.removeEventListener) {
-      BackHandler.removeEventListener = () => {};
-    }
-  }, [])
-   useEffect(() => {
-    Animated.loop(
+    const pulse = Animated.loop(
       Animated.sequence([
-        Animated.spring(scale, {
-          toValue: 1.15,
-          useNativeDriver: true,
-        }),
-        Animated.spring(scale, {
-          toValue: 1,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
+        Animated.spring(scale, {toValue: 1.12, useNativeDriver: true}),
+        Animated.spring(scale, {toValue: 1, useNativeDriver: true}),
+      ]),
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [scale]);
+
   return (
-    <View style={styles.containerMain}>
-       <StatusBar backgroundColor={Colors.intermediate1}/>
-        
-       <ScrollView>
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:0.8,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.secondary1,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepOneSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>1</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Make your intention to perform wudhu</Text>
-                      <Text numberOfLines={2} style={{top:10,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Begin Wudhu by saying</Text>
-                      <Text numberOfLines={2} style={{left:20,top:15,fontSize:20,width:"95%",textAlign:"center",color:Colors.white,fontWeight:"500",fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',}}>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</Text>
-                      <Text numberOfLines={2} style={{top:20,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Transliteration: {'\n'}Bismillahir Rahmanir Raheem.</Text>
+    <View style={stepStyles.screen}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+      <ScrollView
+        contentContainerStyle={[stepStyles.list, {paddingBottom: insets.bottom + 96}]}
+        showsVerticalScrollIndicator={false}>
+        {WUDU_STEPS.map((step, i) => (
+          <GuideStep
+            key={step.title}
+            number={i + 1}
+            step={step}
+            expanded={!collapsed[i]}
+            onToggle={() => setCollapsed(prev => ({...prev, [i]: !prev[i]}))}
+            styles={stepStyles}
+          />
+        ))}
+      </ScrollView>
 
-                      </View>
-              </View>
-          
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer1}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepTwoSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>2</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:width*0.034,color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wash both hands up to the wrists</Text>
-                      <Text numberOfLines={8}style={{top:10,fontSize:10,color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Begin by cleaning your hands thoroughly, starting from the fingertips and moving towards the wrists, ensuring they are free from any dirt. Start with your right hand, washing it from the fingertips to the wrist three times. Ensure that water reaches every part of the hand. Then, repeat the same process with your left hand.</Text>
+      <TouchableOpacity
+        style={[styles.fab, {bottom: insets.bottom + Spacing.xl}]}
+        onPress={() => setVideoOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Watch how to perform wudhu">
+        <Animated.View style={{transform: [{scale}]}}>
+          <VideoPlayIcon />
+        </Animated.View>
+      </TouchableOpacity>
 
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer2}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepThreeSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>3</Text>
-                </View>
-                    </View>
-                    </View>
-                    <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Rinse your Mouth</Text>
-                      <Text style={{top:10,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Take some water into your right hand and rinse your mouth three times. Do this thoroughly to clean your mouth properly.</Text>
-                      <Text style={{top:20,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Repeat this process three times</Text>
-
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer3}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepFourSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>4</Text>
-                </View>
-                    </View>
-                    </View>
-                    <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Rinse your Nose</Text>
-                      <Text style={{top:10,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Using your right hand, take some water and sniff it into your nose. This involves inhaling the water gently into your nostrils and then expelling it out. Be cautious not to inhale too much water to avoid discomfort.</Text>
-                      <Text style={{top:20,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Repeat this process three times</Text>
-
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer4}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepFiveSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>5</Text>
-                </View>
-                    </View>
-                    </View>
-                    <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wash your face from the hairline to the chin</Text>
-                      <Text style={{top:10,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wash your entire face thoroughly, from the hairline to the chin, ensuring every part is cleansed. Cover from ear to ear and from the forehead to the chin. If you have a beard, ensure to run wet hands through it while washing your face.</Text>
-                      <Text style={{top:13,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Repeat this process three times</Text>
-
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer5}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepSixSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>6</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wash your both arms up to the elbow</Text>
-                      <Text style={{top:10,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Begin by washing your right arm from the fingertips up to the elbow. Ensure thorough coverage, leaving no part dry. Then, repeat the same process for your left arm.</Text>
-                      <Text style={{top:20,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Repeat this process three times</Text>
-
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer6}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepSevenSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>7</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wipe your head & ears with wet hands</Text>
-                      <Text style={{top:15,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wipe your head with wet hands, moving gently from your forehead to the back of your head, then from the back to the forehead. Afterward, gently wipe both the inside and outside of your ears with wet fingers.</Text>
-                    
-                      </View>
-              </View>
-
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer7}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepEightSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>8</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15,width:"62%"}}>
-                      <Text numberOfLines={2} style={{top:10,fontSize:13,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Wash Your both Feet</Text>
-                      <Text style={{top:15,fontSize:10,width:"95%",color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Start by washing your right foot, beginning from the toes and working up to and including the ankle. Ensure that water reaches every part of the right foot, including between the toes and the back of the ankle. Then, repeat the same process for your left foot.</Text>
-                    
-                      </View>
-              </View>
-
-              
-              <View style={{flexDirection:"row", 
-                      borderRadius:10,
-                      borderWidth:1,
-                      backgroundColor:Colors.primary,
-                      borderColor:Colors.bordercolor,marginTop:15,marginLeft:10,marginRight:10}}>
-                      <View>
-                    
-                    <View style={styles.advImageContainer8}>
-                     <View style={{left:8,top:8}}>
-                      <ImageStepOneSVG/>
-                      </View>
-                      <View>
-                  <View style={{bottom:115,left:15}}>
-                <EclipseSVG/>
-                </View>
-                <Text style={{bottom:144,left:24,fontSize:20,fontWeight:"bold",color:Colors.white,fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>9</Text>
-                </View>
-                    </View>
-                    </View>
-                      <View style={{left:15,width:"62%"}}>
-                      <Text style={{top:5,fontSize:20,textAlign:"center",color:Colors.white,fontWeight:"500",fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',}}>أَشْهَدُ أَنْ لا إِلَـٰهَ إِلاَّ اللَّهُ وَحْدَهُ لا شَرِيكَ لَـهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ</Text>
-                      <Text style={{top:15,fontSize:10,color:Colors.white,fontWeight:"500",fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway'}}>Transliteration:Ashhadu alla ilaha illallah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu.</Text>
-                     
-                      </View>
-                      
-              </View>
-        <View style={{height:20}}></View>
-       </ScrollView>
-       <View style = {{resizeMode:"contain",top:height*0.5,right:15,alignSelf:"flex-end",width:50,height:50,position:"absolute"}}>
-       <TouchableOpacity onPress={_toggleModal}>
-        <Animated.View
-              style={{
-                transform: [{ scale }],
-              }}
-            >
-               <PrayerNamazPlayBTSVG/>
-            </Animated.View>
-     
-       </TouchableOpacity>
-       <Modal isVisible={showmemodal} animationType={'none'}>
-                  <View
-                    style={{
-                      width: "100%",
-                      height: 188,
-                      alignSelf:"center",
-                     
-                      marginTop: 50,
-                     
-                      backgroundColor: 'white',
-                    }}>
-                  <View style = {{resizeMode:"contain",right:-35,zIndex:1,top:-12,alignSelf:"flex-end",width:50,height:70,position:"absolute"}}>
-       <TouchableOpacity onPress={closetoggleModal}>
-       <ClosePlayDrawerSVG/>
-       </TouchableOpacity>
-       </View>
-                    
-                    <View>
-                    <View style={{flex:1}}>
-                         <YoutubePlayer height={200} play={true} videoId={lastvideolink} />
-                      </View>
-                      
-                    </View>
-                  </View>
-                </Modal>
-       </View>
- 
+      <Modal
+        isVisible={videoOpen}
+        onBackdropPress={() => setVideoOpen(false)}
+        onBackButtonPress={() => setVideoOpen(false)}
+        useNativeDriver>
+        <View style={styles.videoCard}>
+          <View style={styles.videoHeader}>
+            <Text style={styles.videoTitle} accessibilityRole="header">
+              How to perform wudhu
+            </Text>
+            <TouchableOpacity
+              onPress={() => setVideoOpen(false)}
+              style={styles.close}
+              accessibilityRole="button"
+              accessibilityLabel="Close video">
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          {videoOpen ? <YoutubePlayer height={200} play videoId={VIDEO_ID} /> : null}
+        </View>
+      </Modal>
     </View>
   );
-};
+}
 
-export default AblutionWaduStepNew;
-
-const styles = StyleSheet.create({
-  containerMain: {
-    flex: 1,
-    backgroundColor:Colors.intermediate1
-  },
-  slidercontainer: {
-    backgroundColor: Colors.intermediate1,
-    height: 120,
-    borderBottomLeftRadius:20,
-    borderBottomRightRadius:20
-  },
-  advImageContainer: {
-   height: 150,
-   flexDirection:'column',
- },
- advImageContainer1: {
-   height: 155,
-   flexDirection:'column',
- },
- advImageContainer2:{
-   height: 150,
-   flexDirection:'column',
- },
- advImageContainer3:{
-   height: 150,
-   flexDirection:'column',
- },
- advImageContainer4:{
-  height: 170,
-  flexDirection:'column',
-},
-advImageContainer5:{
-  height: 150,
-  flexDirection:'column',
-},
-advImageContainer6:{
-  height: 150,
-  flexDirection:'column',
-},
-advImageContainer7:{
-  height: 150,
-  flexDirection:'column',
-},
-advImageContainer8:{
-  height: 170,
-  flexDirection:'column',
-},
- advImage: {
-   flex:1,
-   width: 180,
-   height: 120,
-   resizeMode: 'cover',
-   borderTopLeftRadius:10,
-   borderBottomLeftRadius:10,
- },
- submit: {
-   backgroundColor: Colors.transparent,
-   borderRadius: 15,
-   borderWidth: 1.5,
-   borderColor: Colors.wasilnewthemecolorsecond,
-   height:25,
-   width:70,
-   top:10,
-   left:5
- },
- submitText: {
-   fontSize:12,
-   flexDirection:"column",
-   color: Colors.wasilnewthemecolorsecond,
-   alignSelf:'center',
-   fontWeight:"500",
-   fontFamily:Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
-   top:1
- },
-});
+const makeStyles = Colors =>
+  StyleSheet.create({
+    fab: {position: 'absolute', right: Spacing.lg},
+    videoCard: {borderRadius: Radius.md, overflow: 'hidden', backgroundColor: Colors.background},
+    videoHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: Spacing.lg},
+    videoTitle: {color: Colors.textPrimary, fontSize: TypeScale.subtitle, fontFamily: Fonts.bodyBold},
+    close: {width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center'},
+    closeText: {color: Colors.textSecondary, fontSize: 18},
+  });

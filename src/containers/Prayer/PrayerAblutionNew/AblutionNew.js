@@ -1,6 +1,6 @@
-import React,{ useState, useEffect }  from 'react';
+import React, {useMemo,  useState, useEffect }  from 'react';
 import {  StatusBar, StyleSheet,View,TouchableOpacity,ScrollView,Image,LogBox,Text,Dimensions,Platform} from 'react-native';
-import { Colors} from '../../../theme';
+import {useTheme} from '../../../theme';
 LogBox.ignoreAllLogs();
 
 const wudhubackimage = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766837805/prayertimes/ITW.png',};
@@ -10,11 +10,13 @@ const wudhubackimage3 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload
 const wudhubackimage4 = {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1766840146/prayertimes/MWSS.png',};
 const { width } = Dimensions.get('window');
 
-const AblutionNew = ({ navigation }) => { 
+const AblutionNew = ({ navigation }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]); 
 
   return (
     <View style={styles.containerMain}>
-       <StatusBar backgroundColor={Colors.intermediate1}/>
+       <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg}/>
        <ScrollView>
         <TouchableOpacity onPress={() => {navigation.navigate('IntoWudhuNew')}}>
         <View style={styles.headerWrapper}>
@@ -79,10 +81,11 @@ const AblutionNew = ({ navigation }) => {
 
 export default AblutionNew;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   containerMain: {
     height:"100%",
-    backgroundColor:Colors.intermediate1
+    backgroundColor:Colors.background
   },
   advImageContainer: {
     width: "94%",
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
     marginTop:10,
     borderRadius:8,
     borderWidth:1,
-    borderColor:Colors.bordercolor,
+    borderColor:Colors.border,
   },
   slidercontainer: {
     width:width*0.95,

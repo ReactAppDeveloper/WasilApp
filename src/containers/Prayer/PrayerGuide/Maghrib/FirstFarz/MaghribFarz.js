@@ -1,123 +1,12 @@
 import React from 'react';
-import {
-  LogBox,
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  StatusBar
-} from 'react-native';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-
+import RakatTabs from '../../RakatTabs';
+import {MaghribFarzBanner} from '../../../../../assets/icons/themed';
 import FirstRakat from './FirstRakat';
 import SecondRakat from './SecondRakat';
 import ThirdRakat from './ThirdRakat';
 
-import {Colors} from '../../../../../theme';
-import {WasilNewBTPrayerMaghribFarzSvg} from '../../../../../assets/icons';
+const RAKATS = [FirstRakat, SecondRakat, ThirdRakat];
 
-LogBox.ignoreAllLogs();
-
-const Tab = createMaterialTopTabNavigator();
-
-const renderTabLabel = (label, color) => (
-  <Text
-    allowFontScaling={false}
-    numberOfLines={1}
-    adjustsFontSizeToFit
-    minimumFontScale={0.8}
-    style={{
-      color,
-      fontSize: 13,
-      fontWeight: '600',
-      fontFamily: Platform.OS === 'ios' ? 'Poppins-Regular' : 'Raleway',
-    }}>
-    {label}
-  </Text>
-);
-
-const MaghribFarz = () => {
-  return (
-    <View style={styles.containerMain}>
-       <StatusBar backgroundColor={Colors.intermediate1}/>
-      <View style={styles.slidercontainer}>
-        <WasilNewBTPrayerMaghribFarzSvg />
-      </View>
-
-      <Tab.Navigator
-        screenOptions={{
-          lazy: true,
-          tabBarStyle: {
-           backgroundColor:Colors.secondary1,
-            marginHorizontal: 16,
-            marginTop: 16,
-            borderRadius: 12,
-            elevation: 0,
-            shadowOpacity: 0,
-            height: 50,
-          },
-
-          tabBarItemStyle: {
-            borderRadius: 14,
-            paddingHorizontal: 4,
-          },
-
-          tabBarIndicatorStyle: {
-           backgroundColor: "#5F50A1",
-            height: '100%',
-            borderRadius: 14,
-          },
-
-          tabBarActiveTintColor: Colors.white,
-          tabBarInactiveTintColor: '#444',
-
-          tabBarLabelStyle: {
-            textTransform: 'none',
-          },
-
-          tabBarPressColor: 'transparent',
-        }}>
-        <Tab.Screen
-          name="FirstRakat"
-          component={FirstRakat}
-          options={{
-            tabBarLabel: ({color}) => renderTabLabel('1st Rakah', color),
-          }}
-        />
-
-        <Tab.Screen
-          name="SecondRakat"
-          component={SecondRakat}
-          options={{
-            tabBarLabel: ({color}) => renderTabLabel('2nd Rakah', color),
-          }}
-        />
-
-        <Tab.Screen
-          name="ThirdRakat"
-          component={ThirdRakat}
-          options={{
-            tabBarLabel: ({color}) => renderTabLabel('3rd Rakah', color),
-          }}
-        />
-
-       
-      </Tab.Navigator>
-    </View>
-  );
-};
-
-export default MaghribFarz;
-
-const styles = StyleSheet.create({
-  containerMain: {
-    flex: 1,
-    backgroundColor: Colors.intermediate1,
-  },
-
-  slidercontainer: {
-    top: 20,
-    alignSelf: 'center',
-    height: 120,
-  },
-});
+export default function MaghribFarz() {
+  return <RakatTabs Banner={MaghribFarzBanner} rakats={RAKATS} />;
+}

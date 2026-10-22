@@ -13,7 +13,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator,
+  Pressable,
   NativeModules,
   Platform,
   PermissionsAndroid,
@@ -24,23 +24,28 @@ import {cachedGet, DAY} from '../../../services/http';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 
-import { Colors } from '../../../theme';
+import {useTheme, Fonts, TypeScale, Spacing, Radius} from '../../../theme';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {ScreenState} from '../../../components';
+import {refreshLocation} from '../../../services/location';
 
 import {
-  WasilNewPrayerFajrBTSvg,
-  WasilNewPrayerDhuhrBTSvg,
-  WasilNewPrayerAsrBTSvg,
-  WasilNewPrayerMaghribBTSvg,
-  WasilNewPrayerIshaBTSvg,
-  WasilNewArrowUnopenBTSvg,
-  WasilNewArrowOpenBTSvg,
+  PrayerFajrIcon,
+  PrayerDhuhrIcon,
+  PrayerAsrIcon,
+  PrayerMaghribIcon,
+  PrayerIshaIcon,
+  StepExpandedIcon,
+  StepCollapsedIcon,
+} from '../../../assets/icons/themed';
+import {
   WasilNewFajrIcon,
   WasilNewDhuhrIcon,
   WasilNewMagrhibIcon,
   WasilNewIshaIcon,
 } from '../../../assets/icons';
 
-import PrayerHeader from './PrayerHeader';
+import PrayerHeader from '../../HomeNew/PrayerHeader';
 import PrayerTimeSectionNew from './PrayerTimeSectionNew';
 
 const { AzanScheduler } = NativeModules;
@@ -62,6 +67,10 @@ const LOCATIONIQ_API_KEY =
   'pk.9c1fc2948e48c019aee6f13b6a961796';
 
 const PrayerGuide = ({ navigation }) => {
+  const {Colors} = useTheme();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  const [locating, setLocating] = useState(false);
 
   const locationWatchId = useRef(null);
   const isMounted = useRef(true);
@@ -99,7 +108,7 @@ const PrayerGuide = ({ navigation }) => {
         key: 'Fajr',
         english: 'Fajr',
         arabic: 'فجر',
-        icon: <WasilNewPrayerFajrBTSvg />,
+        icon: <PrayerFajrIcon />,
         items: [
           {
             title: 'Sunnah: 2 rak’ah',
@@ -116,7 +125,7 @@ const PrayerGuide = ({ navigation }) => {
         key: 'Dhuhr',
         english: 'Dhuhr',
         arabic: 'ظہر',
-        icon: <WasilNewPrayerDhuhrBTSvg />,
+        icon: <PrayerDhuhrIcon />,
         items: [
           {
             title: 'Sunnah: 4 rak’ah',
@@ -141,7 +150,7 @@ const PrayerGuide = ({ navigation }) => {
         key: 'Asr',
         english: 'Asr',
         arabic: 'عصر',
-        icon: <WasilNewPrayerAsrBTSvg />,
+        icon: <PrayerAsrIcon />,
         items: [
           {
             title: 'Sunnah: 4 rak’ah',
@@ -158,7 +167,7 @@ const PrayerGuide = ({ navigation }) => {
         key: 'Maghrib',
         english: 'Maghrib',
         arabic: 'مغرب',
-        icon: <WasilNewPrayerMaghribBTSvg />,
+        icon: <PrayerMaghribIcon />,
         items: [
           {
             title: 'Farz: 3 rak’ah',
@@ -179,7 +188,7 @@ const PrayerGuide = ({ navigation }) => {
         key: 'Isha',
         english: 'Isha',
         arabic: 'عشاء',
-        icon: <WasilNewPrayerIshaBTSvg />,
+        icon: <PrayerIshaIcon />,
         items: [
           {
             title: 'Sunnah: 4 rak’ah',
@@ -1189,539 +1198,174 @@ const PrayerGuide = ({ navigation }) => {
   } = getCurrentPrayer();
 
 
-  if (isLoading) {
+  const onLocationPress = async () => {
+    setLocating(true);
+    try {
+      const coords = await refreshLocation();
+      if (coords) {
+        await fetchHomeData();
+      }
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  if (isLoading || error) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          {
-            backgroundColor:
-              Colors.intermediate1,
-          },
-        ]}
-      >
-        <StatusBar
-          backgroundColor={
-            Colors.intermediate1
-          }
-          barStyle="light-content"
+      <View style={styles.containerMain}>
+        <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
+        <ScreenState
+          status={error ? 'error' : 'loading'}
+          title={error ? 'Unable to load prayer times' : undefined}
+          message={error || undefined}
+          onRetry={handleRetry}
         />
-
-        <ActivityIndicator
-          size="large"
-          color={
-            Colors.white ||
-            Colors.white
-          }
-        />
-
-        <Text
-          style={styles.loadingText}
-        >
-          Loading prayer times...
-        </Text>
       </View>
     );
   }
-
-
-  if (error) {
-    return (
-      <View
-        style={
-          styles.errorContainer
-        }
-      >
-        <StatusBar
-          backgroundColor={
-            Colors.intermediate1
-          }
-          barStyle="light-content"
-        />
-
-        <Text
-          style={styles.errorTitle}
-        >
-          Unable to load prayer times
-        </Text>
-
-        <Text
-          style={styles.errorMessage}
-        >
-          {error}
-        </Text>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={handleRetry}
-          style={styles.retryButton}
-        >
-          <Text
-            style={
-              styles.retryButtonText
-            }
-          >
-            Try Again
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
 
   return (
-    <View
-      style={styles.containerMain}
-    >
-      <StatusBar
-        backgroundColor={
-          Colors.intermediate1
-        }
-      />
-
-      <PrayerHeader
-        navigation={navigation}
-        hijriDate={hijriDate}
-        gregorianDate={gregorianDate}
-        address={address}
-        nextPrayer={nextPrayer}
-        nextPrayerTime={nextPrayerTime}
-        currentPrayer={currentPrayer}
-        currentTime={currentTime}
-      />
-
-      <PrayerTimeSectionNew
-        prayerTimes={prayerTimes}
-        icons={{
-          Fajr: (
-            <WasilNewFajrIcon />
-          ),
-          Dhuhr: (
-            <WasilNewDhuhrIcon />
-          ),
-          Asr: (
-            <WasilNewFajrIcon />
-          ),
-          Maghrib: (
-            <WasilNewMagrhibIcon />
-          ),
-          Isha: (
-            <WasilNewIshaIcon />
-          ),
-        }}
-        onToggle={
-          togglePrayerAzan
-        }
-      />
-
+    <View style={styles.containerMain}>
+      <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg} />
       <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        nestedScrollEnabled
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={
-          styles.scrollContent
-        }
-      >
-        <View
-          style={
-            styles.prayerListContainer
-          }
-        >
-          {prayerSections.map(
-            section => {
-              const isExpanded =
-                expandedPrayer ===
-                section.key;
+        contentContainerStyle={[styles.scrollContent, {paddingBottom: insets.bottom + Spacing.xxl}]}>
+        <PrayerHeader
+          timings={timings}
+          hijriDate={hijriDate}
+          gregorianDate={gregorianDate}
+          address={address}
+          onLocationPress={onLocationPress}
+          locating={locating}
+        />
 
-              return (
-                <PrayerAccordion
-                  key={
-                    section.key
-                  }
-                  section={
-                    section
-                  }
-                  isExpanded={
-                    isExpanded
-                  }
-                  onPress={() =>
-                    handlePrayerPress(
-                      section.key
-                    )
-                  }
-                  navigation={
-                    navigation
-                  }
-                />
-              );
-            }
-          )}
+        <PrayerTimeSectionNew
+          prayerTimes={prayerTimes}
+          currentPrayer={currentPrayer}
+          icons={{
+            Fajr: <WasilNewFajrIcon />,
+            Dhuhr: <WasilNewDhuhrIcon />,
+            Asr: <WasilNewFajrIcon />,
+            Maghrib: <WasilNewMagrhibIcon />,
+            Isha: <WasilNewIshaIcon />,
+          }}
+        />
+
+        <Text style={styles.sectionTitle} accessibilityRole="header">
+          How to pray
+        </Text>
+        <View style={styles.prayerListContainer}>
+          {prayerSections.map(section => (
+            <PrayerAccordion
+              key={section.key}
+              section={section}
+              isExpanded={expandedPrayer === section.key}
+              isCurrent={currentPrayer === section.key}
+              onPress={() => handlePrayerPress(section.key)}
+              navigation={navigation}
+              styles={styles}
+            />
+          ))}
         </View>
       </ScrollView>
     </View>
   );
 };
 
-const PrayerAccordion = ({
-  section,
-  isExpanded,
-  onPress,
-  navigation,
-}) => {
-  return (
-    <View
-      style={
-        styles.accordionWrapper
-      }
-    >
-
-
-      <View
-        style={[
-          styles.prayerHeaderRow,
-          isExpanded &&
-            styles.prayerHeaderRowExpanded,
-        ]}
-      >
-        <View
-          style={[
-            styles.prayerIconContainer,
-            {
-              backgroundColor: isExpanded
-                ? Colors.secondary1
-                : Colors.intermediate1,
-            },
-          ]}
-        >
-          {section.icon}
-        </View>
-
-        <View
-          style={[
-            styles.prayerEnglishContainer,
-            {
-              backgroundColor: isExpanded
-                ? Colors.secondary1
-                : Colors.intermediate1,
-            },
-          ]}
-        >
-          <Text
-            numberOfLines={1}
-            style={
-              styles.prayerEnglishText
-            }
-          >
-            {section.english}
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.prayerArabicContainer,
-            {
-              backgroundColor: isExpanded
-                ? Colors.secondary1
-                : Colors.intermediate1,
-            },
-          ]}
-        >
-          <Text
-            numberOfLines={1}
-            style={
-              styles.prayerArabicText
-            }
-          >
-            {section.arabic}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onPress}
-          style={[
-            styles.arrowContainer,
-            {
-              backgroundColor: isExpanded
-                ? Colors.secondary1
-                : Colors.intermediate1,
-            },
-          ]}
-        >
-          {isExpanded ? (
-            <WasilNewArrowOpenBTSvg />
-          ) : (
-            <WasilNewArrowUnopenBTSvg />
-          )}
-        </TouchableOpacity>
+const PrayerAccordion = ({section, isExpanded, isCurrent, onPress, navigation, styles}) => (
+  <View style={[styles.accordion, isExpanded && styles.accordionExpanded]}>
+    <Pressable
+      onPress={onPress}
+      style={styles.accordionHeader}
+      accessibilityRole="button"
+      accessibilityState={{expanded: isExpanded}}
+      accessibilityLabel={`${section.english} prayer${isCurrent ? ', current prayer' : ''}`}>
+      <View style={styles.prayerIcon}>{section.icon}</View>
+      <View style={styles.prayerNames}>
+        <Text numberOfLines={1} style={styles.prayerEnglishText}>
+          {section.english}
+        </Text>
+        {isCurrent ? <Text style={styles.nowBadge}>Now</Text> : null}
       </View>
+      <Text numberOfLines={1} style={styles.prayerArabicText}>
+        {section.arabic}
+      </Text>
+      {isExpanded ? <StepExpandedIcon /> : <StepCollapsedIcon />}
+    </Pressable>
 
-      {isExpanded && (
-        <View
-          style={
-            styles.accordionContent
-          }
-        >
-          {section.items.map(
-            (item, index) => (
-              <View
-                key={`${section.key}-${item.route}-${index}`}
-                style={
-                  styles.actionRow
-                }
-              >
-                <TouchableOpacity
-                  activeOpacity={0.75}
-                  onPress={() =>
-                    navigation.navigate(
-                      item.route
-                    )
-                  }
-                  style={
-                    styles.submitButton
-                  }
-                >
-                  <Text
-                    style={
-                      styles.submitText
-                    }
-                  >
-                    {item.title}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )
-          )}
-        </View>
-      )}
-    </View>
-  );
-};
+    {isExpanded ? (
+      <View style={styles.accordionContent}>
+        {section.items.map((item, index) => (
+          <TouchableOpacity
+            key={`${section.key}-${item.route}-${index}`}
+            activeOpacity={0.75}
+            onPress={() => navigation.navigate(item.route)}
+            style={styles.actionButton}
+            accessibilityRole="button">
+            <Text style={styles.actionText}>{item.title}</Text>
+            <Text style={styles.actionChevron}>›</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    ) : null}
+  </View>
+);
 
-const styles = StyleSheet.create({
-
-  containerMain: {
-    flex: 1,
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-
-  loadingContainer: {
-     backgroundColor:Colors.primary,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  loadingText: {
-    marginTop: 15,
-    color: Colors.white,
-    fontSize: 14,
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 30,
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-  errorTitle: {
-    color: Colors.white,
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-
-  errorMessage: {
-    marginTop: 10,
-    color: Colors.white,
-    fontSize: 14,
-    lineHeight: 21,
-    textAlign: 'center',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-
-  retryButton: {
-    marginTop: 25,
-    minWidth: 130,
-    height: 44,
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:
-      Colors.primary,
-  },
-
-  retryButtonText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-
-  scrollContent: {
-    paddingTop: 90,
-    paddingBottom:
-      Platform.OS === 'ios'
-        ? 0
-        : 0,
-  },
-
-  prayerListContainer: {
-    width: '100%',
-    paddingBottom: 20,
-  },
-
-  accordionWrapper: {
-    width: '94%',
-    alignSelf: 'center',
-    marginBottom: 12,
-  },
-
-  prayerHeaderRow: {
-    width: '100%',
-    minHeight: 70,
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    borderRadius: 10,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor:
-      Colors.secondary1,
-    backgroundColor:
-      Colors.secondary1,
-  },
-
-  prayerHeaderRowExpanded: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-     backgroundColor:
-      Colors.secondary1,
-  },
-
-  prayerIconContainer: {
-    flex: 0.4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:
-      Colors.secondary1,
-  },
-
-  prayerEnglishContainer: {
-    flex: 0.9,
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-  prayerEnglishText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-
-  prayerArabicContainer: {
-    flex: 0.4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-  prayerArabicText: {
-    color: Colors.white,
-    fontSize: 25,
-    textAlign: 'center',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Al Qalam Quran Majeed Web'
-        : 'AlQalamQuran',
-        bottom:6
-  },
-
-  arrowContainer: {
-    flex: 0.3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-
-  accordionContent: {
-    width: '100%',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderWidth: 1.2,
-    borderTopWidth: 0,
-    borderColor:
-      Colors.secondary1,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    backgroundColor:
-      Colors.secondary1,
-  },
-
-  actionRow: {
-    width: '100%',
-    minHeight: 58,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 3,
-  },
-
-
-  submitButton: {
-    width: '85%',
-    minHeight: 40,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor:
-      Colors.secondary1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    backgroundColor:
-      Colors.intermediate1,
-  },
-
-  submitText: {
-    color: Colors.white,
-    fontSize: 15,
-    top:1,
-    textAlign: 'center',
-    fontWeight: '400',
-    fontFamily:
-      Platform.OS === 'ios'
-        ? 'Poppins-Regular'
-        : 'Raleway',
-  },
-});
+const makeStyles = Colors =>
+  StyleSheet.create({
+    containerMain: {flex: 1, backgroundColor: Colors.background},
+    scrollContent: {paddingTop: Spacing.md},
+    sectionTitle: {
+      marginTop: Spacing.xl,
+      marginBottom: Spacing.md,
+      marginHorizontal: Spacing.lg,
+      color: Colors.sectionTitle,
+      fontSize: TypeScale.title,
+      fontFamily: Fonts.heading,
+    },
+    prayerListContainer: {paddingHorizontal: Spacing.lg, gap: Spacing.md},
+    accordion: {
+      borderRadius: Radius.md,
+      borderWidth: 1,
+      borderColor: Colors.stepCardBorder,
+      backgroundColor: Colors.ayahBg,
+      overflow: 'hidden',
+    },
+    accordionExpanded: {backgroundColor: Colors.stepCard},
+    accordionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.md,
+      minHeight: 70,
+      paddingHorizontal: Spacing.md,
+    },
+    prayerIcon: {width: 44, alignItems: 'center', justifyContent: 'center'},
+    prayerNames: {flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm},
+    prayerEnglishText: {color: Colors.stepTitle, fontSize: TypeScale.subtitle, fontFamily: Fonts.bodyBold},
+    nowBadge: {
+      overflow: 'hidden',
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: 2,
+      borderRadius: Radius.pill,
+      backgroundColor: Colors.button,
+      color: Colors.onButton,
+      fontSize: TypeScale.caption,
+      fontFamily: Fonts.bodyBold,
+    },
+    prayerArabicText: {color: Colors.quranArabic, fontSize: 24, fontFamily: Fonts.arabic},
+    accordionContent: {paddingHorizontal: Spacing.md, paddingBottom: Spacing.md, gap: Spacing.sm},
+    actionButton: {
+      minHeight: 48,
+      borderRadius: Radius.sm,
+      backgroundColor: Colors.background,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: Spacing.lg,
+    },
+    actionText: {color: Colors.textPrimary, fontSize: TypeScale.body + 1, fontFamily: Fonts.bodySemiBold},
+    actionChevron: {color: Colors.textSecondary, fontSize: 22},
+  });
 
 export default PrayerGuide;

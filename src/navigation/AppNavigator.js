@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTheme, headerOptions } from "../theme";
-import themedScreen from './themedScreen';
 import { HeaderFavouritesButton } from '../components';
 import {View,TouchableOpacity,Platform} from 'react-native';
 import {WasilNewHeartfilledBTSVG,WasilNewBTTasbihHeartUnFilled,HeartfilledSVG,WasilNewTasbihHeartUnFilled} from '../assets/icons';
@@ -113,45 +112,7 @@ import Isha2Nafil from '../containers/Prayer/PrayerGuide/Isha/SecondNafil/Isha2N
 import IshaWitr from '../containers/Prayer/PrayerGuide/Isha/Witr/IshaWitr';
 import IshaLast2Nafil from '../containers/Prayer/PrayerGuide/Isha/LastNafil/IshaLast2Nafil';
 
-import PrayerMosqueWhite from '../containers/PrayerWhite/PrayerMosque/PrayerMosque';
-import PrayerGuideWhite from '../containers/PrayerWhite/PrayerGuide/PrayerGuide';
-import FajrSunnahWhite from '../containers/PrayerWhite/PrayerGuide/Fajr/Sunnah/FajrSunnah';
-import FajrFarzWhite from '../containers/PrayerWhite/PrayerGuide/Fajr/Farz/FajrFarz';
-import DhuhrFirst4SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Dhuhr/First4Sunnah/DhuhrFirst4Sunnah';
-import DhuhrFirst4FarzWhite from '../containers/PrayerWhite/PrayerGuide/Dhuhr/First4Farz/DhuhrFirst4Farz';
-import Dhuhr2SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Dhuhr/SecondSunnah/Dhuhr2Sunnah';
-import Dhuhr2NafilWhite from '../containers/PrayerWhite/PrayerGuide/Dhuhr/SecondNafil/Dhuhr2Nafil';
-import AsrFirst4SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Asr/First4Sunnah/AsrFirst4Sunnah';
-import AsrFirst4FarzWhite from '../containers/PrayerWhite/PrayerGuide/Asr/First4Farz/AsrFirst4Farz';
-import MaghribFarzWhite from '../containers/PrayerWhite/PrayerGuide/Maghrib/FirstFarz/MaghribFarz';
-import Maghrib2SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Maghrib/SecondSunnah/Maghrib2Sunnah';
-import Maghrib2NafilWhite from '../containers/PrayerWhite/PrayerGuide/Maghrib/SecondNafil/Maghrib2Nafil';
-import IshaFirst4SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Isha/First4Sunnah/IshaFirst4Sunnah';
-import IshaFirst4FarzWhite from '../containers/PrayerWhite/PrayerGuide/Isha/First4Farz/IshaFirst4Farz';
-import Isha2SunnahWhite from '../containers/PrayerWhite/PrayerGuide/Isha/SecondSunnah/Isha2Sunnah';
-import Isha2NafilWhite from '../containers/PrayerWhite/PrayerGuide/Isha/SecondNafil/Isha2Nafil';
-import IshaWitrWhite from '../containers/PrayerWhite/PrayerGuide/Isha/Witr/IshaWitr';
-import IshaLast2NafilWhite from '../containers/PrayerWhite/PrayerGuide/Isha/LastNafil/IshaLast2Nafil';
 
-import PrayerMosqueGreen from '../containers/PrayerGreen/PrayerMosque/PrayerMosque';
-import PrayerGuideGreen from '../containers/PrayerGreen/PrayerGuide/PrayerGuide';
-import FajrSunnahGreen from '../containers/PrayerGreen/PrayerGuide/Fajr/Sunnah/FajrSunnah';
-import FajrFarzGreen from '../containers/PrayerGreen/PrayerGuide/Fajr/Farz/FajrFarz';
-import DhuhrFirst4SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Dhuhr/First4Sunnah/DhuhrFirst4Sunnah';
-import DhuhrFirst4FarzGreen from '../containers/PrayerGreen/PrayerGuide/Dhuhr/First4Farz/DhuhrFirst4Farz';
-import Dhuhr2SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Dhuhr/SecondSunnah/Dhuhr2Sunnah';
-import Dhuhr2NafilGreen from '../containers/PrayerGreen/PrayerGuide/Dhuhr/SecondNafil/Dhuhr2Nafil';
-import AsrFirst4SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Asr/First4Sunnah/AsrFirst4Sunnah';
-import AsrFirst4FarzGreen from '../containers/PrayerGreen/PrayerGuide/Asr/First4Farz/AsrFirst4Farz';
-import MaghribFarzGreen from '../containers/PrayerGreen/PrayerGuide/Maghrib/FirstFarz/MaghribFarz';
-import Maghrib2SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Maghrib/SecondSunnah/Maghrib2Sunnah';
-import Maghrib2NafilGreen from '../containers/PrayerGreen/PrayerGuide/Maghrib/SecondNafil/Maghrib2Nafil';
-import IshaFirst4SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Isha/First4Sunnah/IshaFirst4Sunnah';
-import IshaFirst4FarzGreen from '../containers/PrayerGreen/PrayerGuide/Isha/First4Farz/IshaFirst4Farz';
-import Isha2SunnahGreen from '../containers/PrayerGreen/PrayerGuide/Isha/SecondSunnah/Isha2Sunnah';
-import Isha2NafilGreen from '../containers/PrayerGreen/PrayerGuide/Isha/SecondNafil/Isha2Nafil';
-import IshaWitrGreen from '../containers/PrayerGreen/PrayerGuide/Isha/Witr/IshaWitr';
-import IshaLast2NafilGreen from '../containers/PrayerGreen/PrayerGuide/Isha/LastNafil/IshaLast2Nafil';
 
 //Prayer Section New
 import AblutionNew from '../containers/Prayer/PrayerAblutionNew/AblutionNew';
@@ -161,19 +122,7 @@ import NullifiesNew from '../containers/Prayer/PrayerAblutionNew/NullifiesNew';
 import WearingSockWudhu from '../containers/Prayer/PrayerAblutionNew/WearingSockWudhu';
 import TayammumScreen from '../containers/Prayer/PrayerAblutionNew/TayammumScreen';
 
-import AblutionNewWhite from '../containers/PrayerWhite/PrayerAblutionNew/AblutionNew';
-import AblutionWaduStepNewWhite from '../containers/PrayerWhite/PrayerAblutionNew/AblutionWaduStepNew';
-import IntoWudhuNewWhite from '../containers/PrayerWhite/PrayerAblutionNew/IntoWudhuNew';
-import NullifiesNewWhite from '../containers/PrayerWhite/PrayerAblutionNew/NullifiesNew';
-import WearingSockWudhuWhite from '../containers/PrayerWhite/PrayerAblutionNew/WearingSockWudhu';
-import TayammumScreenWhite from '../containers/PrayerWhite/PrayerAblutionNew/TayammumScreen';
 
-import AblutionNewGreen from '../containers/PrayerGreen/PrayerAblutionNew/AblutionNew';
-import AblutionWaduStepNewGreen from '../containers/PrayerGreen/PrayerAblutionNew/AblutionWaduStepNew';
-import IntoWudhuNewGreen from '../containers/PrayerGreen/PrayerAblutionNew/IntoWudhuNew';
-import NullifiesNewGreen from '../containers/PrayerGreen/PrayerAblutionNew/NullifiesNew';
-import WearingSockWudhuGreen from '../containers/PrayerGreen/PrayerAblutionNew/WearingSockWudhu';
-import TayammumScreenGreen from '../containers/PrayerGreen/PrayerAblutionNew/TayammumScreen';
 
 //Greetings New Section
 import GreetingsNew from '../containers/Greetings/GreetingsNew';
@@ -210,31 +159,6 @@ import WallDetail from '../containers/WallOfRemembrance/WallDetail';
 import RemembranceForm from '../containers/WallOfRemembrance/RemembranceForm';
 
 // One route per screen; the component follows the active theme.
-const Themed_PrayerMosque = themedScreen({ blue: PrayerMosque, green: PrayerMosqueGreen, white: PrayerMosqueWhite });
-const Themed_PrayerGuide = themedScreen({ blue: PrayerGuide, green: PrayerGuideGreen, white: PrayerGuideWhite });
-const Themed_FajrSunnah = themedScreen({ blue: FajrSunnah, green: FajrSunnahGreen, white: FajrSunnahWhite });
-const Themed_FajrFarz = themedScreen({ blue: FajrFarz, green: FajrFarzGreen, white: FajrFarzWhite });
-const Themed_DhuhrFirst4Sunnah = themedScreen({ blue: DhuhrFirst4Sunnah, green: DhuhrFirst4SunnahGreen, white: DhuhrFirst4SunnahWhite });
-const Themed_DhuhrFirst4Farz = themedScreen({ blue: DhuhrFirst4Farz, green: DhuhrFirst4FarzGreen, white: DhuhrFirst4FarzWhite });
-const Themed_Dhuhr2Sunnah = themedScreen({ blue: Dhuhr2Sunnah, green: Dhuhr2SunnahGreen, white: Dhuhr2SunnahWhite });
-const Themed_Dhuhr2Nafil = themedScreen({ blue: Dhuhr2Nafil, green: Dhuhr2NafilGreen, white: Dhuhr2NafilWhite });
-const Themed_AsrFirst4Sunnah = themedScreen({ blue: AsrFirst4Sunnah, green: AsrFirst4SunnahGreen, white: AsrFirst4SunnahWhite });
-const Themed_AsrFirst4Farz = themedScreen({ blue: AsrFirst4Farz, green: AsrFirst4FarzGreen, white: AsrFirst4FarzWhite });
-const Themed_MaghribFarz = themedScreen({ blue: MaghribFarz, green: MaghribFarzGreen, white: MaghribFarzWhite });
-const Themed_Maghrib2Sunnah = themedScreen({ blue: Maghrib2Sunnah, green: Maghrib2SunnahGreen, white: Maghrib2SunnahWhite });
-const Themed_Maghrib2Nafil = themedScreen({ blue: Maghrib2Nafil, green: Maghrib2NafilGreen, white: Maghrib2NafilWhite });
-const Themed_IshaFirst4Sunnah = themedScreen({ blue: IshaFirst4Sunnah, green: IshaFirst4SunnahGreen, white: IshaFirst4SunnahWhite });
-const Themed_IshaFirst4Farz = themedScreen({ blue: IshaFirst4Farz, green: IshaFirst4FarzGreen, white: IshaFirst4FarzWhite });
-const Themed_Isha2Sunnah = themedScreen({ blue: Isha2Sunnah, green: Isha2SunnahGreen, white: Isha2SunnahWhite });
-const Themed_Isha2Nafil = themedScreen({ blue: Isha2Nafil, green: Isha2NafilGreen, white: Isha2NafilWhite });
-const Themed_IshaWitr = themedScreen({ blue: IshaWitr, green: IshaWitrGreen, white: IshaWitrWhite });
-const Themed_IshaLast2Nafil = themedScreen({ blue: IshaLast2Nafil, green: IshaLast2NafilGreen, white: IshaLast2NafilWhite });
-const Themed_AblutionNew = themedScreen({ blue: AblutionNew, green: AblutionNewGreen, white: AblutionNewWhite });
-const Themed_AblutionWaduStepNew = themedScreen({ blue: AblutionWaduStepNew, green: AblutionWaduStepNewGreen, white: AblutionWaduStepNewWhite });
-const Themed_IntoWudhuNew = themedScreen({ blue: IntoWudhuNew, green: IntoWudhuNewGreen, white: IntoWudhuNewWhite });
-const Themed_NullifiesNew = themedScreen({ blue: NullifiesNew, green: NullifiesNewGreen, white: NullifiesNewWhite });
-const Themed_WearingSockWudhu = themedScreen({ blue: WearingSockWudhu, green: WearingSockWudhuGreen, white: WearingSockWudhuWhite });
-const Themed_TayammumScreen = themedScreen({ blue: TayammumScreen, green: TayammumScreenGreen, white: TayammumScreenWhite });
 
 
 const Stack = createNativeStackNavigator();
@@ -397,79 +321,79 @@ const Stack = createNativeStackNavigator();
       }})}/>
           <Stack.Screen name="VideoPlayingNew" component={VideoPlayingNew} options={headerOptions(Colors, "Videos")}/>
           <Stack.Screen name="QiblaCompassNew" component={QiblaCompassNew} options={headerOptions(Colors, "Qibla")}/>
-          <Stack.Screen name="PrayerMosque" component={Themed_PrayerMosque} options={{animation:'slide_from_right',headerTitle:"Find a Mosque",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+          <Stack.Screen name="PrayerMosque" component={PrayerMosque} options={{animation:'slide_from_right',headerTitle:"Find a Mosque",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
         },}}/>
-        <Stack.Screen name="PrayerGuide" component={Themed_PrayerGuide} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="PrayerGuide" component={PrayerGuide} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
         },}}/>
-        <Stack.Screen name="FajrSunnah" component={Themed_FajrSunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="FajrSunnah" component={FajrSunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="FajrFarz" component={Themed_FajrFarz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="FajrFarz" component={FajrFarz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="DhuhrFirst4Sunnah" component={Themed_DhuhrFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="DhuhrFirst4Sunnah" component={DhuhrFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="DhuhrFirst4Farz" component={Themed_DhuhrFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="DhuhrFirst4Farz" component={DhuhrFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Dhuhr2Sunnah" component={Themed_Dhuhr2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Dhuhr2Sunnah" component={Dhuhr2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Dhuhr2Nafil" component={Themed_Dhuhr2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Dhuhr2Nafil" component={Dhuhr2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="AsrFirst4Sunnah" component={Themed_AsrFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="AsrFirst4Sunnah" component={AsrFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="AsrFirst4Farz" component={Themed_AsrFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="AsrFirst4Farz" component={AsrFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="MaghribFarz" component={Themed_MaghribFarz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="MaghribFarz" component={MaghribFarz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Maghrib2Sunnah" component={Themed_Maghrib2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Maghrib2Sunnah" component={Maghrib2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Maghrib2Nafil" component={Themed_Maghrib2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Maghrib2Nafil" component={Maghrib2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="IshaFirst4Sunnah" component={Themed_IshaFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="IshaFirst4Sunnah" component={IshaFirst4Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="IshaFirst4Farz" component={Themed_IshaFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="IshaFirst4Farz" component={IshaFirst4Farz} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Isha2Sunnah" component={Themed_Isha2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Isha2Sunnah" component={Isha2Sunnah} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="Isha2Nafil" component={Themed_Isha2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="Isha2Nafil" component={Isha2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="IshaWitr" component={Themed_IshaWitr} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="IshaWitr" component={IshaWitr} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="IshaLast2Nafil" component={Themed_IshaLast2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="IshaLast2Nafil" component={IshaLast2Nafil} options={{animation:'slide_from_right',headerTitle:"Prayer Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="AblutionNew" component={Themed_AblutionNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="AblutionNew" component={AblutionNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="AblutionWaduStepNew" component={Themed_AblutionWaduStepNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="AblutionWaduStepNew" component={AblutionWaduStepNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="IntoWudhuNew" component={Themed_IntoWudhuNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="IntoWudhuNew" component={IntoWudhuNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="NullifiesNew" component={Themed_NullifiesNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="NullifiesNew" component={NullifiesNew} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="WearingSockWudhu" component={Themed_WearingSockWudhu} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="WearingSockWudhu" component={WearingSockWudhu} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
-        <Stack.Screen name="TayammumScreen" component={Themed_TayammumScreen} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
+        <Stack.Screen name="TayammumScreen" component={TayammumScreen} options={{animation:'slide_from_right',headerTitle:"Wudhu Guide",headerTitleAlign:"center",headerTintColor: Colors.headerText, headerTitleStyle: {color: Colors.headerText,fontSize:18,fontFamily:Platform.OS === 'ios' ? 'Asul-Bold' : 'AsulBold'}, headerStyle: {
         backgroundColor: Colors.headerBg
       },}}/>
         <Stack.Screen name="GreetingsNew" component={GreetingsNew} options={headerOptions(Colors, "Greeting Cards")}/>

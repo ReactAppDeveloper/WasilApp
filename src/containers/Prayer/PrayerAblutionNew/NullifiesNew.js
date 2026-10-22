@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Text,
   Image,
 } from 'react-native';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const headerImage = {
   uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698320/prayertimes/nullifies.png',
@@ -26,9 +26,11 @@ const nullifiesList = [
 ];
 
 const NullifiesNew = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.container}>
-    <StatusBar backgroundColor={Colors.intermediate1}/>
+    <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg}/>
       <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.headerWrapper}>
             <Image source={headerImage} style={styles.headerImage} />
@@ -52,10 +54,11 @@ const NullifiesNew = () => {
 };
 
 export default NullifiesNew;
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1
+    backgroundColor: Colors.background
   },
   headerWrapper: {
     height: 220,
@@ -76,7 +79,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontFamily: 'Poppins-Light',
-    color: Colors.white,
+    color: Colors.textPrimary,
     marginBottom: 16,
   },
 
@@ -85,13 +88,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 14,
     borderBottomWidth: 0.7,
-    borderBottomColor: Colors.secondary1,
+    borderBottomColor: Colors.stepCardBorder,
   },
   bullet: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.secondary1,
+    backgroundColor: Colors.accent,
     marginTop: 6,
     marginRight: 12,
   },
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     lineHeight: 22,
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Regular',
   },
 });

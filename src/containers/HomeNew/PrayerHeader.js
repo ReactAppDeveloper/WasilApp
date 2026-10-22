@@ -82,9 +82,11 @@ export default function PrayerHeader({ timings, hijriDate, gregorianDate, addres
         </View>
       </View>
 
-      <TouchableOpacity style={s.viewAll} onPress={onViewAll} accessibilityRole="button">
-        <Text style={s.viewAllText}>View all prayer times</Text>
-      </TouchableOpacity>
+      {onViewAll ? (
+        <TouchableOpacity style={s.viewAll} onPress={onViewAll} accessibilityRole="button">
+          <Text style={s.viewAllText}>View all prayer times</Text>
+        </TouchableOpacity>
+      ) : null}
     </ImageBackground>
   );
 }

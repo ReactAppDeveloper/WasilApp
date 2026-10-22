@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useMemo,  useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -6,13 +6,15 @@ import {
   Platform,
   PermissionsAndroid,
 } from "react-native";
-import { Colors } from "../../../theme";
 import { WebView } from "react-native-webview";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation from "react-native-geolocation-service";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import {useTheme} from '../../../theme';
 
 const PrayerMosque = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
@@ -107,7 +109,7 @@ const PrayerMosque = () => {
 
   // ✅ Wait until coordinates are available
   if (!latitude || !longitude) {
-    return <View style={{ flex: 1, backgroundColor: Colors.white }} />;
+    return <View style={{ flex: 1, backgroundColor: Colors.background }} />;
   }
 
   return (
@@ -124,9 +126,10 @@ const PrayerMosque = () => {
 
 export default PrayerMosque;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   containerMain: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
   },
 });

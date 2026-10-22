@@ -1,69 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../../../theme';
-import { runAzanSetup } from '../../../services/azan/AzanSetupComponent';
-const HomeBannerImage = { uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1785408832/prayerwhitethemebg1.png' };
+import React, {useMemo} from 'react';
+import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {useTheme, Fonts, TypeScale, Spacing, Radius} from '../../../theme';
+import {formatTime12} from '../../HomeNew/prayerTimes';
 
-export default class PrayerTimeSectionNew extends React.PureComponent {
-  togglePrayer = async (name, value) => {
-    const updated = {
-      ...this.props.toggles,
-      [name]: value,
-    };
+const STRIP_ART = {
+  blue: {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1785408832/prayerwhitethemebg1.png'},
+  green: {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1786541707/prayersectionbg.png'},
+  white: {uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1785021168/prayerwhitethemebg.png'},
+};
+const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-    await AsyncStorage.setItem(
-      'azan_prayer_toggles',
-      JSON.stringify(updated)
-    );
-
-    this.props.onToggle(updated);
-    runAzanSetup();
-  };
-
-  render() {
-    const { prayerTimes, icons } = this.props;
-
-    const mainPrayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-
-    return (
-      <ImageBackground source={HomeBannerImage} imageStyle={{borderRadius:10}} style={styles.card}>
-
-        {mainPrayers.map(prayer => (
-          <View key={prayer} style={styles.item}>
-            <Text style={{fontFamily:"NunitoSans-SemiBold",fontSize:12,color:Colors.white}}>{prayer}</Text>
-            <View style={{top:5}}>
-                        {icons[prayer]}
-                        </View>
-            
-            <Text style={{fontFamily:Platform.OS === 'ios' ? "Nunito Sans 7pt" : "NunitoSansRegular",fontSize:14,top:8,color:Colors.white,fontWeight:"600"}}>{prayerTimes[prayer]}</Text>
-
+// The five daily prayer times in one row; the current prayer is highlighted.
+export default function PrayerTimeSectionNew({prayerTimes = {}, icons = {}, currentPrayer}) {
+  const {Colors, theme} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  return (
+    <ImageBackground source={STRIP_ART[theme] || STRIP_ART.blue} imageStyle={styles.art} style={styles.card}>
+      {PRAYERS.map(prayer => {
+        const active = prayer === currentPrayer;
+        return (
+          <View
+            key={prayer}
+            style={[styles.item, active && styles.itemActive]}
+            accessible
+            accessibilityLabel={`${prayer} ${formatTime12(prayerTimes[prayer])}${active ? ', current prayer' : ''}`}>
+            <Text style={styles.name}>{prayer}</Text>
+            <View style={styles.icon}>{icons[prayer]}</View>
+            <Text style={styles.time}>{formatTime12(prayerTimes[prayer]).replace(/ (AM|PM)$/, '')}</Text>
           </View>
-        ))}
-
-      </ImageBackground>
-    );
-  }
+        );
+      })}
+    </ImageBackground>
+  );
 }
 
-const styles = StyleSheet.create({
- card: {
-  marginTop: Platform.OS === 'ios' ? 14 : 25,
-  width: '98%',
-  height: 90,
-  left:Platform.OS === 'ios' ? 7 : 8,
-  alignSelf: 'center',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  paddingVertical: 4,
-  top: Platform.OS === 'ios' ? 160 : 155,
-  overflow: 'hidden',
-  position: 'absolute',
-  zIndex: 10,
-},
- item: {
-  flex: 1,
-  alignItems: 'center',
-  top: 10,
-},
-});
+const makeStyles = Colors =>
+  StyleSheet.create({
+    card: {
+      marginHorizontal: Spacing.lg,
+      marginTop: Spacing.md,
+      minHeight: 92,
+      flexDirection: 'row',
+      padding: Spacing.xs,
+      borderRadius: Radius.md,
+      overflow: 'hidden',
+      backgroundColor: Colors.surface,
+    },
+    art: {borderRadius: Radius.md},
+    item: {flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: Radius.sm, paddingVertical: Spacing.sm},
+    itemActive: {backgroundColor: 'rgba(0,0,0,0.25)'},
+    name: {color: '#FFFFFF', fontSize: TypeScale.small, fontFamily: Fonts.bodySemiBold},
+    icon: {height: 26, justifyContent: 'center'},
+    time: {color: '#FFFFFF', fontSize: TypeScale.body, fontFamily: Fonts.bodyBold},
+  });

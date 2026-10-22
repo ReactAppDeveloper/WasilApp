@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -8,16 +8,18 @@ import {
   Image,
   Platform
 } from 'react-native';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const headerImage = {
   uri: 'https://res.cloudinary.com/daof5pne5/image/upload/c_limit,q_auto,w_1200/v1720698314/prayertimes/introwudhu.png',
 };
 
 const IntoWudhuNew = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.container}>
-    <StatusBar backgroundColor={Colors.intermediate1}/>
+    <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg}/>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerWrapper}>
           <Image source={headerImage} style={styles.headerImage} />
@@ -82,10 +84,11 @@ const IntoWudhuNew = () => {
 };
 export default IntoWudhuNew;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1
+    backgroundColor: Colors.background
   },
 
  headerWrapper: { height: 300, }, 
@@ -101,21 +104,21 @@ const styles = StyleSheet.create({
     width:"90%",
     fontSize: 13,
     alignSelf:"center",
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Light',
   },
   paragraph1: {
     top:20,
     fontSize: 13,
     alignSelf:"center",
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Light',
   },
    paragraph2: {
     top:30,
     fontSize: 13,
     alignSelf:"center",
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Light',
   },
    paragraph3: {
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     left:5,
     fontSize: 13,
     alignSelf:"center",
-    color: Colors.white,
+    color: Colors.textPrimary,
     fontFamily: 'Poppins-Light',
   },
   bold: {
@@ -132,14 +135,14 @@ const styles = StyleSheet.create({
 
   /* Verse Card */
   verseCard: {
-    backgroundColor: Colors.secondary1,
+    backgroundColor: Colors.stepCard,
     borderRadius: 16,
     padding: 16,
     marginVertical: 16,
     alignItems: 'center',
   },
   verseTitle: {
-    color: Colors.white,
+    color: Colors.stepText,
     fontSize: 14,
     fontFamily: 'Poppins-Light',
     marginBottom: 2,
@@ -149,17 +152,17 @@ const styles = StyleSheet.create({
     height:50,
     fontSize: 25,
     marginBottom: 5,
-    color:Colors.intermediate1,
+    color: Colors.quranArabic,
     fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
   },
   verseReference: {
     fontSize: 12,
     marginBottom: 8,
-    color: Colors.white,
+    color: Colors.stepText,
     fontFamily: Platform.OS === 'ios' ? 'Al Qalam Quran Majeed Web' : 'AlQalamQuran',
   },
   translation: {
-    color: Colors.white,
+    color: Colors.stepText,
     fontSize: 13,
     textAlign: 'center',
     lineHeight: 20,

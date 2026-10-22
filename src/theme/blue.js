@@ -67,5 +67,17 @@ export default {
     ayahBorder: "#43288A",
     ayahPlayingText: "#FFF1CA",
     ayahCardBorder: "#281658",
+    // Prayer guide step cards
+    stepCard: "#7F76B7",
+    stepCardBorder: "#7F76B7",
+    stepTitle: "#FFFFFF",
+    stepText: "#FFFFFF",
+    stepBadge: "#43288A",
+    stepLabel: "#FFF1CA",
+    // Pill tab bars (prayer guide rakats)
+    tabTrack: "#7F76B7",
+    tabIndicator: "#5F50A1",
+    tabActiveText: "#FFFFFF",
+    tabInactiveText: "#2B2B2B",
     overlay: "rgba(0,0,0,0.45)",
 };

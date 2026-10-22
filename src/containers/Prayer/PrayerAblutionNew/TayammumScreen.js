@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,16 @@ import {
   Dimensions,
   StatusBar
 } from 'react-native';
-import { Colors } from '../../../theme';
+import {useTheme} from '../../../theme';
 
 const { width } = Dimensions.get('window');
 
 const TayammumScreen = () => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
   return (
     <View style={styles.container}>
-    <StatusBar backgroundColor={Colors.intermediate1}/>
+    <StatusBar barStyle={Colors.statusBar} backgroundColor={Colors.headerBg}/>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image
           source={{
@@ -61,19 +63,24 @@ const TayammumScreen = () => {
   );
 };
 
-const Bullet = ({ text }) => (
-  <View style={styles.bulletRow}>
-    <View style={styles.bullet} />
-    <Text style={styles.bulletText}>{text}</Text>
-  </View>
-);
+const Bullet = ({ text }) => {
+  const {Colors} = useTheme();
+  const styles = useMemo(() => makeStyles(Colors), [Colors]);
+  return (
+    <View style={styles.bulletRow}>
+      <View style={styles.bullet} />
+      <Text style={styles.bulletText}>{text}</Text>
+    </View>
+  );
+};
 
 export default TayammumScreen;
 
-const styles = StyleSheet.create({
+const makeStyles = Colors =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.intermediate1
+    backgroundColor: Colors.background
   },
 
   image: {
@@ -87,7 +94,7 @@ const styles = StyleSheet.create({
 
   description: {
     fontSize: 14,
-    color: Colors.white,
+    color: Colors.textPrimary,
     lineHeight: 22,
     marginBottom: 16,
     fontFamily: 'Poppins-Light',
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 10,
     fontFamily: 'Poppins-SemiBold',
-     color: Colors.white,
+     color: Colors.textPrimary,
   },
 
   bulletRow: {
@@ -111,7 +118,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.secondary1,
+    backgroundColor: Colors.accent,
     marginTop: 6,
     marginRight: 10,
   },
@@ -119,7 +126,7 @@ const styles = StyleSheet.create({
   bulletText: {
     flex: 1,
     fontSize: 14,
-    color: Colors.white,
+    color: Colors.textPrimary,
     lineHeight: 22,
     fontFamily: 'Poppins-Light',
   },
